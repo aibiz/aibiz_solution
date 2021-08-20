@@ -1,0 +1,64 @@
+/*-----------------------------------------------
+|   Select 2
+-----------------------------------------------*/
+@import '../../../pages/assets/lib/select2/scss/core.scss';
+@import '../../../pages/assets/lib/select2-theme/select2-bootstrap4.scss';
+
+.select2-container {
+  .select2-selection--single .select2-selection__rendered {
+    padding-left: $input-padding-x;
+    padding-right: $input-padding-x;
+  }
+}
+.select2-container--bootstrap4 {
+  .select2-selection--multiple {
+    .select2-selection__rendered {
+      padding-left: $input-padding-x;
+      padding-right: $input-padding-x;
+      vertical-align: top;
+    }
+    .select2-selection__choice {
+      border-color: $gray-200;
+      margin-top: 5px;
+      font-size: 15px;
+      background-color: $gray-100;
+    }
+  }
+  .select2-selection--single .select2-selection__arrow {
+    right: 11px;
+  }
+}
+.select2-search--dropdown {
+  padding: 0.5rem $input-padding-x;
+  .select2-search__field {
+    padding: 0.25rem 0.5rem;
+  }
+}
+.select2-results__options {
+  .select2-results__option {
+    padding-left: $input-padding-x;
+    padding-right: $input-padding-x;
+  }
+}
+.select2-container .select2-search--inline {
+  vertical-align: top;
+  line-height: 24px;
+}
+.select2-search--inline .select2-search__field {
+  margin-top: 6px !important;
+}
+
+.select2-container--bootstrap4
+  .select2-selection--multiple
+  .select2-selection__rendered
+  .select2-search__field {
+  line-height: 22px;
+  vertical-align: middle;
+}
+.select2-dropdown.select2-dropdown--below {
+  border-top: 1px solid transparent !important;
+}
+.select2-container--bootstrap4.select2-container--focus.select2-container--open
+  .select2-selection {
+  border-bottom: 1px solid transparent;
+}

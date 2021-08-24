@@ -1,1114 +1,621 @@
 "use strict";
 
-var _this = this;
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
+
+function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
+
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) { symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); } keys.push.apply(keys, symbols); } return keys; }
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-/*-----------------------------------------------
-|   Theme Configuration
------------------------------------------------*/
-var storage = {
-  isDark: false
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+/* -------------------------------------------------------------------------- */
+
+/*                                    Utils                                   */
+
+/* -------------------------------------------------------------------------- */
+var docReady = function docReady(fn) {
+  // see if DOM is already available
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', fn);
+  } else {
+    setTimeout(fn, 1);
+  }
+};
+
+var resize = function resize(fn) {
+  return window.addEventListener('resize', fn);
+};
+
+var isIterableArray = function isIterableArray(array) {
+  return Array.isArray(array) && !!array.length;
+};
+
+var camelize = function camelize(str) {
+  var text = str.replace(/[-_\s.]+(.)?/g, function (_, c) {
+    return c ? c.toUpperCase() : '';
+  });
+  return "".concat(text.substr(0, 1).toLowerCase()).concat(text.substr(1));
+};
+
+var getData = function getData(el, data) {
+  try {
+    return JSON.parse(el.dataset[camelize(data)]);
+  } catch (e) {
+    return el.dataset[camelize(data)];
+  }
+};
+/* ----------------------------- Colors function ---------------------------- */
+
+
+var hexToRgb = function hexToRgb(hexValue) {
+  var hex;
+  hexValue.indexOf('#') === 0 ? hex = hexValue.substring(1) : hex = hexValue; // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
+
+  var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+  var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex.replace(shorthandRegex, function (m, r, g, b) {
+    return r + r + g + g + b + b;
+  }));
+  return result ? [parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16)] : null;
+};
+
+var rgbaColor = function rgbaColor() {
+  var color = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '#fff';
+  var alpha = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0.5;
+  return "rgba(".concat(hexToRgb(color), ", ").concat(alpha, ")");
+};
+/* --------------------------------- Colors --------------------------------- */
+
+
+var getColor = function getColor(name) {
+  var dom = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : document.documentElement;
+  return getComputedStyle(dom).getPropertyValue("--falcon-".concat(name)).trim();
+};
+
+var getColors = function getColors(dom) {
+  return {
+    primary: getColor('primary', dom),
+    secondary: getColor('secondary', dom),
+    success: getColor('success', dom),
+    info: getColor('info', dom),
+    warning: getColor('warning', dom),
+    danger: getColor('danger', dom),
+    light: getColor('light', dom),
+    dark: getColor('dark', dom)
+  };
+};
+
+var getSoftColors = function getSoftColors(dom) {
+  return {
+    primary: getColor('soft-primary', dom),
+    secondary: getColor('soft-secondary', dom),
+    success: getColor('soft-success', dom),
+    info: getColor('soft-info', dom),
+    warning: getColor('soft-warning', dom),
+    danger: getColor('soft-danger', dom),
+    light: getColor('soft-light', dom),
+    dark: getColor('soft-dark', dom)
+  };
+};
+
+var getGrays = function getGrays(dom) {
+  return {
+    white: getColor('white', dom),
+    100: getColor('100', dom),
+    200: getColor('200', dom),
+    300: getColor('300', dom),
+    400: getColor('400', dom),
+    500: getColor('500', dom),
+    600: getColor('600', dom),
+    700: getColor('700', dom),
+    800: getColor('800', dom),
+    900: getColor('900', dom),
+    1000: getColor('1000', dom),
+    1100: getColor('1100', dom),
+    black: getColor('black', dom)
+  };
+};
+
+var hasClass = function hasClass(el, className) {
+  !el && false;
+  return el.classList.value.includes(className);
+};
+
+var addClass = function addClass(el, className) {
+  el.classList.add(className);
+};
+
+var getOffset = function getOffset(el) {
+  var rect = el.getBoundingClientRect();
+  var scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+  var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+  return {
+    top: rect.top + scrollTop,
+    left: rect.left + scrollLeft
+  };
+};
+
+var isScrolledIntoView = function isScrolledIntoView(el) {
+  var top = el.offsetTop;
+  var left = el.offsetLeft;
+  var width = el.offsetWidth;
+  var height = el.offsetHeight;
+
+  while (el.offsetParent) {
+    // eslint-disable-next-line no-param-reassign
+    el = el.offsetParent;
+    top += el.offsetTop;
+    left += el.offsetLeft;
+  }
+
+  return {
+    all: top >= window.pageYOffset && left >= window.pageXOffset && top + height <= window.pageYOffset + window.innerHeight && left + width <= window.pageXOffset + window.innerWidth,
+    partial: top < window.pageYOffset + window.innerHeight && left < window.pageXOffset + window.innerWidth && top + height > window.pageYOffset && left + width > window.pageXOffset
+  };
+};
+
+var breakpoints = {
+  xs: 0,
+  sm: 576,
+  md: 768,
+  lg: 992,
+  xl: 1200,
+  xxl: 1540
+};
+
+var getBreakpoint = function getBreakpoint(el) {
+  var classes = el && el.classList.value;
+  var breakpoint;
+
+  if (classes) {
+    breakpoint = breakpoints[classes.split(' ').filter(function (cls) {
+      return cls.includes('navbar-expand-');
+    }).pop().split('-').pop()];
+  }
+
+  return breakpoint;
+};
+/* --------------------------------- Cookie --------------------------------- */
+
+
+var setCookie = function setCookie(name, value, expire) {
+  var expires = new Date();
+  expires.setTime(expires.getTime() + expire);
+  document.cookie = "".concat(name, "=").concat(value, ";expires=").concat(expires.toUTCString());
+};
+
+var getCookie = function getCookie(name) {
+  var keyValue = document.cookie.match("(^|;) ?".concat(name, "=([^;]*)(;|$)"));
+  return keyValue ? keyValue[2] : keyValue;
+};
+
+var settings = {
+  tinymce: {
+    theme: 'oxide'
+  },
+  chart: {
+    borderColor: 'rgba(255, 255, 255, 0.8)'
+  }
+};
+/* -------------------------- Chart Initialization -------------------------- */
+
+var newChart = function newChart(chart, config) {
+  var ctx = chart.getContext('2d');
+  return new window.Chart(ctx, config);
+};
+/* ---------------------------------- Store --------------------------------- */
+
+
+var getItemFromStore = function getItemFromStore(key, defaultValue) {
+  var store = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : localStorage;
+
+  try {
+    return JSON.parse(store.getItem(key)) || defaultValue;
+  } catch (_unused) {
+    return store.getItem(key) || defaultValue;
+  }
+};
+
+var setItemToStore = function setItemToStore(key, payload) {
+  var store = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : localStorage;
+  return store.setItem(key, payload);
+};
+
+var getStoreSpace = function getStoreSpace() {
+  var store = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : localStorage;
+  return parseFloat((escape(encodeURIComponent(JSON.stringify(store))).length / (1024 * 1024)).toFixed(2));
+};
+/* get Dates between */
+
+
+var getDates = function getDates(startDate, endDate) {
+  var interval = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 1000 * 60 * 60 * 24;
+  var duration = endDate - startDate;
+  var steps = duration / interval;
+  return Array.from({
+    length: steps + 1
+  }, function (v, i) {
+    return new Date(startDate.valueOf() + interval * i);
+  });
+};
+
+var getPastDates = function getPastDates(duration) {
+  var days;
+
+  switch (duration) {
+    case 'week':
+      days = 7;
+      break;
+
+    case 'month':
+      days = 30;
+      break;
+
+    case 'year':
+      days = 365;
+      break;
+
+    default:
+      days = duration;
+  }
+
+  var date = new Date();
+  var endDate = date;
+  var startDate = new Date(new Date().setDate(date.getDate() - (days - 1)));
+  return getDates(startDate, endDate);
+};
+/* Get Random Number */
+
+
+var getRandomNumber = function getRandomNumber(min, max) {
+  return Math.floor(Math.random() * (max - min) + min);
+};
+
+var utils = {
+  docReady: docReady,
+  resize: resize,
+  isIterableArray: isIterableArray,
+  camelize: camelize,
+  getData: getData,
+  hasClass: hasClass,
+  addClass: addClass,
+  hexToRgb: hexToRgb,
+  rgbaColor: rgbaColor,
+  getColor: getColor,
+  getColors: getColors,
+  getSoftColors: getSoftColors,
+  getGrays: getGrays,
+  getOffset: getOffset,
+  isScrolledIntoView: isScrolledIntoView,
+  getBreakpoint: getBreakpoint,
+  setCookie: setCookie,
+  getCookie: getCookie,
+  newChart: newChart,
+  settings: settings,
+  getItemFromStore: getItemFromStore,
+  setItemToStore: setItemToStore,
+  getStoreSpace: getStoreSpace,
+  getDates: getDates,
+  getPastDates: getPastDates,
+  getRandomNumber: getRandomNumber
+};
+/* -------------------------------------------------------------------------- */
+
+/*                                  Detector                                  */
+
+/* -------------------------------------------------------------------------- */
+
+var detectorInit = function detectorInit() {
+  var _window = window,
+      is = _window.is;
+  var html = document.querySelector('html');
+  is.opera() && addClass(html, 'opera');
+  is.mobile() && addClass(html, 'mobile');
+  is.firefox() && addClass(html, 'firefox');
+  is.safari() && addClass(html, 'safari');
+  is.ios() && addClass(html, 'ios');
+  is.iphone() && addClass(html, 'iphone');
+  is.ipad() && addClass(html, 'ipad');
+  is.ie() && addClass(html, 'ie');
+  is.edge() && addClass(html, 'edge');
+  is.chrome() && addClass(html, 'chrome');
+  is.mac() && addClass(html, 'osx');
+  is.windows() && addClass(html, 'windows');
+  navigator.userAgent.match('CriOS') && addClass(html, 'chrome');
 };
 /*-----------------------------------------------
-|   Utilities
------------------------------------------------*/
-
-var utils = function ($) {
-  var grays = function grays() {
-    var colors = {
-      white: '#fff',
-      100: '#f9fafd',
-      200: '#edf2f9',
-      300: '#d8e2ef',
-      400: '#b6c1d2',
-      500: '#9da9bb',
-      600: '#748194',
-      700: '#5e6e82',
-      800: '#4d5969',
-      900: '#344050',
-      1000: '#232e3c',
-      1100: '#0b1727',
-      black: '#000'
-    };
-
-    if (storage.isDark) {
-      colors = {
-        white: '#0e1c2f',
-        100: '#132238',
-        200: '#061325',
-        300: '#344050',
-        400: '#4d5969',
-        500: '#5e6e82',
-        600: '#748194',
-        700: '#9da9bb',
-        800: '#b6c1d2',
-        900: '#d8e2ef',
-        1000: '#edf2f9',
-        1100: '#f9fafd',
-        black: '#fff'
-      };
-    }
-
-    return colors;
-  };
-
-  var themeColors = function themeColors() {
-    var colors = {
-      primary: '#2c7be5',
-      secondary: '#748194',
-      success: '#00d27a',
-      info: '#27bcfd',
-      warning: '#f5803e',
-      danger: '#e63757',
-      light: '#f9fafd',
-      dark: '#0b1727'
-    };
-
-    if (storage.isDark) {
-      colors.light = grays()['100'];
-      colors.dark = grays()['1100'];
-    }
-
-    return colors;
-  };
-
-  var pluginSettings = function pluginSettings() {
-    var settings = {
-      tinymce: {
-        theme: 'oxide'
-      },
-      chart: {
-        borderColor: 'rgba(255, 255, 255, 0.8)'
-      }
-    };
-
-    if (storage.isDark) {
-      settings.tinymce.theme = 'oxide-dark';
-      settings.chart.borderColor = themeColors().primary;
-    }
-
-    return settings;
-  };
-
-  var Utils = {
-    $window: $(window),
-    $document: $(document),
-    $html: $('html'),
-    $body: $('body'),
-    $main: $('main'),
-    isRTL: function isRTL() {
-      return this.$html.attr('dir') === 'rtl';
-    },
-    location: window.location,
-    nua: navigator.userAgent,
-    breakpoints: {
-      xs: 0,
-      sm: 576,
-      md: 768,
-      lg: 992,
-      xl: 1200,
-      xxl: 1540
-    },
-    colors: themeColors(),
-    grays: grays(),
-    offset: function offset(element) {
-      var rect = element.getBoundingClientRect();
-      var scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
-      var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-      return {
-        top: rect.top + scrollTop,
-        left: rect.left + scrollLeft
-      };
-    },
-    isScrolledIntoViewJS: function isScrolledIntoViewJS(element) {
-      var windowHeight = window.innerHeight;
-      var elemTop = this.offset(element).top;
-      var elemHeight = element.offsetHeight;
-      var windowScrollTop = window.scrollY;
-      return elemTop <= windowScrollTop + windowHeight && windowScrollTop <= elemTop + elemHeight;
-    },
-    isScrolledIntoView: function isScrolledIntoView(el) {
-      var $el = $(el);
-      var windowHeight = this.$window.height();
-      var elemTop = $el.offset().top;
-      var elemHeight = $el.height();
-      var windowScrollTop = this.$window.scrollTop();
-      return elemTop <= windowScrollTop + windowHeight && windowScrollTop <= elemTop + elemHeight;
-    },
-    getCurrentScreanBreakpoint: function getCurrentScreanBreakpoint() {
-      var _this2 = this;
-
-      var currentScrean = '';
-      var windowWidth = this.$window.width();
-      $.each(this.breakpoints, function (index, value) {
-        if (windowWidth >= value) {
-          currentScrean = index;
-        } else if (windowWidth >= _this2.breakpoints.xl) {
-          currentScrean = 'xl';
-        }
-      });
-      return {
-        currentScrean: currentScrean,
-        currentBreakpoint: this.breakpoints[currentScrean]
-      };
-    },
-    hexToRgb: function hexToRgb(hexValue) {
-      var hex;
-      hexValue.indexOf('#') === 0 ? hex = hexValue.substring(1) : hex = hexValue; // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
-
-      var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
-      var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex.replace(shorthandRegex, function (m, r, g, b) {
-        return r + r + g + g + b + b;
-      }));
-      return result ? [parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16)] : null;
-    },
-    rgbColor: function rgbColor(color) {
-      if (color === void 0) {
-        color = '#fff';
-      }
-
-      return "rgb(" + this.hexToRgb(color) + ")";
-    },
-    rgbaColor: function rgbaColor(color, alpha) {
-      if (color === void 0) {
-        color = '#fff';
-      }
-
-      if (alpha === void 0) {
-        alpha = 0.5;
-      }
-
-      return "rgba(" + this.hexToRgb(color) + ", " + alpha + ")";
-    },
-    rgbColors: function rgbColors() {
-      var _this3 = this;
-
-      return Object.keys(this.colors).map(function (color) {
-        return _this3.rgbColor(_this3.colors[color]);
-      });
-    },
-    rgbaColors: function rgbaColors() {
-      var _this4 = this;
-
-      return Object.keys(this.colors).map(function (color) {
-        return _this4.rgbaColor(_this4.colors[color]);
-      });
-    },
-    settings: pluginSettings(_this),
-    isIterableArray: function isIterableArray(array) {
-      return Array.isArray(array) && !!array.length;
-    },
-    setCookie: function setCookie(name, value, expire) {
-      var expires = new Date();
-      expires.setTime(expires.getTime() + expire);
-      document.cookie = name + "=" + value + ";expires=" + expires.toUTCString();
-    },
-    getCookie: function getCookie(name) {
-      var keyValue = document.cookie.match("(^|;) ?" + name + "=([^;]*)(;|$)");
-      return keyValue ? keyValue[2] : keyValue;
-    },
-    getBreakpoint: function getBreakpoint($element) {
-      var classes = $element.attr('class');
-      var breakpoint;
-
-      if (classes) {
-        breakpoint = this.breakpoints[classes.split(' ').filter(function (cls) {
-          return cls.indexOf('navbar-expand-') === 0;
-        }).pop().split('-').pop()];
-      }
-
-      return breakpoint;
-    }
-  };
-  return Utils;
-}(jQuery);
-/*-----------------------------------------------
-|   Detector
+|   DomNode
 -----------------------------------------------*/
 
 
-utils.$document.ready(function () {
-  if (window.is.opera()) utils.$html.addClass('opera');
-  if (window.is.mobile()) utils.$html.addClass('mobile');
-  if (window.is.firefox()) utils.$html.addClass('firefox');
-  if (window.is.safari()) utils.$html.addClass('safari');
-  if (window.is.ios()) utils.$html.addClass('ios');
-  if (window.is.iphone()) utils.$html.addClass('iphone');
-  if (window.is.ipad()) utils.$html.addClass('ipad');
-  if (window.is.ie()) utils.$html.addClass('ie');
-  if (window.is.edge()) utils.$html.addClass('edge');
-  if (window.is.chrome()) utils.$html.addClass('chrome');
-  if (utils.nua.match(/puppeteer/i)) utils.$html.addClass('puppeteer');
-  if (window.is.mac()) utils.$html.addClass('osx');
-  if (window.is.windows()) utils.$html.addClass('windows');
-  if (navigator.userAgent.match('CriOS')) utils.$html.addClass('chrome');
-});
-/*-----------------------------------------------
-|   Emoji Picker
------------------------------------------------*/
+var DomNode = /*#__PURE__*/function () {
+  function DomNode(node) {
+    _classCallCheck(this, DomNode);
 
-utils.$document.ready(function () {
-  var Event = {
-    FOCUS: 'focus'
-  };
-  var Selector = {
-    EMOJIAREA: '.emojiarea'
-  };
-  var DATA_KEY = {
-    OPTIONS: 'options'
-  };
-  var emojioneareas = $(Selector.EMOJIAREA); // Place the Blinking Text Cursor at the end of the editor text
-
-  var placeCaretAtEnd = function placeCaretAtEnd(el) {
-    if (!!window.getSelection && !!document.createRange) {
-      var range = document.createRange();
-      range.selectNodeContents(el);
-      range.collapse(false);
-      var sel = window.getSelection();
-      sel.removeAllRanges();
-      sel.addRange(range);
-    } else if (document.body.createTextRange) {
-      var textRange = document.body.createTextRange();
-      textRange.moveToElementText(el);
-      textRange.collapse(false);
-      textRange.select();
-    }
-  }; // EmojioneArea plugin call
-
-
-  if (emojioneareas.length) {
-    emojioneareas.each(function (item, value) {
-      var $this = $(value);
-      var options = $.extend({}, $this.data(DATA_KEY.OPTIONS));
-      $this.emojioneArea(options); // // Call the caret position function on focus
-
-      emojioneareas[item].emojioneArea.on(Event.FOCUS, function ($editor) {
-        placeCaretAtEnd($editor.get(0));
-      });
-    });
+    this.node = node;
   }
-});
-/*-----------------------------------------------
-|   Animated progressbar
------------------------------------------------*/
 
-utils.$document.ready(function () {
-  var toggle = $('#progress-toggle-animation');
-  toggle.on('click', function () {
-    return $('#progress-toggle').toggleClass('progress-bar-animated');
-  });
-});
-/*-----------------------------------------------
-|   Top navigation opacity on scroll
------------------------------------------------*/
-
-utils.$document.ready(function () {
-  var $navbar = $('.navbar-theme');
-
-  if ($navbar.length) {
-    var windowHeight = utils.$window.height();
-    utils.$window.scroll(function () {
-      var scrollTop = utils.$window.scrollTop();
-      var alpha = scrollTop / windowHeight * 2;
-      alpha >= 1 && (alpha = 1);
-      $navbar.css({
-        'background-color': "rgba(11, 23, 39, " + alpha + ")"
-      });
-    }); // Fix navbar background color [after and before expand]
-
-    var classList = $navbar.attr('class').split(' ');
-    var breakpoint = classList.filter(function (c) {
-      return c.indexOf('navbar-expand-') >= 0;
-    })[0].split('navbar-expand-')[1];
-    utils.$window.resize(function () {
-      if (utils.$window.width() > utils.breakpoints[breakpoint]) {
-        return $navbar.removeClass('bg-dark');
-      }
-
-      if (!$navbar.find('.navbar-toggler').hasClass('collapsed')) {
-        return $navbar.addClass('bg-dark');
+  _createClass(DomNode, [{
+    key: "addClass",
+    value: function addClass(className) {
+      this.isValidNode() && this.node.classList.add(className);
+    }
+  }, {
+    key: "removeClass",
+    value: function removeClass(className) {
+      this.isValidNode() && this.node.classList.remove(className);
+    }
+  }, {
+    key: "toggleClass",
+    value: function toggleClass(className) {
+      this.isValidNode() && this.node.classList.toggle(className);
+    }
+  }, {
+    key: "hasClass",
+    value: function hasClass(className) {
+      this.isValidNode() && this.node.classList.contains(className);
+    }
+  }, {
+    key: "data",
+    value: function data(key) {
+      if (this.isValidNode()) {
+        try {
+          return JSON.parse(this.node.dataset[this.camelize(key)]);
+        } catch (e) {
+          return this.node.dataset[this.camelize(key)];
+        }
       }
 
       return null;
-    }); // Top navigation background toggle on mobile
+    }
+  }, {
+    key: "attr",
+    value: function attr(name) {
+      return this.isValidNode() && this.node[name];
+    }
+  }, {
+    key: "setAttribute",
+    value: function setAttribute(name, value) {
+      this.isValidNode() && this.node.setAttribute(name, value);
+    }
+  }, {
+    key: "removeAttribute",
+    value: function removeAttribute(name) {
+      this.isValidNode() && this.node.removeAttribute(name);
+    }
+  }, {
+    key: "setProp",
+    value: function setProp(name, value) {
+      this.isValidNode() && (this.node[name] = value);
+    }
+  }, {
+    key: "on",
+    value: function on(event, cb) {
+      this.isValidNode() && this.node.addEventListener(event, cb);
+    }
+  }, {
+    key: "isValidNode",
+    value: function isValidNode() {
+      return !!this.node;
+    } // eslint-disable-next-line class-methods-use-this
 
-    $navbar.on('show.bs.collapse hide.bs.collapse', function (e) {
-      $(e.currentTarget).toggleClass('bg-dark');
-    });
+  }, {
+    key: "camelize",
+    value: function camelize(str) {
+      var text = str.replace(/[-_\s.]+(.)?/g, function (_, c) {
+        return c ? c.toUpperCase() : '';
+      });
+      return "".concat(text.substr(0, 1).toLowerCase()).concat(text.substr(1));
+    }
+  }]);
+
+  return DomNode;
+}();
+/* -------------------------------------------------------------------------- */
+
+/*                                  Anchor JS                                 */
+
+/* -------------------------------------------------------------------------- */
+
+
+var anchors = new window.AnchorJS();
+anchors.options = {
+  icon: '#'
+};
+anchors.add('[data-anchor]');
+/*-----------------------------------------------
+|   Bulk Select
+-----------------------------------------------*/
+
+var BulkSelect = /*#__PURE__*/function () {
+  function BulkSelect(element, option) {
+    _classCallCheck(this, BulkSelect);
+
+    this.element = new DomNode(element);
+    this.option = _objectSpread({
+      displayNoneClassName: 'd-none'
+    }, option);
   }
-});
-/*-----------------------------------------------
-|   Select menu [bootstrap 4]
------------------------------------------------*/
 
-utils.$document.ready(function () {
-  // https://getbootstrap.com/docs/4.0/getting-started/browsers-devices/#select-menu
-  // https://github.com/twbs/bootstrap/issues/26183
-  window.is.android() && $('select.form-control').removeClass('form-control').css('width', '100%');
-});
-/*-----------------------------------------------
-|   Bootstrap Wizard
------------------------------------------------*/
+  _createClass(BulkSelect, [{
+    key: "init",
+    value: function init() {
+      this.attachNodes();
+      this.clickBulkCheckbox();
+      this.clickRowCheckbox();
+    }
+  }, {
+    key: "attachNodes",
+    value: function attachNodes() {
+      var _this$element$data = this.element.data('bulk-select'),
+          body = _this$element$data.body,
+          actions = _this$element$data.actions,
+          replacedElement = _this$element$data.replacedElement;
 
-utils.$document.ready(function () {
-  var Selector = {
-    DATA_WIZARD: '[data-wizard]',
-    PREVIOUS_BUTTON: '.previous .btn',
-    TAB_PANE: '.tab-pane',
-    FORM_VALIDATION: '.form-validation',
-    NAV_ITEM_CIRCLE: '.nav-item-circle',
-    NAV_ITEM: '.nav-item',
-    NAV_LINK: '.nav-link',
-    WIZARD_LOTTIE: '.wizard-lottie'
-  };
-  var ClassName = {
-    ACTIVE: 'active',
-    DONE: 'done',
-    NAV: 'nav'
-  };
-  var DATA_KEY = {
-    OPTIONS: 'options',
-    WIZARD_STATE: 'wizard-state',
-    CONTROLLER: 'controller',
-    ERROR_MODAL: 'error-modal'
-  };
-  var wizards = $(Selector.DATA_WIZARD);
+      this.actions = new DomNode(document.getElementById(actions));
+      this.replacedElement = new DomNode(document.getElementById(replacedElement));
+      this.bulkSelectRows = document.getElementById(body).querySelectorAll('[data-bulk-select-row]');
+    }
+  }, {
+    key: "clickBulkCheckbox",
+    value: function clickBulkCheckbox() {
+      var _this = this;
 
-  var isFormValidate = function isFormValidate($currentTab) {
-    var $currentTabForms = $currentTab.find(Selector.FORM_VALIDATION);
-    var isValidate = true;
-    $currentTabForms.each(function (i, v) {
-      isValidate = $(v).valid();
-      return isValidate;
-    });
-    return isValidate;
-  };
+      // Handle click event in bulk checkbox
+      this.element.on('click', function () {
+        if (_this.element.attr('indeterminate') === 'indeterminate') {
+          _this.actions.addClass(_this.option.displayNoneClassName);
 
-  !!wizards.length && wizards.each(function (index, value) {
-    var $this = $(value);
-    var controller = $this.data(DATA_KEY.CONTROLLER);
-    var $controller = $(controller);
-    var $buttonPrev = $controller.find(Selector.PREVIOUS_BUTTON);
-    var $modal = $($this.data(DATA_KEY.ERROR_MODAL));
-    var $lottie = $(value).find(Selector.WIZARD_LOTTIE);
-    var options = $.extend({
-      container: value.querySelector(Selector.WIZARD_LOTTIE),
-      renderer: 'svg',
-      loop: true,
-      autoplay: false,
-      name: 'Hello World'
-    }, $lottie.data(DATA_KEY.OPTIONS));
-    var animation = window.bodymovin.loadAnimation(options);
-    $this.bootstrapWizard({
-      tabClass: ClassName.NAV,
-      onNext: function onNext(tab, navigation, idx) {
-        var $currentTab = $this.find(Selector.TAB_PANE).eq(idx - 1);
-        return isFormValidate($currentTab);
-      },
-      onTabClick: function onTabClick(tab, navigation, idx, clickedIndex) {
-        var stepDone = $this.find(".nav-item:nth-child(" + (clickedIndex + 1) + ") .nav-link").data(DATA_KEY.WIZARD_STATE);
+          _this.replacedElement.removeClass(_this.option.displayNoneClassName);
 
-        if (stepDone === 'done') {
-          $modal.modal('show');
-          return false;
-        }
+          _this.removeBulkCheck();
 
-        if (clickedIndex <= idx) {
-          return true;
-        }
-
-        var isValid = true;
-        $this.find(Selector.TAB_PANE).each(function (tabIndex, tabValue) {
-          if (tabIndex < clickedIndex) {
-            $this.bootstrapWizard('show', tabIndex);
-            isValid = isFormValidate($(tabValue));
-          }
-
-          return isValid;
-        });
-        return isValid;
-      },
-      onTabShow: function onTabShow(tab, navigation, idx) {
-        var length = navigation.find('li').length - 1;
-        idx === 0 ? $buttonPrev.hide() : $buttonPrev.show();
-        idx === length && setTimeout(function () {
-          return animation.play();
-        }, 300);
-        $this.find(Selector.NAV_LINK).removeClass(ClassName.DONE);
-        $this.find(Selector.NAV_ITEM).each(function (i, v) {
-          var link = $(v).find(Selector.NAV_LINK);
-
-          if (idx === length && !link.hasClass(ClassName.ACTIVE)) {
-            link.attr('data-wizard-state', 'done');
-          }
-
-          if (!link.hasClass(ClassName.ACTIVE)) {
-            link.addClass(ClassName.DONE);
-            return true;
-          }
-
-          if (idx === length) {
-            link.addClass(ClassName.DONE);
-            $controller.hide();
-          }
-
-          return false;
-        });
-      }
-    });
-  });
-});
-/*-----------------------------------------------
-|   Bulk Actions
------------------------------------------------*/
-
-utils.$document.ready(function () {
-  var checkboxBulkSelects = $('.checkbox-bulk-select');
-
-  if (checkboxBulkSelects.length) {
-    var Event = {
-      CLICK: 'click'
-    };
-    var Selector = {
-      CHECKBOX_BULK_SELECT_CHECKBOX: '.checkbox-bulk-select-target'
-    };
-    var ClassName = {
-      D_NONE: 'd-none'
-    };
-    var DATA_KEY = {
-      CHECKBOX_BODY: 'checkbox-body',
-      CHECKBOX_ACTIONS: 'checkbox-actions',
-      CHECKBOX_REPLACED_ELEMENT: 'checkbox-replaced-element'
-    };
-    var Attribute = {
-      CHECKED: 'checked',
-      INDETERMINATE: 'indeterminate'
-    };
-    checkboxBulkSelects.each(function (index, value) {
-      var checkboxBulkAction = $(value);
-      var bulkActions = $(checkboxBulkAction.data(DATA_KEY.CHECKBOX_ACTIONS));
-      var replacedElement = $(checkboxBulkAction.data(DATA_KEY.CHECKBOX_REPLACED_ELEMENT));
-      var rowCheckboxes = $(checkboxBulkAction.data(DATA_KEY.CHECKBOX_BODY)).find(Selector.CHECKBOX_BULK_SELECT_CHECKBOX);
-      checkboxBulkAction.on(Event.CLICK, function () {
-        if (checkboxBulkAction.attr(Attribute.INDETERMINATE) === Attribute.INDETERMINATE) {
-          bulkActions.addClass(ClassName.D_NONE);
-          replacedElement.removeClass(ClassName.D_NONE);
-          checkboxBulkAction.prop(Attribute.INDETERMINATE, false).attr(Attribute.INDETERMINATE, false);
-          checkboxBulkAction.prop(Attribute.CHECKED, false).attr(Attribute.CHECKED, false);
-          rowCheckboxes.prop(Attribute.CHECKED, false).attr(Attribute.CHECKED, false);
-        } else {
-          bulkActions.toggleClass(ClassName.D_NONE);
-          replacedElement.toggleClass(ClassName.D_NONE);
-
-          if (checkboxBulkAction.attr(Attribute.CHECKED)) {
-            checkboxBulkAction.prop(Attribute.CHECKED, false).attr(Attribute.CHECKED, false);
-          } else {
-            checkboxBulkAction.prop(Attribute.CHECKED, true).attr(Attribute.CHECKED, true);
-          }
-
-          rowCheckboxes.each(function (i, v) {
-            var $this = $(v);
-
-            if ($this.attr(Attribute.CHECKED)) {
-              $this.prop(Attribute.CHECKED, false).attr(Attribute.CHECKED, false);
-            } else {
-              $this.prop(Attribute.CHECKED, true).attr(Attribute.CHECKED, true);
-            }
+          _this.bulkSelectRows.forEach(function (el) {
+            var rowCheck = new DomNode(el);
+            rowCheck.setProp('checked', false);
+            rowCheck.setAttribute('checked', false);
           });
-        }
-      });
-      rowCheckboxes.on(Event.CLICK, function (e) {
-        var $this = $(e.target);
 
-        if ($this.attr(Attribute.CHECKED)) {
-          $this.prop(Attribute.CHECKED, false).attr(Attribute.CHECKED, false);
-        } else {
-          $this.prop(Attribute.CHECKED, true).attr(Attribute.CHECKED, true);
+          return;
         }
 
-        rowCheckboxes.each(function (i, v) {
-          var $elem = $(v);
+        _this.toggleDisplay();
 
-          if ($elem.attr(Attribute.CHECKED)) {
-            checkboxBulkAction.prop(Attribute.INDETERMINATE, true).attr(Attribute.INDETERMINATE, Attribute.INDETERMINATE);
-            bulkActions.removeClass(ClassName.D_NONE);
-            replacedElement.addClass(ClassName.D_NONE);
-            return false;
-          }
-
-          if (i === checkboxBulkAction.length) {
-            checkboxBulkAction.prop(Attribute.INDETERMINATE, false).attr(Attribute.INDETERMINATE, false);
-            checkboxBulkAction.prop(Attribute.CHECKED, false).attr(Attribute.CHECKED, false);
-            bulkActions.addClass(ClassName.D_NONE);
-            replacedElement.removeClass(ClassName.D_NONE);
-          }
-
-          return true;
+        _this.bulkSelectRows.forEach(function (el) {
+          var rowCheck = new DomNode(el);
+          rowCheck.setProp('checked', _this.element.attr('checked'));
+          rowCheck.setAttribute('checked', _this.element.attr('checked'));
         });
-      });
-    });
-  }
-});
-/*-----------------------------------------------
-|   Chart
------------------------------------------------*/
-
-utils.$document.ready(function () {
-  /*-----------------------------------------------
-  |   Helper functions and Data
-  -----------------------------------------------*/
-  var chartData = [3, 1, 4, 1, 5, 9, 2, 6, 5, 3, 5, 8, 9, 7, 9, 3, 2, 3, 8, 4, 6, 2, 6, 4, 3, 3, 8, 3, 2, 7, 9, 5, 0, 2, 8, 8, 4, 1, 9, 7];
-  var labels = ['9:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '1:00 PM', '2:00 PM', '3:00 PM', '4:00 PM', '5:00 PM', '6:00 PM', '7:00 PM', '8:00 PM'];
-  /*-----------------------------------------------
-  |   Chart Initialization
-  -----------------------------------------------*/
-
-  var newChart = function newChart(chart, config) {
-    var ctx = chart.getContext('2d');
-    return new window.Chart(ctx, config);
-  };
-  /*-----------------------------------------------
-  |   Line Chart
-  -----------------------------------------------*/
-
-
-  var chartLine = document.getElementById('chart-line');
-
-  if (chartLine) {
-    var getChartBackground = function getChartBackground(chart) {
-      var ctx = chart.getContext('2d');
-
-      if (storage.isDark) {
-        var _gradientFill = ctx.createLinearGradient(0, 0, 0, ctx.canvas.height);
-
-        _gradientFill.addColorStop(0, utils.rgbaColor(utils.colors.primary, 0.5));
-
-        _gradientFill.addColorStop(1, 'transparent');
-
-        return _gradientFill;
-      }
-
-      var gradientFill = ctx.createLinearGradient(0, 0, 0, 250);
-      gradientFill.addColorStop(0, 'rgba(255, 255, 255, 0.3)');
-      gradientFill.addColorStop(1, 'rgba(255, 255, 255, 0)');
-      return gradientFill;
-    };
-
-    var dashboardLineChart = newChart(chartLine, {
-      type: 'line',
-      data: {
-        labels: labels.map(function (label) {
-          return label.substring(0, label.length - 3);
-        }),
-        datasets: [{
-          borderWidth: 2,
-          data: chartData.map(function (d) {
-            return (d * 3.14).toFixed(2);
-          }),
-          borderColor: utils.settings.chart.borderColor,
-          backgroundColor: getChartBackground(chartLine)
-        }]
-      },
-      options: {
-        legend: {
-          display: false
-        },
-        tooltips: {
-          mode: 'x-axis',
-          xPadding: 20,
-          yPadding: 10,
-          displayColors: false,
-          callbacks: {
-            label: function label(tooltipItem) {
-              return labels[tooltipItem.index] + " - " + tooltipItem.yLabel + " USD";
-            },
-            title: function title() {
-              return null;
-            }
-          }
-        },
-        hover: {
-          mode: 'label'
-        },
-        scales: {
-          xAxes: [{
-            scaleLabel: {
-              show: true,
-              labelString: 'Month'
-            },
-            ticks: {
-              fontColor: utils.rgbaColor('#fff', 0.7),
-              fontStyle: 600
-            },
-            gridLines: {
-              color: utils.rgbaColor('#fff', 0.1),
-              zeroLineColor: utils.rgbaColor('#fff', 0.1),
-              lineWidth: 1
-            }
-          }],
-          yAxes: [{
-            display: false
-          }]
-        }
-      }
-    });
-    $('#dashboard-chart-select').on('change', function (e) {
-      var LineDB = {
-        all: [4, 1, 6, 2, 7, 12, 4, 6, 5, 4, 5, 10].map(function (d) {
-          return (d * 3.14).toFixed(2);
-        }),
-        successful: [3, 1, 4, 1, 5, 9, 2, 6, 5, 3, 5, 8].map(function (d) {
-          return (d * 3.14).toFixed(2);
-        }),
-        failed: [1, 0, 2, 1, 2, 1, 1, 0, 0, 1, 0, 2].map(function (d) {
-          return (d * 3.14).toFixed(2);
-        })
-      };
-      dashboardLineChart.data.datasets[0].data = LineDB[e.target.value];
-      dashboardLineChart.update();
-    });
-  }
-  /*-----------------------------------------------
-  |   Bar Chart
-  -----------------------------------------------*/
-
-
-  var chartBar = document.getElementById('chart-bar');
-
-  if (chartBar) {
-    newChart(chartBar, {
-      type: 'bar',
-      data: {
-        labels: labels.slice(0, 2),
-        datasets: [{
-          label: 'First dataset',
-          backgroundColor: [utils.rgbaColor(utils.colors.info), utils.rgbaColor(utils.colors.warning)],
-          borderColor: [utils.rgbColor(utils.colors.info), utils.rgbColor(utils.colors.warning)],
-          borderWidth: 2,
-          data: [6, 10]
-        }, {
-          label: 'Second dataset',
-          backgroundColor: [utils.rgbaColor(utils.colors.success), utils.rgbaColor(utils.colors.danger)],
-          borderColor: [utils.rgbColor(utils.colors.success), utils.rgbColor(utils.colors.danger)],
-          borderWidth: 2,
-          data: [3, 7]
-        }]
-      },
-      options: {
-        scales: {
-          yAxes: [{
-            ticks: {
-              beginAtZero: true
-            }
-          }]
-        }
-      }
-    });
-  }
-  /*-----------------------------------------------
-  |   Radar Chart
-  -----------------------------------------------*/
-
-
-  var chartRadar = document.getElementById('chart-radar');
-
-  if (chartRadar) {
-    newChart(chartRadar, {
-      type: 'radar',
-      data: {
-        labels: labels,
-        datasets: [{
-          label: 'First dataset',
-          backgroundColor: utils.rgbaColor(utils.colors.warning),
-          borderColor: utils.rgbColor(utils.colors.warning),
-          borderWidth: 2,
-          data: chartData.slice(0, 12),
-          fill: 1
-        }, {
-          label: 'Second dataset',
-          backgroundColor: utils.rgbaColor(utils.colors.danger),
-          borderColor: utils.rgbColor(utils.colors.danger),
-          borderWidth: 2,
-          data: chartData.slice(12, 24),
-          fill: 1
-        }]
-      },
-      options: {
-        maintainAspectRatio: true,
-        spanGaps: false,
-        elements: {
-          line: {
-            tension: 0.000001
-          }
-        }
-      }
-    });
-  }
-  /*-----------------------------------------------
-  |   Pie Chart
-  -----------------------------------------------*/
-
-
-  var chartPie = document.getElementById('chart-pie');
-
-  if (chartPie) {
-    newChart(chartPie, {
-      type: 'pie',
-      data: {
-        labels: labels.slice(0, 3),
-        datasets: [{
-          backgroundColor: utils.rgbaColors(),
-          borderColor: utils.rgbColors(),
-          data: chartData.slice(0, 3)
-        }]
-      },
-      options: {
-        responsive: true
-      }
-    });
-  }
-  /*-----------------------------------------------
-  |   Doughnut Chart
-  -----------------------------------------------*/
-
-
-  var chartDoughnut = document.getElementById('chart-doughnut');
-
-  if (chartDoughnut) {
-    newChart(chartDoughnut, {
-      type: 'doughnut',
-      data: {
-        labels: labels.slice(0, 3),
-        datasets: [{
-          backgroundColor: utils.rgbColors(),
-          borderColor: utils.rgbColors(),
-          data: chartData.slice(0, 3)
-        }]
-      },
-      options: {
-        responsive: true
-      }
-    });
-  }
-  /*-----------------------------------------------
-  |   Polar Area Chart
-  -----------------------------------------------*/
-
-
-  var chartPolarArea = document.getElementById('chart-polar-area');
-
-  if (chartPolarArea) {
-    newChart(chartPolarArea, {
-      type: 'polarArea',
-      data: {
-        labels: labels.slice(0, 3),
-        datasets: [{
-          backgroundColor: utils.rgbaColors(),
-          borderColor: utils.rgbaColors(),
-          data: chartData.slice(0, 3)
-        }]
-      },
-      options: {
-        responsive: true
-      }
-    });
-  }
-  /* eslint-disable */
-
-  /*-----------------------------------------------
-  |   Polar Bubble
-  -----------------------------------------------*/
-
-
-  var colorize = function colorize(opaque, context) {
-    var value = context.dataset.data[context.dataIndex];
-    var x = value.x / 100;
-    var y = value.y / 100;
-    var r = x < 0 && y < 0 ? 250 : x < 0 ? 150 : y < 0 ? 50 : 0;
-    var g = x < 0 && y < 0 ? 0 : x < 0 ? 50 : y < 0 ? 150 : 250;
-    var b = x < 0 && y < 0 ? 0 : x > 0 && y > 0 ? 250 : 150;
-    var a = opaque ? 1 : 0.5 * value.v / 1000;
-    return "rgba(" + r + ", " + g + ", " + b + ", " + a + ")";
-  };
-
-  var rand = function rand(min, max) {
-    var seed = _this._seed;
-    min = min === undefined ? 0 : min;
-    max = max === undefined ? 1 : max;
-    _this._seed = (seed * 9301 + 49297) % 233280;
-    return min + _this._seed / 233280 * (max - min);
-  };
-
-  var generateData = function generateData() {
-    var data = [];
-    var DATA_COUNT = 16;
-    var MIN_XY = -150;
-    var MAX_XY = 100;
-
-    for (var i = 0; i < DATA_COUNT; i += 1) {
-      data.push({
-        x: rand(MIN_XY, MAX_XY),
-        y: rand(MIN_XY, MAX_XY),
-        v: rand(0, 1000)
       });
     }
+  }, {
+    key: "clickRowCheckbox",
+    value: function clickRowCheckbox() {
+      var _this2 = this;
 
-    return data;
-  };
+      // Handle click event in checkbox of each row
+      this.bulkSelectRows.forEach(function (el) {
+        var rowCheck = new DomNode(el);
+        rowCheck.on('click', function () {
+          if (_this2.element.attr('indeterminate') !== 'indeterminate') {
+            _this2.element.setProp('indeterminate', true);
 
-  var chartBubble = document.getElementById("chart-bubble");
+            _this2.element.setAttribute('indeterminate', 'indeterminate');
 
-  if (chartBubble) {
-    newChart(chartBubble, {
-      type: "bubble",
-      data: {
-        datasets: [{
-          label: ["Deer Population"],
-          data: [{
-            x: -10,
-            y: -20,
-            r: 20
-          }, {
-            x: 100,
-            y: 0,
-            r: 10
-          }, {
-            x: 60,
-            y: 30,
-            r: 20
-          }, {
-            x: 40,
-            y: 60,
-            r: 25
-          }, {
-            x: 80,
-            y: 80,
-            r: 30
-          }, {
-            x: 20,
-            y: 30,
-            r: 25
-          }, {
-            x: 0,
-            y: 100,
-            r: 5
-          }],
-          backgroundColor: "#2C7BE5"
-        }]
-      }
-    });
-  }
-  /*-----------------------------------------------
-  |   Component Line Chart
-  -----------------------------------------------*/
+            _this2.element.setProp('checked', true);
 
+            _this2.element.setAttribute('checked', true);
 
-  var componentChartLine = document.getElementById("component-chart-line");
+            _this2.actions.removeClass(_this2.option.displayNoneClassName);
 
-  if (componentChartLine) {
-    newChart(componentChartLine, {
-      type: "line",
-      data: {
-        labels: labels,
-        datasets: [{
-          borderWidth: 2,
-          data: chartData.slice(2, 14).map(function (d) {
-            return (d * 3.14).toFixed(2);
-          }),
-          borderColor: utils.rgbaColor(utils.colors.primary, 0.4),
-          backgroundColor: utils.rgbaColor(utils.colors.primary)
-        }, {
-          borderWidth: 2,
-          borderColor: "#fff",
-          data: chartData.slice(3, 15).map(function (d) {
-            return (d * 3.14).toFixed(2);
-          }),
-          backgroundColor: utils.rgbaColor(utils.colors.primary)
-        }]
-      },
-      options: {
-        legend: {
-          display: false
-        },
-        tooltips: {
-          mode: "x-axis",
-          xPadding: 20,
-          yPadding: 10,
-          displayColors: false,
-          callbacks: {
-            label: function label(tooltipItem) {
-              return labels[tooltipItem.index] + " - " + tooltipItem.yLabel + " USD";
-            },
-            title: function title() {
-              return null;
-            }
+            _this2.replacedElement.addClass(_this2.option.displayNoneClassName);
           }
-        },
-        hover: {
-          mode: "label"
-        },
-        scales: {
-          xAxes: [{
-            scaleLabel: {
-              show: true,
-              labelString: "Month"
-            },
-            ticks: {
-              fontColor: utils.rgbaColor("#000", 0.7),
-              fontStyle: 600
-            },
-            gridLines: {
-              // color: utils.rgbaColor('#000', 0.1),
-              color: utils.rgbaColor("#000", 0.1),
-              zeroLineColor: utils.rgbaColor("#000", 0.1),
-              lineWidth: 1
-            }
-          }],
-          yAxes: [{
-            display: false
-          }]
-        }
-      }
-    });
-  }
-  /*-----------------------------------------------
-  |   Real time user
-  -----------------------------------------------*/
 
-  /*-----------------------------------------------
-  |   Bar Chart
-  -----------------------------------------------*/
+          if (_toConsumableArray(_this2.bulkSelectRows).every(function (element) {
+            return element.checked;
+          })) {
+            _this2.element.setProp('indeterminate', false);
 
+            _this2.element.setAttribute('indeterminate', false);
+          }
 
-  var realTimeUser = document.getElementById("real-time-user");
+          if (_toConsumableArray(_this2.bulkSelectRows).every(function (element) {
+            return !element.checked;
+          })) {
+            _this2.removeBulkCheck();
 
-  if (realTimeUser) {
-    var realTimeUserChart = newChart(realTimeUser, {
-      type: "bar",
-      data: {
-        labels: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25],
-        datasets: [{
-          label: "Users",
-          backgroundColor: utils.rgbaColor("#fff", 0.3),
-          data: [183, 163, 176, 172, 166, 161, 164, 159, 172, 173, 184, 163, 99, 173, 183, 167, 160, 183, 163, 176, 172, 166, 173, 188, 175],
-          barPercentage: 0.9,
-          categoryPercentage: 1.0
-        }]
-      },
-      options: {
-        legend: {
-          display: false
-        },
-        scales: {
-          yAxes: [{
-            display: false,
-            stacked: true
-          }],
-          xAxes: [{
-            stacked: false,
-            ticks: {
-              display: false
-            },
-            gridLines: {
-              color: utils.rgbaColor("#fff", 0.1),
-              display: false
-            }
-          }]
-        }
-      }
-    });
-    var userCounterDom = $(".real-time-user");
-    setInterval(function () {
-      var userCounter = Math.floor(Math.random() * (120 - 60) + 60);
-      /*-----------------------------------------------
-      |   Remove data
-      -----------------------------------------------*/
-
-      realTimeUserChart.data.datasets.forEach(function (dataset) {
-        dataset.data.shift();
-      });
-      realTimeUserChart.update();
-      /*-----------------------------------------------
-      |   Add data
-      -----------------------------------------------*/
-
-      setTimeout(function () {
-        realTimeUserChart.data.datasets.forEach(function (dataset) {
-          dataset.data.push(userCounter);
+            _this2.toggleDisplay();
+          }
         });
-        realTimeUserChart.update();
-        userCounterDom.text(userCounter);
-      }, 500);
-    }, 2000);
+      });
+    }
+  }, {
+    key: "removeBulkCheck",
+    value: function removeBulkCheck() {
+      this.element.setProp('indeterminate', false);
+      this.element.removeAttribute('indeterminate');
+      this.element.setProp('checked', false);
+      this.element.setAttribute('checked', false);
+    }
+  }, {
+    key: "toggleDisplay",
+    value: function toggleDisplay() {
+      this.actions.toggleClass(this.option.displayNoneClassName);
+      this.replacedElement.toggleClass(this.option.displayNoneClassName);
+    }
+  }]);
+
+  return BulkSelect;
+}();
+
+function bulkSelectInit() {
+  var bulkSelects = document.querySelectorAll('[data-bulk-select');
+
+  if (bulkSelects.length) {
+    bulkSelects.forEach(function (el) {
+      var bulkSelect = new BulkSelect(el);
+      bulkSelect.init();
+    });
   }
-});
+}
 /*-----------------------------------------------
 |   Chat
 -----------------------------------------------*/
 
-utils.$document.ready(function () {
-  var Event = {
+
+var chatInit = function chatInit() {
+  var Events = {
     CLICK: 'click',
     SHOWN_BS_TAB: 'shown.bs.tab',
-    RESIZE: 'resize',
     KEYUP: 'keyup',
-    EMOJI_BTN_CLIK: 'emojibtn.click'
+    EMOJI: 'emoji'
   };
   var Selector = {
     CHAT_SIDEBAR: '.chat-sidebar',
     CHAT_CONTACT: '.chat-contact',
     CHAT_CONTENT_SCROLL_AREA: '.chat-content-scroll-area',
-    CHAT_CONTENT_HEADER_ACTIVE: '.card-chat-pane.active .chat-content-header',
     CHAT_CONTENT_SCROLL_AREA_ACTIVE: '.card-chat-pane.active .chat-content-scroll-area',
-    CARD_CHAT_PANE_ACTIVE: '.card-chat-pane.active',
-    CHAT_EMOJIAREA: '.chat-editor-area .emojiarea',
+    CHAT_EMOJIAREA: '.chat-editor-area .emojiarea-editor',
     BTN_SEND: '.btn-send',
-    CHAT_FILE_UPLOAD: '.chat-file-upload',
-    CARD_CHAT_CONTENT: '.card-chat-content',
-    EMOJIONEAREA_EDITOR: '.emojionearea-editor',
+    EMOJIEAREA_EDITOR: '.emojiarea-editor',
     BTN_INFO: '.btn-info',
     CONVERSATION_INFO: '.conversation-info',
-    CONTACTS_LIST_SHOW: '.contacts-list-show',
-    CHAT_EDITOR_AREA: '.chat-editor-area'
+    CONTACTS_LIST_SHOW: '.contacts-list-show'
   };
   var ClassName = {
     UNREAD_MESSAGE: 'unread-message',
     TEXT_PRIMARY: 'text-primary',
-    SHOW: 'show',
-    LEFT_0: 'l-0'
+    SHOW: 'show'
   };
   var DATA_KEY = {
-    TARGET: 'target',
     INDEX: 'index'
   };
-  var Attribute = {
-    STYLE: 'style'
-  };
-  var $chatSidebar = $(Selector.CHAT_SIDEBAR);
-  var $chatContact = $(Selector.CHAT_CONTACT);
-  var $chatEmojiarea = $(Selector.CHAT_EMOJIAREA);
-  var $chatIcons = $(Selector.BTN_SEND + "," + Selector.CHAT_FILE_UPLOAD);
-  var $btnSend = $(Selector.BTN_SEND);
-  var initialEditorHeight = $(Selector.EMOJIONEAREA_EDITOR).outerHeight();
-  var $chatContent = $(Selector.CARD_CHAT_CONTENT);
-  var $scrollArea = $(Selector.CHAT_CONTENT_SCROLL_AREA);
-  var $currentChatArea = document.querySelector(Selector.CHAT_CONTENT_SCROLL_AREA); // Set chat scrollbar area height
-
-  var setChatAreaHeight = function setChatAreaHeight(chatContentArea, editorAreaHeight) {
-    var chatContentHeight = chatContentArea.height();
-    var calculated = chatContentHeight - editorAreaHeight;
-    var chatContentHeaderHeight = $(Selector.CHAT_CONTENT_HEADER_ACTIVE).outerHeight();
-    var chatArea = chatContentArea.find(Selector.CHAT_CONTENT_SCROLL_AREA_ACTIVE);
-    chatArea.css({
-      height: calculated - chatContentHeaderHeight
-    });
-  }; // Set scrollbar position
-
+  var $chatSidebar = document.querySelector(Selector.CHAT_SIDEBAR);
+  var $chatContact = document.querySelectorAll(Selector.CHAT_CONTACT);
+  var $chatEmojiarea = document.querySelector(Selector.CHAT_EMOJIAREA);
+  var $btnSend = document.querySelector(Selector.BTN_SEND);
+  var $currentChatArea = document.querySelector(Selector.CHAT_CONTENT_SCROLL_AREA); // Set scrollbar position
 
   var setScrollbarPosition = function setScrollbarPosition($chatArea) {
     if ($chatArea) {
@@ -1120,354 +627,249 @@ utils.$document.ready(function () {
   setTimeout(function () {
     setScrollbarPosition($currentChatArea);
   }, 700);
-  utils.$document.on(Event.CLICK, Selector.CHAT_CONTACT, function (e) {
-    var $this = $(e.currentTarget); // Hide contact list sidebar on responsive
+  document.querySelectorAll(Selector.CHAT_CONTACT).forEach(function (el) {
+    el.addEventListener(Events.CLICK, function (e) {
+      var $this = e.currentTarget;
+      $this.classList.add('active'); // Hide contact list sidebar on responsive
 
-    utils.$window.width() < 768 && $chatSidebar.removeClass(ClassName.LEFT_0); // Remove unread-message class when read
+      window.innerWidth < 768 && !e.target.classList.contains('hover-actions') && ($chatSidebar.style.left = '-100%'); // Remove unread-message class when read
 
-    $this.hasClass(ClassName.UNREAD_MESSAGE) && $this.removeClass(ClassName.UNREAD_MESSAGE);
+      $this.classList.contains(ClassName.UNREAD_MESSAGE) && $this.classList.remove(ClassName.UNREAD_MESSAGE);
+    });
   });
-  $chatContact.on(Event.SHOWN_BS_TAB, function (e) {
-    var $this = $(e.currentTarget);
-    var $tab = $this.data(DATA_KEY.TARGET);
-    $chatEmojiarea.length && $chatEmojiarea[0].emojioneArea.setText('');
-    var editorHeight = $(Selector.EMOJIONEAREA_EDITOR).outerHeight();
-    setChatAreaHeight($chatContent, editorHeight);
-    $chatIcons.removeAttr(Attribute.STYLE);
-    $btnSend.removeClass(ClassName.TEXT_PRIMARY); // Set scrollbar position on bottom
+  $chatContact.forEach(function (el) {
+    el.addEventListener(Events.SHOWN_BS_TAB, function () {
+      $chatEmojiarea.innerHTML = '';
+      $btnSend.classList.remove(ClassName.TEXT_PRIMARY);
+      var TargetChatArea = document.querySelector(Selector.CHAT_CONTENT_SCROLL_AREA_ACTIVE);
+      setScrollbarPosition(TargetChatArea);
+    });
+  }); // change send button color on
 
-    var $chatArea = document.querySelector($tab + " " + Selector.CHAT_CONTENT_SCROLL_AREA);
-    setScrollbarPosition($chatArea);
-  }); // Detect keyup event on EmojioneArea Editor
+  if ($chatEmojiarea) {
+    $chatEmojiarea.setAttribute('placeholder', 'Type your message');
+    $chatEmojiarea.addEventListener(Events.KEYUP, function (e) {
+      if (e.target.textContent.length <= 0) {
+        $btnSend.classList.remove(ClassName.TEXT_PRIMARY);
 
-  if ($chatEmojiarea.length) {
-    $chatEmojiarea[0].emojioneArea.on(Event.KEYUP + " " + Event.EMOJI_BTN_CLIK, function ($editor) {
-      var textLength = $editor.text().trim().length;
-      var _$editor$ = $editor[0],
-          offsetWidth = _$editor$.offsetWidth,
-          clientWidth = _$editor$.clientWidth;
-      var currentEditorHeight = $editor.outerHeight();
-      var emojiLength = $editor.find('img').length; // Change color of submit button on keyup
+        if (e.target.innerHTML === '<br>') {
+          e.target.innerHTML = '';
+        }
+      } else {
+        $btnSend.classList.add(ClassName.TEXT_PRIMARY);
+      }
 
-      textLength || emojiLength ? $btnSend.addClass(ClassName.TEXT_PRIMARY) : $btnSend.removeClass(ClassName.TEXT_PRIMARY);
-
-      if (currentEditorHeight !== initialEditorHeight) {
-        setChatAreaHeight($chatContent, currentEditorHeight); // Set scrollbar position on bottom
-
-        var tabContentId = $chatContent.find(Selector.CARD_CHAT_PANE_ACTIVE).attr('id');
-        var $chatArea = document.querySelector("#" + tabContentId + " " + Selector.CHAT_CONTENT_SCROLL_AREA);
-        setScrollbarPosition($chatArea);
-      } // Align file upload and send icons when editor overflow scroll
-
-
-      $chatIcons.css({
-        marginRight: offsetWidth === clientWidth ? 0 : '1rem'
-      });
-      initialEditorHeight = currentEditorHeight;
+      var TargetChatArea = document.querySelector(Selector.CHAT_CONTENT_SCROLL_AREA_ACTIVE);
+      setScrollbarPosition(TargetChatArea);
     });
   } // Open conversation info sidebar
 
 
-  utils.$document.on(Event.CLICK, Selector.BTN_INFO, function (e) {
-    var $this = $(e.currentTarget);
-    var dataIndex = $this.data(DATA_KEY.INDEX);
-    var $info = $(Selector.CONVERSATION_INFO + "[data-" + DATA_KEY.INDEX + "='" + dataIndex + "']");
-    $info.toggleClass(ClassName.SHOW);
+  $chatEmojiarea && document.querySelectorAll(Selector.BTN_INFO).forEach(function (el) {
+    el.addEventListener(Events.CLICK, function (e) {
+      var $this = e.currentTarget;
+      var dataIndex = utils.getData($this, DATA_KEY.INDEX);
+      var $info = document.querySelector("".concat(Selector.CONVERSATION_INFO, "[data-").concat(DATA_KEY.INDEX, "='").concat(dataIndex, "']"));
+      $info.classList.toggle(ClassName.SHOW);
+    });
   }); // Show contact list sidebar on responsive
 
-  utils.$document.on(Event.CLICK, Selector.CONTACTS_LIST_SHOW, function () {
-    $chatSidebar.addClass(ClassName.LEFT_0);
+  document.querySelectorAll(Selector.CONTACTS_LIST_SHOW).forEach(function (el) {
+    el.addEventListener(Events.CLICK, function () {
+      $chatSidebar.style.left = 0;
+    });
   }); // Set scrollbar area height on resize
 
-  utils.$window.on(Event.RESIZE, function () {
-    if ($scrollArea.length) {
-      var editorCurrentHeight = $(Selector.EMOJIONEAREA_EDITOR).outerHeight();
-      setChatAreaHeight($chatContent, editorCurrentHeight);
-      var chatArea = document.querySelector(Selector.CHAT_CONTENT_SCROLL_AREA_ACTIVE);
-      setScrollbarPosition(chatArea);
-    }
+  utils.resize(function () {
+    var TargetChatArea = document.querySelector(Selector.CHAT_CONTENT_SCROLL_AREA_ACTIVE);
+    setScrollbarPosition(TargetChatArea);
+  }); // Emoji append in message text
+
+  $chatEmojiarea && window.picker.on(Events.EMOJI, function (selection) {
+    document.querySelector(Selector.EMOJIEAREA_EDITOR).innerHTML += selection.emoji;
   });
-});
-/*-----------------------------------------------
-|   Copy link
------------------------------------------------*/
+};
+/* -------------------------------------------------------------------------- */
 
-utils.$document.ready(function () {
-  $('#copyLinkModal').on('shown.bs.modal', function () {
-    $('.invitation-link').focus().select();
-  });
-  utils.$document.on('click', '[data-copy]', function (e) {
-    var $this = $(e.currentTarget);
-    var targetID = $this.data('copy');
-    $(targetID).focus().select();
-    document.execCommand('copy');
-    $this.attr('title', 'Copied!').tooltip('_fixTitle').tooltip('show').attr('title', 'Copy to clipboard').tooltip('_fixTitle');
-  });
-});
-/*-----------------------------------------------
-|   Count Up
------------------------------------------------*/
+/*                                   choices                                   */
 
-utils.$document.ready(function () {
-  var $counters = $('[data-countup]');
+/* -------------------------------------------------------------------------- */
 
-  if ($counters.length) {
-    $counters.each(function (index, value) {
-      var $counter = $(value);
-      var counter = $counter.data('countup');
 
-      var toAlphanumeric = function toAlphanumeric(num) {
-        var number = num;
-        var abbreviations = {
-          k: 1000,
-          m: 1000000,
-          b: 1000000000,
-          t: 1000000000000
-        };
-
-        if (num < abbreviations.m) {
-          number = (num / abbreviations.k).toFixed(2) + "k";
-        } else if (num < abbreviations.b) {
-          number = (num / abbreviations.m).toFixed(2) + "m";
-        } else if (num < abbreviations.t) {
-          number = (num / abbreviations.b).toFixed(2) + "b";
-        } else {
-          number = (num / abbreviations.t).toFixed(2) + "t";
-        }
-
-        return number;
-      };
-
-      var toComma = function toComma(num) {
-        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-      };
-
-      var toSpace = function toSpace(num) {
-        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
-      };
-
-      var playCountUpTriggered = false;
-
-      var countUP = function countUP() {
-        if (utils.isScrolledIntoView(value) && !playCountUpTriggered) {
-          if (!playCountUpTriggered) {
-            $({
-              countNum: 0
-            }).animate({
-              countNum: counter.count
-            }, {
-              duration: counter.duration || 1000,
-              easing: 'linear',
-              step: function step() {
-                $counter.text((counter.prefix ? counter.prefix : '') + Math.floor(this.countNum));
-              },
-              complete: function complete() {
-                switch (counter.format) {
-                  case 'comma':
-                    $counter.text((counter.prefix ? counter.prefix : '') + toComma(this.countNum));
-                    break;
-
-                  case 'space':
-                    $counter.text((counter.prefix ? counter.prefix : '') + toSpace(this.countNum));
-                    break;
-
-                  case 'alphanumeric':
-                    $counter.text((counter.prefix ? counter.prefix : '') + toAlphanumeric(this.countNum));
-                    break;
-
-                  default:
-                    $counter.text((counter.prefix ? counter.prefix : '') + this.countNum);
-                }
-              }
-            });
-            playCountUpTriggered = true;
-          }
-        }
-
-        return playCountUpTriggered;
-      };
-
-      countUP();
-      utils.$window.scroll(function () {
-        countUP();
-      });
+var choicesInit = function choicesInit() {
+  if (window.Choices) {
+    var elements = document.querySelectorAll('.js-choice');
+    elements.forEach(function (item) {
+      var userOptions = utils.getData(item, 'options');
+      var choices = new window.Choices(item, _objectSpread({
+        itemSelectText: ''
+      }, userOptions));
+      return choices;
     });
   }
-});
+};
 /*-----------------------------------------------
-|   Data table
+|   Cookie notice
 -----------------------------------------------*/
 
-utils.$document.ready(function () {
-  var dataTables = $('.data-table');
 
-  var customDataTable = function customDataTable(elem) {
-    elem.find('.pagination').addClass('pagination-sm');
-  };
-
-  dataTables.length && dataTables.each(function (index, value) {
-    var $this = $(value);
-    var options = $.extend({
-      responsive: true,
-      dom: "<'row mx-1'<'col-sm-12 col-md-6 px-3'l><'col-sm-12 col-md-6 px-3'f>>" + "<'table-responsive'tr>" + "<'row mx-1 align-items-center justify-content-center justify-content-md-between'<'col-auto mb-2 mb-sm-0'i><'col-auto'p>>"
-    }, $this.data('options'));
-    $this.DataTable(options);
-    var $wrpper = $this.closest('.dataTables_wrapper');
-    customDataTable($wrpper);
-    $this.on('draw.dt', function () {
-      return customDataTable($wrpper);
-    });
-  });
-});
-/*-----------------------------------------------
-|   Countdown
------------------------------------------------*/
-
-utils.$document.ready(function () {
-  var $dataCountdowns = $('[data-countdown]');
-  var DATA_KEY = {
-    FALLBACK: 'countdown-fallback',
-    COUNTDOWN: 'countdown'
-  };
-
-  if ($dataCountdowns.length) {
-    $dataCountdowns.each(function (index, value) {
-      var $dateCountdown = $(value);
-      var date = $dateCountdown.data(DATA_KEY.COUNTDOWN);
-      var fallback;
-
-      if (typeof $dateCountdown.data(DATA_KEY.FALLBACK) !== typeof undefined) {
-        fallback = $dateCountdown.data(DATA_KEY.FALLBACK);
-      }
-
-      $dateCountdown.countdown(date, function (event) {
-        if (event.elapsed) {
-          $dateCountdown.text(fallback);
-        } else {
-          $dateCountdown.text(event.strftime('%D days %H:%M:%S'));
-        }
-      });
-    });
-  }
-});
-/*-----------------------------------------------
-|   Demo mode
------------------------------------------------*/
-
-utils.$document.ready(function () {
-  var _window = window,
-      location = _window.location;
-  var Event = {
-    CHANGE: 'change'
-  };
+var cookieNoticeInit = function cookieNoticeInit() {
   var Selector = {
-    RTL: '#mode-rtl',
-    FLUID: '#mode-fluid',
-    INPUT_NAVBAR: "input[name='navbar']",
-    INPUT_COLOR_SCHEME: "input[name='colorScheme']",
-    NAVBAR_STYLE_TRANSPARENT: '#navbar-style-transparent',
-    NAVBAR_STYLE_INVERTED: '#navbar-style-inverted',
-    NAVBAR_STYLE_VIBRANT: '#navbar-style-vibrant',
-    NAVBAR_STYLE_WHITE: '#navbar-style-card'
+    NOTICE: '.notice',
+    DATA_TOGGLE_Notice: '[data-bs-toggle="notice"]'
   };
-  var DATA_KEY = {
-    URL: 'url',
-    HOME_URL: 'home-url',
-    PAGE_URL: 'page-url'
-  }; // Redirect on Checkbox change
-
-  var handleChange = function handleChange(selector) {
-    utils.$document.on(Event.CHANGE, selector, function (e) {
-      var $this = $(e.currentTarget);
-      var isChecked = $this.prop('checked');
-
-      if (isChecked) {
-        var url = $this.data(DATA_KEY.URL);
-        location.replace(url);
-      } else {
-        var homeUrl = $this.data(DATA_KEY.HOME_URL);
-        location.replace(homeUrl);
-      }
-    });
+  var Events = {
+    CLICK: 'click',
+    HIDDEN_BS_TOAST: 'hidden.bs.toast'
   };
+  var DataKeys = {
+    OPTIONS: 'options'
+  };
+  var ClassNames = {
+    HIDE: 'hide'
+  };
+  var notices = document.querySelectorAll(Selector.NOTICE);
+  var showNotice = true;
+  notices.forEach(function (item) {
+    var notice = new window.bootstrap.Toast(item);
 
-  var handleInputChange = function handleInputChange(selector) {
-    utils.$document.on(Event.CHANGE, selector, function (e) {
-      var $this = $(e.currentTarget);
-      var pageUrl = $this.data(DATA_KEY.PAGE_URL);
-      location.replace(pageUrl);
-    });
-  }; // Mode checkbox handler
+    var options = _objectSpread({
+      autoShow: false,
+      autoShowDelay: 0,
+      showOnce: false,
+      cookieExpireTime: 3600000
+    }, utils.getData(item, DataKeys.OPTIONS));
 
+    var showOnce = options.showOnce,
+        autoShow = options.autoShow,
+        autoShowDelay = options.autoShowDelay;
 
-  handleChange(Selector.RTL);
-  handleChange(Selector.FLUID);
-  handleInputChange(Selector.INPUT_NAVBAR);
-  handleInputChange(Selector.INPUT_COLOR_SCHEME);
-  handleInputChange(Selector.NAVBAR_STYLE_TRANSPARENT);
-  handleInputChange(Selector.NAVBAR_STYLE_INVERTED);
-  handleInputChange(Selector.NAVBAR_STYLE_VIBRANT);
-  handleInputChange(Selector.NAVBAR_STYLE_WHITE);
-});
-/*-----------------------------------------------
-|   Documentation and Component Navigation
------------------------------------------------*/
-
-utils.$document.ready(function () {
-  var $componentNav = $('#components-nav');
-
-  if ($componentNav.length) {
-    var loc = window.location.href;
-
-    var _loc$split = loc.split('#');
-
-    loc = _loc$split[0];
-    var location = loc.split('/');
-    var url = location[location.length - 2] + "/" + location.pop();
-    var urls = $componentNav.children('li').children('a');
-
-    for (var i = 0, max = urls.length; i < max; i += 1) {
-      var dom = urls[i].href.split('/');
-      var domURL = dom[dom.length - 2] + "/" + dom.pop();
-
-      if (domURL === url) {
-        var $targetedElement = $(urls[i]);
-        $targetedElement.removeClass('text-800');
-        $targetedElement.addClass('font-weight-medium');
-        break;
-      }
+    if (showOnce) {
+      var hasNotice = utils.getCookie('notice');
+      showNotice = hasNotice === null;
     }
-  }
-});
-/*-----------------------------------------------
-|   Draggable
------------------------------------------------*/
 
-utils.$document.ready(function () {
+    if (autoShow && showNotice) {
+      setTimeout(function () {
+        notice.show();
+      }, autoShowDelay);
+    }
+
+    item.addEventListener(Events.HIDDEN_BS_TOAST, function (e) {
+      var el = e.currentTarget;
+
+      var toastOptions = _objectSpread({
+        cookieExpireTime: 3600000,
+        showOnce: false
+      }, utils.getData(el, DataKeys.OPTIONS));
+
+      toastOptions.showOnce && utils.setCookie('notice', false, toastOptions.cookieExpireTime);
+    });
+  });
+  var btnNoticeToggle = document.querySelector(Selector.DATA_TOGGLE_Notice);
+  btnNoticeToggle && btnNoticeToggle.addEventListener(Events.CLICK, function (_ref) {
+    var currentTarget = _ref.currentTarget;
+    var id = currentTarget.getAttribute('href');
+    var notice = new window.bootstrap.Toast(document.querySelector(id));
+    /*eslint-disable-next-line*/
+
+    var el = notice._element;
+    utils.hasClass(el, ClassNames.HIDE) ? notice.show() : notice.hide();
+  });
+};
+/* -------------------------------------------------------------------------- */
+
+/*                                  Copy LinK                                 */
+
+/* -------------------------------------------------------------------------- */
+
+
+var copyLink = function copyLink() {
+  var copyLinkModal = document.getElementById('copyLinkModal');
+  copyLinkModal && copyLinkModal.addEventListener('shown.bs.modal', function () {
+    var invitationLink = document.querySelector('.invitation-link');
+    invitationLink.select();
+  });
+  var copyButtons = document.querySelectorAll('[data-copy]');
+  copyButtons && copyButtons.forEach(function (button) {
+    var tooltip = new window.bootstrap.Tooltip(button);
+    button.addEventListener('mouseover', function () {
+      return tooltip.show();
+    });
+    button.addEventListener('mouseleave', function () {
+      return tooltip.hide();
+    });
+    button.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var el = e.target;
+      el.setAttribute('data-original-title', 'Copied');
+      tooltip.show();
+      el.setAttribute('data-original-title', 'Copy to clipboard');
+      tooltip.update();
+      var inputID = utils.getData(el, 'copy');
+      var input = document.querySelector(inputID);
+      input.select();
+      document.execCommand('copy');
+    });
+  });
+};
+/* -------------------------------------------------------------------------- */
+
+/*                                  Count Up                                  */
+
+/* -------------------------------------------------------------------------- */
+
+
+var countupInit = function countupInit() {
+  if (window.countUp) {
+    var countups = document.querySelectorAll('[data-countup]');
+    countups.forEach(function (node) {
+      var _utils$getData = utils.getData(node, 'countup'),
+          endValue = _utils$getData.endValue,
+          options = _objectWithoutProperties(_utils$getData, ["endValue"]);
+
+      var countUp = new window.countUp.CountUp(node, endValue, _objectSpread({
+        duration: 5
+      }, options));
+
+      if (!countUp.error) {
+        countUp.start();
+      } else {
+        console.error(countUp.error);
+      }
+    });
+  }
+};
+/* -------------------------------------------------------------------------- */
+
+/*                                  Draggable                                 */
+
+/* -------------------------------------------------------------------------- */
+
+
+var draggableInit = function draggableInit() {
   var Selectors = {
     BODY: 'body',
     KANBAN_CONTAINER: '.kanban-container',
+    KABNBAN_COLUMN: '.kanban-column',
     KANBAN_ITEMS_CONTAINER: '.kanban-items-container',
     KANBAN_ITEM: '.kanban-item',
-    KANBAN_COLLAPSE: "[data-collapse='kanban']",
-    PS_RAILS: '.ps__rail-x, .ps__rail-y' // Perfect scrollbar rails in IE
-
+    ADD_CARD_FORM: '.add-card-form'
   };
   var Events = {
     DRAG_START: 'drag:start',
     DRAG_STOP: 'drag:stop'
   };
-  var columns = document.querySelectorAll(Selectors.KANBAN_ITEMS_CONTAINER);
+  var ClassNames = {
+    FORM_ADDED: 'form-added'
+  };
+  var columns = document.querySelectorAll(Selectors.KABNBAN_COLUMN);
+  var columnContainers = document.querySelectorAll(Selectors.KANBAN_ITEMS_CONTAINER);
   var container = document.querySelector(Selectors.KANBAN_CONTAINER);
-  var scrollItems = $(Selectors.KANBAN_ITEMS_CONTAINER);
-  var scrollableElements = [];
-  scrollItems.each(function (index, item) {
-    scrollableElements[index] = item;
-  });
 
-  if (columns.length) {
+  if (columnContainers.length) {
     // Initialize Sortable
-    var sortable = new window.Draggable.Sortable(columns, {
+    var sortable = new window.Draggable.Sortable(columnContainers, {
       draggable: Selectors.KANBAN_ITEM,
       delay: 200,
       mirror: {
@@ -1476,32 +878,30 @@ utils.$document.ready(function () {
       },
       scrollable: {
         draggable: Selectors.KANBAN_ITEM,
-        scrollableElements: [].concat(scrollableElements, [container])
+        scrollableElements: [].concat(_toConsumableArray(columnContainers), [container])
       }
     }); // Hide form when drag start
 
     sortable.on(Events.DRAG_START, function () {
-      $(Selectors.KANBAN_COLLAPSE).collapse('hide');
+      columns.forEach(function (column) {
+        utils.hasClass(column, ClassNames.FORM_ADDED) && column.classList.remove(ClassNames.FORM_ADDED);
+      });
     }); // Place forms and other contents bottom of the sortable container
 
-    sortable.on(Events.DRAG_STOP, function (e) {
-      var $this = $(e.data.source);
-      var $itemContainer = $this.closest(Selectors.KANBAN_ITEMS_CONTAINER);
-      var $collapse = $this.closest(Selectors.KANBAN_ITEMS_CONTAINER).find(Selectors.KANBAN_COLLAPSE);
-      $this.is(':last-child') && $itemContainer.append($collapse); // For IE
-
-      if (window.is.ie()) {
-        var $rails = $itemContainer.find(Selectors.PS_RAILS);
-        $itemContainer.append($rails);
-      }
+    sortable.on(Events.DRAG_STOP, function (_ref2) {
+      var el = _ref2.data.source;
+      var columnContainer = el.closest(Selectors.KANBAN_ITEMS_CONTAINER);
+      var form = columnContainer.querySelector(Selectors.ADD_CARD_FORM);
+      !el.nextElementSibling && columnContainer.appendChild(form);
     });
   }
-});
+};
 /*-----------------------------------------------
 |   Dashboard Table dropdown
 -----------------------------------------------*/
 
-utils.$document.ready(function () {
+
+var dropdownMenuInit = function dropdownMenuInit() {
   // Only for ios
   if (window.is.ios()) {
     var Event = {
@@ -1512,71 +912,60 @@ utils.$document.ready(function () {
       TABLE_RESPONSIVE: '.table-responsive',
       DROPDOWN_MENU: '.dropdown-menu'
     };
-    $(Selector.TABLE_RESPONSIVE).on(Event.SHOWN_BS_DROPDOWN, function dashboardTableDropdown(e) {
-      var t = $(this);
-      var m = $(e.target).find(Selector.DROPDOWN_MENU);
-      var tb = t.offset().top + t.height();
-      var mb = m.offset().top + m.outerHeight(true);
-      var d = 20; // Space for shadow + scrollbar.
+    document.querySelectorAll(Selector.TABLE_RESPONSIVE).forEach(function (table) {
+      table.addEventListener(Event.SHOWN_BS_DROPDOWN, function (e) {
+        var t = e.currentTarget;
 
-      if (t[0].scrollWidth > t.innerWidth()) {
-        if (mb + d > tb) {
-          t.css('padding-bottom', mb + d - tb);
+        if (t.scrollWidth > t.clientWidth) {
+          t.style.paddingBottom = "".concat(e.target.nextElementSibling.clientHeight, "px");
         }
-      } else {
-        t.css('overflow', 'visible');
-      }
-    }).on(Event.HIDDEN_BS_DROPDOWN, function (e) {
-      var $this = $(e.currentTarget);
-      $this.css({
-        'padding-bottom': '',
-        overflow: ''
+      });
+      table.addEventListener(Event.HIDDEN_BS_DROPDOWN, function (e) {
+        e.currentTarget.style.paddingBottom = '';
       });
     });
   }
-}); // Reference
+}; // Reference
 // https://github.com/twbs/bootstrap/issues/11037#issuecomment-274870381
 
-/*-----------------------------------------------
-|   Documentation and Component Navigation
------------------------------------------------*/
+/* -------------------------------------------------------------------------- */
 
-utils.$document.ready(function () {
-  var Selector = {
-    NAVBAR_THEME_DROPDOWN: '.navbar-theme .dropdown',
-    DROPDOWN_ON_HOVER: '.dropdown-on-hover',
-    DATA_TOGGLE_DROPDOWN: '[data-toggle="dropdown"]',
-    BODY: 'body'
-  };
-  var ClassName = {
-    DROPDOWN_ON_HOVER: 'dropdown-on-hover'
-  };
-  var Event = {
-    CLICK: 'click',
-    MOUSE_LEAVE: 'mouseleave',
-    MOUSE_EVENT: 'mouseenter mouseleave'
-  };
-  var $navbarDropdown = $(Selector.NAVBAR_THEME_DROPDOWN);
-  !window.is.mobile() ? $navbarDropdown.addClass(ClassName.DROPDOWN_ON_HOVER) : $navbarDropdown.removeClass(ClassName.DROPDOWN_ON_HOVER);
+/*                           Open dropdown on hover                           */
 
-  var toggleDropdown = function toggleDropdown(e) {
-    var $el = $(e.target);
-    var dropdown = $el.closest(Selector.DROPDOWN_ON_HOVER);
-    var btnDropdown = dropdown.find(Selector.DATA_TOGGLE_DROPDOWN);
-    setTimeout(function () {
-      var shouldOpen = e.type !== Event.CLICK && dropdown.is(':hover');
-      shouldOpen ? btnDropdown.dropdown('show') : btnDropdown.dropdown('hide');
-    }, e.type === Event.MOUSE_LEAVE ? 100 : 0);
-  };
+/* -------------------------------------------------------------------------- */
 
-  $(Selector.BODY).on(Event.MOUSE_EVENT, Selector.DROPDOWN_ON_HOVER, toggleDropdown);
-});
+
+var dropdownOnHover = function dropdownOnHover() {
+  var navbarArea = document.querySelector('[data-top-nav-dropdowns]');
+
+  if (navbarArea) {
+    navbarArea.addEventListener('mouseover', function (e) {
+      if (e.target.className.includes('dropdown-toggle') && window.innerWidth > 992) {
+        var dropdownInstance = new window.bootstrap.Dropdown(e.target);
+        /* eslint-disable no-underscore-dangle */
+
+        dropdownInstance._element.classList.add('show');
+
+        dropdownInstance._menu.classList.add('show');
+
+        dropdownInstance._menu.setAttribute('data-bs-popper', 'none');
+
+        e.target.parentNode.addEventListener('mouseleave', function () {
+          dropdownInstance.hide();
+        });
+      }
+    });
+  }
+};
 /*-----------------------------------------------
 |   Dropzone
 -----------------------------------------------*/
 
+
 window.Dropzone ? window.Dropzone.autoDiscover = false : '';
-utils.$document.ready(function () {
+
+var dropzoneInit = function dropzoneInit() {
+  var merge = window._.merge;
   var Selector = {
     DROPZONE: '[data-dropzone]',
     DZ_ERROR_MESSAGE: '.dz-error-message',
@@ -1597,38 +986,38 @@ utils.$document.ready(function () {
     ADDED_FILE: 'addedfile',
     COMPLETE: 'complete'
   };
-  var dropzones = $(Selector.DROPZONE);
-  !!dropzones.length && dropzones.each(function (index, value) {
-    var element = value;
-    var $this = $(element);
-    var userOptions = $this.data(DATA_KEY.OPTIONS);
+  var dropzones = document.querySelectorAll(Selector.DROPZONE);
+  !!dropzones.length && dropzones.forEach(function (item) {
+    var userOptions = utils.getData(item, DATA_KEY.OPTIONS);
     userOptions = userOptions || {};
     var data = userOptions.data ? userOptions.data : {};
-    var options = $.extend({
+    var options = merge({
       url: '/assets/php/',
       addRemoveLinks: false,
-      previewsContainer: element.querySelector(Selector.DZ_PREVIEW),
-      previewTemplate: element.querySelector(Selector.DZ_PREVIEW).innerHTML,
+      previewsContainer: item.querySelector(Selector.DZ_PREVIEW),
+      previewTemplate: item.querySelector(Selector.DZ_PREVIEW).innerHTML,
       thumbnailWidth: null,
       thumbnailHeight: null,
+      maxFilesize: 20,
+      filesizeBase: 1000,
       init: function init() {
         var thisDropzone = this;
 
         if (data.length) {
-          $.each(data, function (i, v) {
+          data.forEach(function (v) {
             var mockFile = {
               name: v.name,
               size: v.size
             };
             thisDropzone.options.addedfile.call(thisDropzone, mockFile);
-            thisDropzone.options.thumbnail.call(thisDropzone, mockFile, v.url + "/" + v.name);
+            thisDropzone.options.thumbnail.call(thisDropzone, mockFile, "".concat(v.url, "/").concat(v.name));
           });
         }
 
         thisDropzone.on(Events.ADDED_FILE, function addedfile() {
           if ('maxFiles' in userOptions) {
-            if (userOptions.maxFiles === 1 && $this.find(Selector.DZ_PREVIEW_COVER).length > 1) {
-              $this.find(Selector.DZ_PREVIEW_COVER).first().remove();
+            if (userOptions.maxFiles === 1 && item.querySelectorAll(Selector.DZ_PREVIEW_COVER).length > 1) {
+              item.querySelector(Selector.DZ_PREVIEW_COVER).remove();
             }
 
             if (userOptions.maxFiles === 1 && this.files.length > 1) {
@@ -1637,767 +1026,65 @@ utils.$document.ready(function () {
           }
         });
       }
-    }, userOptions);
-    element.querySelector(Selector.DZ_PREVIEW).innerHTML = '';
-    var dropzone = new window.Dropzone(value, options);
+    }, userOptions); // eslint-disable-next-line
+
+    item.querySelector(Selector.DZ_PREVIEW).innerHTML = "";
+    var dropzone = new window.Dropzone(item, options);
     dropzone.on(Events.ADDED_FILE, function () {
-      $this.find(Selector.DZ_PREVIEW_COVER).removeClass(ClassName.DZ_FILE_COMPLETE);
-      $this.addClass(ClassName.DZ_FILE_PROCESSING);
+      if (item.querySelector(Selector.DZ_PREVIEW_COVER)) {
+        item.querySelector(Selector.DZ_PREVIEW_COVER).classList.remove(ClassName.DZ_FILE_COMPLETE);
+      }
+
+      item.classList.add(ClassName.DZ_FILE_PROCESSING);
     });
     dropzone.on(Events.COMPLETE, function () {
-      $this.find(Selector.DZ_PREVIEW_COVER).removeClass(ClassName.DZ_PROCESSING);
-      $this.addClass(ClassName.DZ_FILE_COMPLETE);
+      if (item.querySelector(Selector.DZ_PREVIEW_COVER)) {
+        item.querySelector(Selector.DZ_PREVIEW_COVER).classList.remove(ClassName.DZ_PROCESSING);
+      }
+
+      item.classList.add(ClassName.DZ_FILE_COMPLETE);
     });
   });
-});
-/*-----------------------------------------------
-|  Echarts
------------------------------------------------*/
-
-var getPosition = function getPosition(pos, params, dom, rect, size) {
-  return {
-    top: pos[1] - size.contentSize[1] - 10,
-    left: pos[0] - size.contentSize[0] / 2
-  };
 };
+/* -------------------------------------------------------------------------- */
 
-utils.$document.ready(function () {
-  var Events = {
-    CHANGE: 'change'
-  };
-  var Selector = {
-    ECHART_LINE_TOTAL_ORDER: '.echart-line-total-order',
-    ECHART_BAR_WEEKLY_SALES: '.echart-bar-weekly-sales',
-    ECHART_LINE_TOTAL_SALES: '.echart-line-total-sales',
-    SELECT_MONTH: '.select-month',
-    ECHART_BAR_TOP_PRODUCTS: '.echart-bar-top-products',
-    ECHART_WORLD_MAP: '.echart-world-map',
-    ECHART_DOUGHNUT: '.echart-doughnut'
-  }; //
-  // ─── TOTAL ORDER CHART ──────────────────────────────────────────────────────────
-  //
+/*                               from-validation                              */
 
-  var $echartLineTotalOrder = document.querySelector(Selector.ECHART_LINE_TOTAL_ORDER);
+/* -------------------------------------------------------------------------- */
 
-  if ($echartLineTotalOrder) {
-    var $this = $($echartLineTotalOrder); // Get options from data attribute
 
-    var userOptions = $this.data('options');
-    var chart = window.echarts.init($echartLineTotalOrder); // Default options
+var formValidationInit = function formValidationInit() {
+  // Example starter JavaScript for disabling form submissions if there are invalid fields
+  // Fetch all the forms we want to apply custom Bootstrap validation styles to
+  var forms = document.querySelectorAll('.needs-validation'); // Loop over them and prevent submission
 
-    var defaultOptions = {
-      tooltip: {
-        triggerOn: 'mousemove',
-        trigger: 'axis',
-        padding: [7, 10],
-        formatter: '{b0}: {c0}',
-        backgroundColor: utils.grays.white,
-        borderColor: utils.grays['300'],
-        borderWidth: 1,
-        transitionDuration: 0,
-        position: function position(pos, params, dom, rect, size) {
-          return getPosition(pos, params, dom, rect, size);
-        },
-        textStyle: {
-          color: utils.colors.dark
-        }
-      },
-      xAxis: {
-        type: 'category',
-        data: ['Week 4', 'Week 5'],
-        boundaryGap: false,
-        splitLine: {
-          show: false
-        },
-        axisLine: {
-          show: false,
-          lineStyle: {
-            color: utils.grays['300'],
-            type: 'dashed'
-          }
-        },
-        axisLabel: {
-          show: false
-        },
-        axisTick: {
-          show: false
-        },
-        axisPointer: {
-          type: 'none'
-        }
-      },
-      yAxis: {
-        type: 'value',
-        splitLine: {
-          show: false
-        },
-        axisLine: {
-          show: false
-        },
-        axisLabel: {
-          show: false
-        },
-        axisTick: {
-          show: false
-        },
-        axisPointer: {
-          show: false
-        }
-      },
-      series: [{
-        type: 'line',
-        lineStyle: {
-          color: utils.colors.primary,
-          width: 3
-        },
-        itemStyle: {
-          color: utils.grays.white,
-          borderColor: utils.colors.primary,
-          borderWidth: 2
-        },
-        hoverAnimation: true,
-        data: [20, 130],
-        connectNulls: true,
-        smooth: 0.6,
-        smoothMonotone: 'x',
-        symbol: 'circle',
-        symbolSize: 8,
-        areaStyle: {
-          color: {
-            type: 'linear',
-            x: 0,
-            y: 0,
-            x2: 0,
-            y2: 1,
-            colorStops: [{
-              offset: 0,
-              color: utils.rgbaColor(utils.colors.primary, 0.25)
-            }, {
-              offset: 1,
-              color: utils.rgbaColor(utils.colors.primary, 0)
-            }]
-          }
-        }
-      }],
-      grid: {
-        bottom: '2%',
-        top: '0%',
-        right: '10px',
-        left: '10px'
+  Array.prototype.slice.call(forms).forEach(function (form) {
+    form.addEventListener('submit', function (event) {
+      if (!form.checkValidity()) {
+        event.preventDefault();
+        event.stopPropagation();
       }
-    }; // Merge options using lodash
 
-    var options = window._.merge(defaultOptions, userOptions);
-
-    chart.setOption(options);
-  } //
-  // ─── WEEKLY SALES CHART ─────────────────────────────────────────────────────────
-  //
-
-
-  var $echartBarWeeklySales = document.querySelector(Selector.ECHART_BAR_WEEKLY_SALES);
-
-  if ($echartBarWeeklySales) {
-    var _$this = $($echartBarWeeklySales); // Get options from data attribute
-
-
-    var _userOptions = _$this.data('options');
-
-    var data = [120, 200, 150, 80, 70, 110, 120]; // Max value of data
-
-    var yMax = Math.max.apply(Math, data);
-    var dataBackground = data.map(function () {
-      return yMax;
-    });
-
-    var _chart = window.echarts.init($echartBarWeeklySales); // Default options
-
-
-    var _defaultOptions = {
-      tooltip: {
-        trigger: 'axis',
-        padding: [7, 10],
-        formatter: '{b1}: {c1}',
-        backgroundColor: utils.grays.white,
-        borderColor: utils.grays['300'],
-        borderWidth: 1,
-        textStyle: {
-          color: utils.colors.dark
-        },
-        transitionDuration: 0,
-        position: function position(pos, params, dom, rect, size) {
-          return getPosition(pos, params, dom, rect, size);
-        }
-      },
-      xAxis: {
-        type: 'category',
-        data: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-        boundaryGap: false,
-        axisLine: {
-          show: false
-        },
-        axisLabel: {
-          show: false
-        },
-        axisTick: {
-          show: false
-        },
-        axisPointer: {
-          type: 'none'
-        }
-      },
-      yAxis: {
-        type: 'value',
-        splitLine: {
-          show: false
-        },
-        axisLine: {
-          show: false
-        },
-        axisLabel: {
-          show: false
-        },
-        axisTick: {
-          show: false
-        },
-        axisPointer: {
-          type: 'none'
-        }
-      },
-      series: [{
-        type: 'bar',
-        barWidth: '5px',
-        barGap: '-100%',
-        itemStyle: {
-          color: utils.grays['200'],
-          barBorderRadius: 10
-        },
-        data: dataBackground,
-        animation: false,
-        emphasis: {
-          itemStyle: {
-            color: utils.grays['200']
-          }
-        }
-      }, {
-        type: 'bar',
-        barWidth: '5px',
-        itemStyle: {
-          color: utils.colors.primary,
-          barBorderRadius: 10
-        },
-        data: data,
-        emphasis: {
-          itemStyle: {
-            color: utils.colors.primary
-          }
-        },
-        z: 10
-      }],
-      grid: {
-        right: 5,
-        left: 10,
-        top: 0,
-        bottom: 0
-      }
-    }; // Merge user options with lodash
-
-    var _options = window._.merge(_defaultOptions, _userOptions);
-
-    _chart.setOption(_options);
-  } //
-  // ─── EHCART LINE TOTAL SALES ────────────────────────────────────────────────────────────────
-  //
-
-
-  var $echartsLineTotalSales = document.querySelector(Selector.ECHART_LINE_TOTAL_SALES);
-  var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-
-  function getFormatter(params) {
-    var _params$ = params[0],
-        name = _params$.name,
-        value = _params$.value;
-    var date = new Date(name);
-    return months[0] + " " + date.getDate() + ", " + value;
-  }
-
-  if ($echartsLineTotalSales) {
-    var _$this2 = $($echartsLineTotalSales); // Get options from data attribute
-
-
-    var _userOptions2 = _$this2.data('options');
-
-    var _chart2 = window.echarts.init($echartsLineTotalSales);
-
-    var monthsnumber = [[60, 80, 60, 80, 65, 130, 120, 100, 30, 40, 30, 70], [100, 70, 80, 50, 120, 100, 130, 140, 90, 100, 40, 50], [80, 50, 60, 40, 60, 120, 100, 130, 60, 80, 50, 60], [70, 80, 100, 70, 90, 60, 80, 130, 40, 60, 50, 80], [90, 40, 80, 80, 100, 140, 100, 130, 90, 60, 70, 50], [80, 60, 80, 60, 40, 100, 120, 100, 30, 40, 30, 70], [20, 40, 20, 50, 70, 60, 110, 80, 90, 30, 50, 50], [60, 70, 30, 40, 80, 140, 80, 140, 120, 130, 100, 110], [90, 90, 40, 60, 40, 110, 90, 110, 60, 80, 60, 70], [50, 80, 50, 80, 50, 80, 120, 80, 50, 120, 110, 110], [60, 90, 60, 70, 40, 70, 100, 140, 30, 40, 30, 70], [20, 40, 20, 50, 30, 80, 120, 100, 30, 40, 30, 70]];
-    var _defaultOptions2 = {
-      color: utils.grays.white,
-      tooltip: {
-        trigger: 'axis',
-        padding: [7, 10],
-        backgroundColor: utils.grays.white,
-        borderColor: utils.grays['300'],
-        borderWidth: 1,
-        textStyle: {
-          color: utils.colors.dark
-        },
-        formatter: function formatter(params) {
-          return getFormatter(params);
-        },
-        transitionDuration: 0,
-        position: function position(pos, params, dom, rect, size) {
-          return getPosition(pos, params, dom, rect, size);
-        }
-      },
-      xAxis: {
-        type: 'category',
-        data: ['2019-01-05', '2019-01-06', '2019-01-07', '2019-01-08', '2019-01-09', '2019-01-10', '2019-01-11', '2019-01-12', '2019-01-13', '2019-01-14', '2019-01-15', '2019-01-16'],
-        boundaryGap: false,
-        axisPointer: {
-          lineStyle: {
-            color: utils.grays['300'],
-            type: 'dashed'
-          }
-        },
-        splitLine: {
-          show: false
-        },
-        axisLine: {
-          lineStyle: {
-            // color: utils.grays['300'],
-            color: utils.rgbaColor('#000', 0.01),
-            type: 'dashed'
-          }
-        },
-        axisTick: {
-          show: false
-        },
-        axisLabel: {
-          color: utils.grays['400'],
-          formatter: function formatter(value) {
-            var date = new Date(value);
-            return months[date.getMonth()] + " " + date.getDate();
-          },
-          margin: 15
-        }
-      },
-      yAxis: {
-        type: 'value',
-        axisPointer: {
-          show: false
-        },
-        splitLine: {
-          lineStyle: {
-            color: utils.grays['300'],
-            type: 'dashed'
-          }
-        },
-        boundaryGap: false,
-        axisLabel: {
-          show: true,
-          color: utils.grays['400'],
-          margin: 15
-        },
-        axisTick: {
-          show: false
-        },
-        axisLine: {
-          show: false
-        }
-      },
-      series: [{
-        type: 'line',
-        data: monthsnumber[0],
-        lineStyle: {
-          color: utils.colors.primary
-        },
-        itemStyle: {
-          borderColor: utils.colors.primary,
-          borderWidth: 2
-        },
-        symbol: 'circle',
-        symbolSize: 10,
-        smooth: false,
-        hoverAnimation: true,
-        areaStyle: {
-          color: {
-            type: 'linear',
-            x: 0,
-            y: 0,
-            x2: 0,
-            y2: 1,
-            colorStops: [{
-              offset: 0,
-              color: utils.rgbaColor(utils.colors.primary, 0.2)
-            }, {
-              offset: 1,
-              color: utils.rgbaColor(utils.colors.primary, 0)
-            }]
-          }
-        }
-      }],
-      grid: {
-        right: '28px',
-        left: '40px',
-        bottom: '15%',
-        top: '5%'
-      }
-    };
-
-    var _options2 = window._.merge(_defaultOptions2, _userOptions2);
-
-    _chart2.setOption(_options2); // Change chart options accordiong to the selected month
-
-
-    utils.$document.on(Events.CHANGE, Selector.SELECT_MONTH, function (e) {
-      var $field = $(e.target);
-      var month = $field.val();
-      var data = monthsnumber[month];
-
-      _chart2.setOption({
-        tooltip: {
-          formatter: function formatter(params) {
-            var _params$2 = params[0],
-                name = _params$2.name,
-                value = _params$2.value;
-            var date = new Date(name);
-            return months[month] + " " + date.getDate() + ", " + value;
-          }
-        },
-        xAxis: {
-          axisLabel: {
-            formatter: function formatter(value) {
-              var date = new Date(value);
-              return months[$field.val()] + " " + date.getDate();
-            },
-            margin: 15
-          }
-        },
-        series: [{
-          data: data
-        }]
-      });
-    });
-  } //
-  // ─── BAR CHART TOP PRODUCTS ──────────────────────────────────────────────────────────────────
-  //
-
-
-  var $echartBarTopProducts = document.querySelector(Selector.ECHART_BAR_TOP_PRODUCTS);
-
-  if ($echartBarTopProducts) {
-    var _data = [['product', '2019', '2018'], ['Boots4', 43, 85], ['Reign Pro', 83, 73], ['Slick', 86, 62], ['Falcon', 72, 53], ['Sparrow', 80, 50], ['Hideway', 50, 70], ['Freya', 80, 90] // ['Raven Pro', 60, 70],
-    // ['Posh', 80, 70],
-    ];
-
-    var _$this3 = $($echartBarTopProducts);
-
-    var _userOptions3 = _$this3.data('options');
-
-    var _chart3 = window.echarts.init($echartBarTopProducts);
-
-    var _defaultOptions3 = {
-      color: [utils.colors.primary, utils.grays['300']],
-      dataset: {
-        source: _data
-      },
-      tooltip: {
-        trigger: 'item',
-        padding: [7, 10],
-        backgroundColor: utils.grays.white,
-        borderColor: utils.grays['300'],
-        borderWidth: 1,
-        textStyle: {
-          color: utils.colors.dark
-        },
-        transitionDuration: 0,
-        position: function position(pos, params, dom, rect, size) {
-          return getPosition(pos, params, dom, rect, size);
-        },
-        formatter: function formatter(params) {
-          return "<div class=\"font-weight-semi-bold\">" + params.seriesName + "</div><div class=\"fs--1 text-600\"><strong>" + params.name + ":</strong> " + params.value[params.componentIndex + 1] + "</div>";
-        }
-      },
-      legend: {
-        data: ['2019', '2018'],
-        left: 'left',
-        itemWidth: 10,
-        itemHeight: 10,
-        borderRadius: 0,
-        icon: 'circle',
-        inactiveColor: utils.grays['500'],
-        textStyle: {
-          color: utils.grays['700']
-        }
-      },
-      xAxis: {
-        type: 'category',
-        axisLabel: {
-          color: utils.grays['400']
-        },
-        axisLine: {
-          lineStyle: {
-            color: utils.grays['300'],
-            type: 'dashed'
-          }
-        },
-        axisTick: false,
-        boundaryGap: true
-      },
-      yAxis: {
-        axisPointer: {
-          type: 'none'
-        },
-        axisTick: 'none',
-        splitLine: {
-          lineStyle: {
-            color: utils.grays['300'],
-            type: 'dashed'
-          }
-        },
-        axisLine: {
-          show: false
-        },
-        axisLabel: {
-          color: utils.grays['400']
-        }
-      },
-      series: [{
-        type: 'bar',
-        barWidth: '12%',
-        barGap: '30%',
-        label: {
-          normal: {
-            show: false
-          }
-        },
-        z: 10,
-        itemStyle: {
-          normal: {
-            barBorderRadius: [10, 10, 0, 0],
-            color: utils.colors.primary
-          }
-        }
-      }, {
-        type: 'bar',
-        barWidth: '12%',
-        barGap: '30%',
-        label: {
-          normal: {
-            show: false
-          }
-        },
-        itemStyle: {
-          normal: {
-            barBorderRadius: [4, 4, 0, 0],
-            color: utils.grays[300]
-          }
-        }
-      }],
-      grid: {
-        right: '0',
-        left: '30px',
-        bottom: '10%',
-        top: '20%'
-      }
-    };
-
-    var _options3 = window._.merge(_defaultOptions3, _userOptions3);
-
-    _chart3.setOption(_options3);
-  } //
-  // ─── PIE CHART ──────────────────────────────────────────────────────────────────
-  //
-
-
-  var $pieChartRevenue = document.querySelector(Selector.ECHART_DOUGHNUT);
-
-  if ($pieChartRevenue) {
-    var _$this4 = $($pieChartRevenue);
-
-    var _userOptions4 = _$this4.data('options');
-
-    var _chart4 = window.echarts.init($pieChartRevenue);
-
-    var _defaultOptions4 = {
-      color: [utils.colors.primary, utils.colors.info, utils.grays[300]],
-      tooltip: {
-        trigger: 'item',
-        padding: [7, 10],
-        backgroundColor: utils.grays.white,
-        textStyle: {
-          color: utils.grays.black
-        },
-        transitionDuration: 0,
-        borderColor: utils.grays['300'],
-        borderWidth: 1,
-        formatter: function formatter(params) {
-          return "<strong>" + params.data.name + ":</strong> " + params.percent + "%";
-        }
-      },
-      position: function position(pos, params, dom, rect, size) {
-        return getPosition(pos, params, dom, rect, size);
-      },
-      legend: {
-        show: false
-      },
-      series: [{
-        type: 'pie',
-        radius: ['100%', '87%'],
-        avoidLabelOverlap: false,
-        hoverAnimation: false,
-        itemStyle: {
-          borderWidth: 2,
-          borderColor: utils.grays.white
-        },
-        label: {
-          normal: {
-            show: false,
-            position: 'center',
-            textStyle: {
-              fontSize: '20',
-              fontWeight: '500',
-              color: utils.grays['700']
-            }
-          },
-          emphasis: {
-            show: false
-          }
-        },
-        labelLine: {
-          normal: {
-            show: false
-          }
-        },
-        data: [{
-          value: 5300000,
-          name: 'Samsung'
-        }, {
-          value: 1900000,
-          name: 'Huawei'
-        }, {
-          value: 2000000,
-          name: 'Apple'
-        }]
-      }]
-    };
-
-    var _options4 = window._.merge(_defaultOptions4, _userOptions4);
-
-    _chart4.setOption(_options4);
-  } //
-  // ─── ECHART FIX ON WINDOW RESIZE ────────────────────────────────────────────────
-  //
-
-
-  var $echarts = document.querySelectorAll('[data-echart-responsive]');
-
-  window.onresize = function () {
-    if ($echarts.length) {
-      $.each($echarts, function (item, value) {
-        if ($(value).data('echart-responsive')) {
-          window.echarts.init(value).resize();
-        }
-      });
-    }
-  };
-});
-/*-----------------------------------------------
-|   On page scroll for #id targets
------------------------------------------------*/
-
-utils.$document.ready(function ($) {
-  $('a[data-fancyscroll]').click(function scrollTo(e) {
-    // const $this = $(e.currentTarget);
-    var $this = $(this);
-
-    if (utils.location.pathname === $this[0].pathname && utils.location.pathname.replace(/^\//, '') === this.pathname.replace(/^\//, '') && utils.location.hostname === this.hostname) {
-      e.preventDefault();
-      var target = $(this.hash);
-      target = target.length ? target : $("[name=" + this.hash.slice(1) + "]");
-
-      if (target.length) {
-        $('html,body').animate({
-          scrollTop: target.offset().top - ($this.data('offset') || 0)
-        }, 400, 'swing', function () {
-          var hash = $this.attr('href');
-          window.history.pushState ? window.history.pushState(null, null, hash) : window.location.hash = hash;
-        });
-        return false;
-      }
-    }
-
-    return true;
+      form.classList.add('was-validated');
+    }, false);
   });
-  var hash = window.location.hash;
+};
+/* -------------------------------------------------------------------------- */
 
-  if (hash && document.getElementById(hash.slice(1))) {
-    var $this = $(hash);
-    $('html,body').animate({
-      scrollTop: $this.offset().top - $("a[href='" + hash + "']").data('offset')
-    }, 400, 'swing', function () {
-      window.history.pushState ? window.history.pushState(null, null, hash) : window.location.hash = hash;
-    });
-  }
-});
-/*-----------------------------------------------
-|   File Input
------------------------------------------------*/
+/*                                FullCalendar                                */
 
-utils.$document.ready(function () {
-  $('.custom-file-input').on('change', function (e) {
-    var $this = $(e.currentTarget);
-    var fileName = $this.val().split('\\').pop();
-    $this.next('.custom-file-label').addClass('selected').html(fileName);
-  });
-});
-/*-----------------------------------------------
-|   Flatpickr
------------------------------------------------*/
+/* -------------------------------------------------------------------------- */
 
-utils.$document.ready(function () {
-  var datetimepicker = $('.datetimepicker');
-  datetimepicker.length && datetimepicker.each(function (index, value) {
-    var $this = $(value);
-    var options = $.extend({
-      dateFormat: 'd/m/y',
-      disableMobile: true
-    }, $this.data('options'));
-    $this.flatpickr(options);
-  });
-});
-/*-----------------------------------------------
-|   Bootstrap validation
------------------------------------------------*/
-
-utils.$document.ready(function () {
-  window.addEventListener('load', function () {
-    // Fetch all the forms we want to apply theme Bootstrap validation styles to
-    var forms = document.getElementsByClassName('needs-validation'); // Loop over them and prevent submission
-
-    Array.prototype.filter.call(forms, function (form) {
-      form.addEventListener('submit', function (event) {
-        if (form.checkValidity() === false) {
-          event.preventDefault();
-          event.stopPropagation();
-        }
-
-        form.classList.add('was-validated');
-      }, false);
-    });
-  }, false);
-}); // /*-----------------------------------------------
-// |   Full Calendar
-// -----------------------------------------------*/
 
 var merge = window._.merge;
 
 var renderCalendar = function renderCalendar(el, option) {
+  var _document$querySelect;
+
   var options = merge({
-    themeSystem: 'bootstrap',
     initialView: 'dayGridMonth',
     editable: true,
-    direction: $('html').attr('dir'),
+    direction: document.querySelector('html').getAttribute('dir'),
     headerToolbar: {
       left: 'prev,next today',
       center: 'title',
@@ -2409,38 +1096,49 @@ var renderCalendar = function renderCalendar(el, option) {
       day: 'Day'
     }
   }, option);
-  var calendar = window.FullCalendar && new window.FullCalendar.Calendar(el, options);
+  var calendar = new window.FullCalendar.Calendar(el, options);
   calendar.render();
-  $('.navbar-vertical-toggle').on('navbar.vertical.toggle', function () {
+  (_document$querySelect = document.querySelector('.navbar-vertical-toggle')) === null || _document$querySelect === void 0 ? void 0 : _document$querySelect.addEventListener('navbar.vertical.toggle', function () {
     return calendar.updateSize();
   });
   return calendar;
 };
 
-utils.$document.ready(function () {
-  var calendars = $('[data-calendar]');
+var fullCalendarInit = function fullCalendarInit() {
+  var calendars = document.querySelectorAll('[data-calendar]');
+  calendars.forEach(function (item) {
+    var options = utils.getData(item, 'options');
+    renderCalendar(item, options);
+  });
+};
 
-  if (calendars.length) {
-    calendars.each(function (index, calendar) {
-      renderCalendar(calendar, JSON.parse(calendar.dataset.calendar));
+var fullCalendar = {
+  renderCalendar: renderCalendar,
+  fullCalendarInit: fullCalendarInit
+};
+/* -------------------------------------------------------------------------- */
+
+/*                                 Glightbox                                */
+
+/* -------------------------------------------------------------------------- */
+
+var glightboxInit = function glightboxInit() {
+  if (window.GLightbox) {
+    window.GLightbox({
+      selector: '[data-gallery]'
     });
   }
-
-  window.FontAwesome.config.autoReplaceSvg = 'nest';
-});
+};
 /*-----------------------------------------------
 |   Gooogle Map
 -----------------------------------------------*/
 
-/*
-  global google
-*/
 
 function initMap() {
-  var $googlemaps = $('.googlemap');
-  var isDark = storage.isDark;
+  var themeController = document.body;
+  var $googlemaps = document.querySelectorAll('.googlemap');
 
-  if ($googlemaps.length) {
+  if ($googlemaps.length && window.google) {
     // Visit https://snazzymaps.com/ for more themes
     var mapStyles = {
       Default: [{
@@ -3333,19 +2031,33 @@ function initMap() {
         }, {
           visibility: 'on'
         }]
+      }],
+      Cobalt: [{
+        featureType: 'all',
+        elementType: 'all',
+        stylers: [{
+          invert_lightness: true
+        }, {
+          saturation: 10
+        }, {
+          lightness: 30
+        }, {
+          gamma: 0.5
+        }, {
+          hue: '#435158'
+        }]
       }]
     };
-    $googlemaps.each(function (index, value) {
-      var $googlemap = $(value);
-      var latLng = $googlemap.data('latlng').split(',');
-      var markerPopup = $googlemap.html();
-      var icon = $googlemap.data('icon') ? $googlemap.data('icon') : 'https://maps.gstatic.com/mapfiles/api-3/images/spotlight-poi.png';
-      var zoom = $googlemap.data('zoom');
-      var mapStyle = isDark ? 'Midnight' : $googlemap.data('theme');
-      var mapElement = value;
+    $googlemaps.forEach(function (itm) {
+      var latLng = utils.getData(itm, 'latlng').split(',');
+      var markerPopup = itm.innerHTML;
+      var icon = utils.getData(itm, 'icon') ? utils.getData(itm, 'icon') : 'https://maps.gstatic.com/mapfiles/api-3/images/spotlight-poi.png';
+      var zoom = utils.getData(itm, 'zoom');
+      var mapElement = itm;
+      var mapStyle = utils.getData(itm, 'theme');
 
-      if ($googlemap.data('theme') === 'streetview') {
-        var pov = $googlemap.data('pov');
+      if (utils.getData(itm, 'theme') === 'streetview') {
+        var pov = utils.getData(itm, 'pov');
         var _mapOptions = {
           position: {
             lat: Number(latLng[0]),
@@ -3356,110 +2068,153 @@ function initMap() {
           gestureHandling: 'none',
           scrollwheel: false
         };
-        return new google.maps.StreetViewPanorama(mapElement, _mapOptions);
+        return new window.google.maps.StreetViewPanorama(mapElement, _mapOptions);
       }
 
       var mapOptions = {
         zoom: zoom,
-        scrollwheel: $googlemap.data('scrollwheel'),
-        center: new google.maps.LatLng(latLng[0], latLng[1]),
-        styles: mapStyles[mapStyle]
+        scrollwheel: utils.getData(itm, 'scrollwheel'),
+        center: new window.google.maps.LatLng(latLng[0], latLng[1]),
+        styles: localStorage.getItem('theme') === 'dark' ? mapStyles.Cobalt : mapStyles[mapStyle]
       };
-      var map = new google.maps.Map(mapElement, mapOptions);
-      var infowindow = new google.maps.InfoWindow({
+      var map = new window.google.maps.Map(mapElement, mapOptions);
+      var infowindow = new window.google.maps.InfoWindow({
         content: markerPopup
       });
-      var marker = new google.maps.Marker({
-        position: new google.maps.LatLng(latLng[0], latLng[1]),
+      var marker = new window.google.maps.Marker({
+        position: new window.google.maps.LatLng(latLng[0], latLng[1]),
         icon: icon,
         map: map
       });
       marker.addListener('click', function () {
         infowindow.open(map, marker);
       });
+      themeController && themeController.addEventListener('clickControl', function (_ref3) {
+        var _ref3$detail = _ref3.detail,
+            control = _ref3$detail.control,
+            value = _ref3$detail.value;
+
+        if (control === 'theme') {
+          map.set('styles', value === 'dark' ? mapStyles.Cobalt : mapStyles[mapStyle]);
+        }
+      });
       return null;
     });
   }
 }
-/*-----------------------------------------------
-|   Jquery Validation
------------------------------------------------*/
+/* -------------------------------------------------------------------------- */
+
+/*                           Icon copy to clipboard                           */
+
+/* -------------------------------------------------------------------------- */
 
 
-utils.$document.ready(function () {
-  var forms = $('.form-validation');
-  forms.length && forms.each(function (index, value) {
-    var $this = $(value);
-    var options = $.extend({}, $this.data('options'));
-    $this.validate(options);
-  });
-});
-/*-----------------------------------------------
-|   Draggable
------------------------------------------------*/
+var iconCopiedInit = function iconCopiedInit() {
+  var iconList = document.getElementById('icon-list');
+  var iconCopiedToast = document.getElementById('icon-copied-toast');
+  var iconCopiedToastInstance = new window.bootstrap.Toast(iconCopiedToast);
 
-utils.$document.ready(function () {
+  if (iconList) {
+    iconList.addEventListener('click', function (e) {
+      var el = e.target;
+
+      if (el.tagName === 'INPUT') {
+        el.select();
+        el.setSelectionRange(0, 99999);
+        document.execCommand('copy');
+        iconCopiedToast.querySelector('.toast-body').innerHTML = "<span class=\"fw-black\">Copied:</span> <code>".concat(el.value, "</code>");
+        iconCopiedToastInstance.show();
+      }
+    });
+  }
+};
+/* -------------------------------------------------------------------------- */
+
+/*                                   Kanbah                                   */
+
+/* -------------------------------------------------------------------------- */
+
+
+var kanbanInit = function kanbanInit() {
   var Selectors = {
-    ADD_LIST_FORM: '#add-list-form',
     KANBAN_COLUMN: '.kanban-column',
-    BTN_ADD_CARD: '.btn-add-card',
     KANBAN_ITEMS_CONTAINER: '.kanban-items-container',
+    BTN_ADD_CARD: '.btn-add-card',
     COLLAPSE: '.collapse',
-    COLLAPSE_CLOSE: "[data-dismiss='collapse']",
-    ADD_CARD: '.add-card',
-    ADD_LIST: '.add-list',
-    MODAL_ANCHOR: "[data-toggle='modal'] a",
-    HIDE_ADD_CARD_FORM: '.hide-add-card-form'
-  };
-  var Events = {
-    TOGGLE_BS_COLLAPSE: 'show.bs.collapse hide.bs.collapse',
-    SHOWN_BS_COLLAPSE: 'shown.bs.collapse',
-    CLICK: 'click'
+    ADD_LIST_FORM: '#addListForm',
+    BTN_COLLAPSE_DISMISS: '[data-dismiss="collapse"]',
+    BTN_FORM_HIDE: '[data-btn-form="hide"]',
+    INPUT_ADD_CARD: '[data-input="add-card"]',
+    INPUT_ADD_LIST: '[data-input="add-list"]'
   };
   var ClassNames = {
     FORM_ADDED: 'form-added',
     D_NONE: 'd-none'
-  }; // Hide button when Add list form is shown
+  };
+  var Events = {
+    CLICK: 'click',
+    SHOW_BS_COLLAPSE: 'show.bs.collapse',
+    SHOWN_BS_COLLAPSE: 'shown.bs.collapse'
+  };
+  var addCardButtons = document.querySelectorAll(Selectors.BTN_ADD_CARD);
+  var formHideButtons = document.querySelectorAll(Selectors.BTN_FORM_HIDE);
+  var addListForm = document.querySelector(Selectors.ADD_LIST_FORM);
+  var collapseDismissButtons = document.querySelectorAll(Selectors.BTN_COLLAPSE_DISMISS); // Show add card form and place scrollbar bottom of the list
 
-  $(Selectors.ADD_LIST_FORM).on(Events.TOGGLE_BS_COLLAPSE, function (e) {
-    var $this = $(e.currentTarget);
-    $this.next().toggleClass(ClassNames.D_NONE);
-  }); // Show card add form and scroll to the bottom
+  addCardButtons && addCardButtons.forEach(function (button) {
+    button.addEventListener(Events.CLICK, function (_ref4) {
+      var el = _ref4.currentTarget;
+      var column = el.closest(Selectors.KANBAN_COLUMN);
+      var container = column.querySelector(Selectors.KANBAN_ITEMS_CONTAINER);
+      var scrollHeight = container.scrollHeight;
+      column.classList.add(ClassNames.FORM_ADDED);
+      container.querySelector(Selectors.INPUT_ADD_CARD).focus();
+      container.scrollTo({
+        top: scrollHeight
+      });
+    });
+  }); // Remove add card form
 
-  utils.$document.on(Events.CLICK, Selectors.BTN_ADD_CARD, function (e) {
-    var $this = $(e.currentTarget);
-    var $column = $this.closest(Selectors.KANBAN_COLUMN);
-    var $container = $column.find(Selectors.KANBAN_ITEMS_CONTAINER);
-    var scrollHeight = $container[0].scrollHeight;
-    $column.addClass(ClassNames.FORM_ADDED);
-    $container.scrollTop(scrollHeight);
-    $container.find(Selectors.ADD_CARD).focus();
-  }); // Hide card add form
-
-  utils.$document.on(Events.CLICK, Selectors.HIDE_ADD_CARD_FORM, function (e) {
-    var $this = $(e.currentTarget);
-    var $column = $this.closest(Selectors.KANBAN_COLUMN);
-    $column.removeClass(ClassNames.FORM_ADDED);
-  }); // Focus add list form on form shown
-
-  $(Selectors.ADD_LIST_FORM).on(Events.SHOWN_BS_COLLAPSE, function (e) {
-    var $this = $(e.currentTarget);
-    $this.find(Selectors.ADD_LIST).focus();
+  formHideButtons.forEach(function (button) {
+    button.addEventListener(Events.CLICK, function (_ref5) {
+      var el = _ref5.currentTarget;
+      el.closest(Selectors.KANBAN_COLUMN).classList.remove(ClassNames.FORM_ADDED);
+    });
   });
-  utils.$document.on(Events.CLICK, Selectors.MODAL_ANCHOR, function (e) {
-    e.stopPropagation();
-  }); // Close collapse when corresponding close button is clicked
 
-  utils.$document.on(Events.CLICK, Selectors.COLLAPSE_CLOSE, function (e) {
-    var $this = $(e.currentTarget);
-    $this.closest(Selectors.COLLAPSE).collapse('hide');
+  if (addListForm) {
+    // Hide add list button when the form is going to show
+    addListForm.addEventListener(Events.SHOW_BS_COLLAPSE, function (_ref6) {
+      var el = _ref6.currentTarget;
+      var nextElement = el.nextElementSibling;
+      nextElement && nextElement.classList.add(ClassNames.D_NONE);
+    }); // Focus input field when the form is shown
+
+    addListForm.addEventListener(Events.SHOWN_BS_COLLAPSE, function (_ref7) {
+      var el = _ref7.currentTarget;
+      el.querySelector(Selectors.INPUT_ADD_LIST).focus();
+    });
+  } // Hide add list form when the dismiss button is clicked
+
+
+  collapseDismissButtons.forEach(function (button) {
+    button.addEventListener(Events.CLICK, function (_ref8) {
+      var el = _ref8.currentTarget;
+      var collapseElement = el.closest(Selectors.COLLAPSE);
+      var collapse = window.bootstrap.Collapse.getInstance(collapseElement);
+      utils.hasClass(collapseElement.nextElementSibling, ClassNames.D_NONE) && collapseElement.nextElementSibling.classList.remove(ClassNames.D_NONE);
+      collapse.hide();
+    });
   });
-});
-/*-----------------------------------------------
-|   Leaflet
------------------------------------------------*/
+};
+/* -------------------------------------------------------------------------- */
 
-utils.$document.ready(function () {
+/*                                   leaflet                                  */
+
+/* -------------------------------------------------------------------------- */
+
+
+var leafletActiveUserInit = function leafletActiveUserInit() {
   var points = [{
     lat: 53.958332,
     "long": -1.080278,
@@ -4439,31 +3194,16 @@ utils.$document.ready(function () {
   var mapContainer = document.getElementById('map');
 
   if (L && mapContainer) {
-    var filterColor = ['bright:101%', 'contrast:101%', 'hue:23deg', 'saturate:225%'];
+    var getFilterColor = function getFilterColor() {
+      return localStorage.getItem('theme') === 'dark' ? ['invert:98%', 'grayscale:69%', 'bright:89%', 'contrast:111%', 'hue:205deg', 'saturate:1000%'] : ['bright:101%', 'contrast:101%', 'hue:23deg', 'saturate:225%'];
+    };
+
     var tileLayerTheme = 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
-    var tiles;
-
-    if (storage.isDark) {
-      filterColor = ['invert:98%', 'grayscale:69%', 'bright:89%', 'contrast:111%', 'hue:205deg', 'saturate:1000%'];
-    }
-
-    if (window.is.ie()) {
-      if (storage.isDark) {
-        tileLayerTheme = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
-      }
-
-      tiles = L.tileLayer(tileLayerTheme, {
-        attribution: null,
-        transparent: true
-      });
-    } else {
-      tiles = L.tileLayer.colorFilter(tileLayerTheme, {
-        attribution: null,
-        transparent: true,
-        filter: filterColor
-      });
-    }
-
+    var tiles = L.tileLayer.colorFilter(tileLayerTheme, {
+      attribution: null,
+      transparent: true,
+      filter: getFilterColor()
+    });
     var map = L.map('map', {
       center: L.latLng(10.737, 0),
       zoom: 0,
@@ -4481,11 +3221,16 @@ utils.$document.ready(function () {
       var name = point.name,
           location = point.location,
           street = point.street;
+      var icon = L.icon({
+        iconUrl: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAApCAYAAADAk4LOAAAACXBIWXMAAAFgAAABYAEg2RPaAAADpElEQVRYCZ1XS1LbQBBtybIdiMEJKSpUqihgEW/xDdARyAnirOIl3MBH8NK7mBvkBpFv4Gy9IRSpFIQiRPyNfqkeZkY9HwmFt7Lm06+7p/vN2MmyDIrQ6QebALAHAD4AbFuWfQeAAACGs5H/w5jlsJJw4wMA+GhMFuMA99jIDJJOP+ihZwDQFmNuowWO1wS3viDXpdEdZPEc0odruj0EgN5s5H8tJOEEX8R3rbkMtcU34NTqhe5nSQTJ7Tkk80s6/Gk28scGiULguFBffgdufdEwWoQ0uoXo8hdAlooVH0REjISfwZSlyHGh0V5n6aHAtKTxXI5g6nQnMH0P4bEgwtR18Yw8Pj8QZ4ARUAI0Hl+fQZZGisGEBVwHr7XKzox57DXZ/ij8Cdwe2u057z9/wygOxRl4S2vSUHx1oucaMQGAHTrgtdag9mK5aN+Wx/uAAQ9Zenp/SRce4TpaNbQK4+sTcGqeTB/aIXv3XN5oj2VKqii++U0JunpZ8urxee4hvjqVc2hHpBDXuKKT9XMgVYJ1/1fPGSeaikzgmWWkMIi9bVf8UhotXxzORn5gWFchI8QyttlzjS0qpsaIGY2MMsujV/AUSdcY0dDpB6/EiOPYzclR1CI5mOez3ekHvrFLxa7cR5pTscfrXjk0Vhm5V2PqLUWnH3R5GbPGpMVD7E1ckXesKBQ7AS/vmQ1c0+kHuxpBj98lTCm8pbc5QRJRdZ6qHb/wGryXq3Lxszv+5gySuwvxueXySwYvHEjuQ9ofTGKYlrmK1EsCHMd5SoD7mZ1HHFCBHLNbMEshvrugqWLn01hpVVJhFgVGkDvK7hR6n2B+d9C7xsqWsbkqHv4cCsWezEb+o2SR+SFweUBxfA5wH7kShjKt2vWL57Px3GhIFEezkb8pxvUWHYhotAfCk2AtkEcxoOttrxUWDR5svb1emSQKj0WXK1HYIgFREbiBqmoZcB2RkbE+byMZiosorVgAZF1ID7yQhEs38wa7nUqNDezdlavC2HbBGSQkGgZ8uJVBmzeiKCRRpEa9ilWghORVeGB7BxeSKF5xqbFBkxBrFKUk/JHA7ppENQaCnCjthK+3opCEYyANztXmZN858cDYWSUSHk3A311GAZDvo6deNKUk1EsqnJoQlkYBNlmxQZeaMgmxoUokICoHDce351RCCiuKoirJWEgNOYvQplM2VCLhUqF7jf94rW9kHVUjQeheV4riv0i4ZOzzz/2y/+0KAOAfr4EE4HpCFhwAAAAASUVORK5CYII=\n        "
+      });
       var marker = L.marker(new L.LatLng(point.lat, point["long"]), {
+        icon: icon
+      }, {
         name: name,
         location: location
       });
-      var popupContent = "\n        <h6 class=\"mb-1\">" + name + "</h6>\n        <p class=\"m-0 text-500\">" + street + ", " + location + "</p>\n      ";
+      var popupContent = "\n        <h6 class=\"mb-1\">".concat(name, "</h6>\n        <p class=\"m-0 text-500\">").concat(street, ", ").concat(location, "</p>\n      ");
       var popup = L.popup({
         minWidth: 180
       }).setContent(popupContent);
@@ -4494,450 +3239,547 @@ utils.$document.ready(function () {
       return true;
     });
     map.addLayer(mcg);
-  }
-});
-/*-----------------------------------------------
-|   Lightbox
------------------------------------------------*/
+    var themeController = document.body;
+    themeController.addEventListener('clickControl', function (_ref9) {
+      var _ref9$detail = _ref9.detail,
+          control = _ref9$detail.control,
+          value = _ref9$detail.value;
 
-/*
-  global lightbox
-*/
-
-utils.$document.ready(function () {
-  if ($('[data-lightbox]').length) {
-    lightbox.option({
-      resizeDuration: 400,
-      wrapAround: true,
-      fadeDuration: 300,
-      imageFadeDuration: 300
+      if (control === 'theme') {
+        tiles.updateFilter(value === 'dark' ? ['invert:98%', 'grayscale:69%', 'bright:89%', 'contrast:111%', 'hue:205deg', 'saturate:1000%'] : ['bright:101%', 'contrast:101%', 'hue:23deg', 'saturate:225%']);
+      }
     });
   }
-});
-/*-----------------------------------------------
-|   Lottie
------------------------------------------------*/
+};
+/* -------------------------------------------------------------------------- */
 
-utils.$document.ready(function () {
-  var lotties = $('.lottie');
+/*                                 Data Table                                 */
+
+/* -------------------------------------------------------------------------- */
+
+/* eslint-disable no-param-reassign */
+
+
+var togglePaginationButtonDisable = function togglePaginationButtonDisable(button, disabled) {
+  button.disabled = disabled;
+  button.classList[disabled ? 'add' : 'remove']('disabled');
+};
+
+var listInit = function listInit() {
+  if (window.List) {
+    var lists = document.querySelectorAll('[data-list]');
+
+    if (lists.length) {
+      lists.forEach(function (el) {
+        var options = utils.getData(el, 'list');
+
+        if (options.pagination) {
+          options = _objectSpread(_objectSpread({}, options), {}, {
+            pagination: _objectSpread({
+              item: '<li><button class=\'page\' type=\'button\'></button></li>'
+            }, options.pagination)
+          });
+        }
+
+        var paginationButtonNext = el.querySelector('[data-list-pagination="next"]');
+        var paginationButtonPrev = el.querySelector('[data-list-pagination="prev"]');
+        var viewAll = el.querySelector('[data-list-view="*"]');
+        var viewLess = el.querySelector('[data-list-view="less"]');
+        var listInfo = el.querySelector('[data-list-info]');
+        var list = new window.List(el, options); //-------fallback-----------
+
+        list.on('updated', function (item) {
+          var fallback = el.querySelector('.fallback') || document.getElementById(options.fallback);
+
+          if (fallback) {
+            if (item.matchingItems.length === 0) {
+              fallback.classList.remove('d-none');
+            } else {
+              fallback.classList.add('d-none');
+            }
+          }
+        }); // ---------------------------------------
+
+        var totalItem = list.items.length;
+        var itemsPerPage = list.page;
+        var btnDropdownClose = list.listContainer.querySelector('.btn-close');
+        var pageQuantity = Math.ceil(totalItem / itemsPerPage);
+        var numberOfcurrentItems = list.visibleItems.length;
+        var pageCount = 1;
+        btnDropdownClose && btnDropdownClose.addEventListener('search.close', function () {
+          list.fuzzySearch('');
+        });
+
+        var updateListControls = function updateListControls() {
+          listInfo && (listInfo.innerHTML = "".concat(list.i, " to ").concat(numberOfcurrentItems, " of ").concat(totalItem));
+          paginationButtonPrev && togglePaginationButtonDisable(paginationButtonPrev, pageCount === 1);
+          paginationButtonNext && togglePaginationButtonDisable(paginationButtonNext, pageCount === pageQuantity);
+
+          if (pageCount > 1 && pageCount < pageQuantity) {
+            togglePaginationButtonDisable(paginationButtonNext, false);
+            togglePaginationButtonDisable(paginationButtonPrev, false);
+          }
+        }; // List info
+
+
+        updateListControls();
+
+        if (paginationButtonNext) {
+          paginationButtonNext.addEventListener('click', function (e) {
+            e.preventDefault();
+            pageCount += 1;
+            var nextInitialIndex = list.i + itemsPerPage;
+            nextInitialIndex <= list.size() && list.show(nextInitialIndex, itemsPerPage);
+            numberOfcurrentItems += list.visibleItems.length;
+            updateListControls();
+          });
+        }
+
+        if (paginationButtonPrev) {
+          paginationButtonPrev.addEventListener('click', function (e) {
+            e.preventDefault();
+            pageCount -= 1;
+            numberOfcurrentItems -= list.visibleItems.length;
+            var prevItem = list.i - itemsPerPage;
+            prevItem > 0 && list.show(prevItem, itemsPerPage);
+            updateListControls();
+          });
+        }
+
+        var toggleViewBtn = function toggleViewBtn() {
+          viewLess.classList.toggle('d-none');
+          viewAll.classList.toggle('d-none');
+        };
+
+        if (viewAll) {
+          viewAll.addEventListener('click', function () {
+            list.show(1, totalItem);
+            pageQuantity = 1;
+            pageCount = 1;
+            numberOfcurrentItems = totalItem;
+            updateListControls();
+            toggleViewBtn();
+          });
+        }
+
+        if (viewLess) {
+          viewLess.addEventListener('click', function () {
+            list.show(1, itemsPerPage);
+            pageQuantity = Math.ceil(totalItem / itemsPerPage);
+            pageCount = 1;
+            numberOfcurrentItems = list.visibleItems.length;
+            updateListControls();
+            toggleViewBtn();
+          });
+        } // numbering pagination
+
+
+        if (options.pagination) {
+          el.querySelector('.pagination').addEventListener('click', function (e) {
+            if (e.target.classList[0] === 'page') {
+              pageCount = Number(e.target.innerText);
+              updateListControls();
+            }
+          });
+        }
+      });
+    }
+  }
+};
+
+var lottieInit = function lottieInit() {
+  var lotties = document.querySelectorAll('.lottie');
 
   if (lotties.length) {
-    lotties.each(function (index, value) {
-      var $this = $(value);
-      var options = $.extend({
-        container: value,
+    lotties.forEach(function (item) {
+      var options = utils.getData(item, 'options');
+      window.bodymovin.loadAnimation(_objectSpread({
+        container: item,
         path: '../img/animated-icons/warning-light.json',
         renderer: 'svg',
         loop: true,
         autoplay: true,
         name: 'Hello World'
-      }, $this.data('options'));
-      window.bodymovin.loadAnimation(options);
+      }, options));
     });
   }
-});
-/*-----------------------------------------------
-|   Modal
------------------------------------------------*/
+};
+/* -------------------------------------------------------------------------- */
 
-utils.$document.ready(function () {
+/*                             Navbar Combo Layout                            */
+
+/* -------------------------------------------------------------------------- */
+
+
+var navbarComboInit = function navbarComboInit() {
   var Selector = {
-    MODAL_THEME: '.modal-theme'
-  };
-  var DataKey = {
-    OPTIONS: 'options'
-  };
-  var Events = {
-    HIDDEN_BS_MODAL: 'hidden.bs.modal'
-  };
-  var modals = $(Selector.MODAL_THEME);
-  var showModal = true;
-
-  if (modals.length) {
-    modals.each(function (index, value) {
-      var $this = $(value);
-      var userOptions = $this.data(DataKey.OPTIONS);
-      var options = $.extend({
-        autoShow: false,
-        autoShowDelay: 0,
-        showOnce: false
-      }, userOptions);
-
-      if (options.showOnce) {
-        var modal = utils.getCookie('modal');
-        showModal = modal === null;
-      }
-
-      if (options.autoShow && showModal) {
-        setTimeout(function () {
-          $this.modal('show');
-        }, options.autoShowDelay);
-      }
-    });
-  }
-
-  $(Selector.MODAL_THEME).on(Events.HIDDEN_BS_MODAL, function (e) {
-    var $this = $(e.currentTarget);
-    var userOptions = $this.data(DataKey.OPTIONS);
-    var options = $.extend({
-      cookieExpireTime: 7200000,
-      showOnce: false
-    }, userOptions);
-    options.showOnce && utils.setCookie('modal', false, options.cookieExpireTime);
-  });
-});
-/*-----------------------------------------------
-|   Navbar Top
------------------------------------------------*/
-
-utils.$document.ready(function () {
-  var Selectors = {
-    COLLAPSE: '.collapse',
-    NAVBAR_NAV: '.navbar-nav',
-    NAVBAR_TOP_COMBO: '.navbar-top-combo',
     NAVBAR_VERTICAL: '.navbar-vertical',
-    NAVBAR_VERTICAL_DIVIDER: '.navbar-vertical-divider',
-    NAVBAR_TOP_COMBO_COLLAPSE: '.navbar-top-combo .collapse',
-    MOVEABLE_CONTENT: '[data-move-container]'
+    NAVBAR_TOP_COMBO: '[data-navbar-top="combo"]',
+    COLLAPSE: '.collapse',
+    DATA_MOVE_CONTAINER: '[data-move-container]',
+    NAVBAR_NAV: '.navbar-nav',
+    NAVBAR_VERTICAL_DIVIDER: '.navbar-vertical-divider'
   };
-  var CLASS_NAME = {
+  var ClassName = {
     FLEX_COLUMN: 'flex-column'
   };
-  var DATA_KEYS = {
-    MOVE_TARGET: 'move-target'
-  };
-  var $navbarTop = $(Selectors.NAVBAR_TOP_COMBO);
-  var $navbarVertical = $(Selectors.NAVBAR_VERTICAL);
-  var navbarTopBreakpoint = utils.getBreakpoint($navbarTop);
-  var navbarVertcicalBreakpoint = utils.getBreakpoint($navbarVertical);
+  var navbarVertical = document.querySelector(Selector.NAVBAR_VERTICAL);
+  var navbarTopCombo = document.querySelector(Selector.NAVBAR_TOP_COMBO);
 
-  var moveNavContent = function moveNavContent(width) {
-    if (width < navbarTopBreakpoint) {
-      var $navbarTopCollapse = $navbarTop.find(Selectors.COLLAPSE);
-      var navbarTopContent = $navbarTopCollapse.html();
+  var moveNavContent = function moveNavContent(windowWidth) {
+    var navbarVerticalBreakpoint = utils.getBreakpoint(navbarVertical);
+    var navbarTopBreakpoint = utils.getBreakpoint(navbarTopCombo);
+
+    if (windowWidth < navbarTopBreakpoint) {
+      var navbarCollapse = navbarTopCombo.querySelector(Selector.COLLAPSE);
+      var navbarTopContent = navbarCollapse.innerHTML;
 
       if (navbarTopContent) {
-        $navbarTopCollapse.html('');
-        var divider = "<div class='navbar-vertical-divider'><hr class='navbar-vertical-hr' /></div>";
-        navbarTopContent = "<div data-move-container>" + divider + navbarTopContent + "</div>";
-        var targetID = $navbarTop.data(DATA_KEYS.MOVE_TARGET);
-        $(navbarTopContent).insertAfter(targetID);
-        navbarTopBreakpoint > navbarVertcicalBreakpoint && $(Selectors.MOVEABLE_CONTENT).find(Selectors.NAVBAR_NAV).addClass(CLASS_NAME.FLEX_COLUMN);
+        var targetID = utils.getData(navbarTopCombo, 'move-target');
+        var targetElement = document.querySelector(targetID);
+        navbarCollapse.innerHTML = '';
+        targetElement.insertAdjacentHTML('afterend', "\n            <div data-move-container>\n              <div class='navbar-vertical-divider'>\n                <hr class='navbar-vertical-hr' />\n              </div>\n              ".concat(navbarTopContent, "\n            </div>\n          "));
+
+        if (navbarVerticalBreakpoint < navbarTopBreakpoint) {
+          var navbarNav = document.querySelector(Selector.DATA_MOVE_CONTAINER).querySelector(Selector.NAVBAR_NAV);
+          utils.addClass(navbarNav, ClassName.FLEX_COLUMN);
+        }
       }
     } else {
-      var $container = $(Selectors.MOVEABLE_CONTENT);
-      var $navbarNav = $container.find(Selectors.NAVBAR_NAV);
-      $navbarNav.hasClass(CLASS_NAME.FLEX_COLUMN) && $navbarNav.removeClass(CLASS_NAME.FLEX_COLUMN);
-      $container.find(Selectors.NAVBAR_VERTICAL_DIVIDER).remove();
-      var content = $container.html();
-      $container.remove();
-      $(Selectors.NAVBAR_TOP_COMBO_COLLAPSE).html(content);
+      var moveableContainer = document.querySelector(Selector.DATA_MOVE_CONTAINER);
+
+      if (moveableContainer) {
+        var _navbarNav = moveableContainer.querySelector(Selector.NAVBAR_NAV);
+
+        utils.hasClass(_navbarNav, ClassName.FLEX_COLUMN) && _navbarNav.classList.remove(ClassName.FLEX_COLUMN);
+        moveableContainer.querySelector(Selector.NAVBAR_VERTICAL_DIVIDER).remove();
+        navbarTopCombo.querySelector(Selector.COLLAPSE).innerHTML = moveableContainer.innerHTML;
+        moveableContainer.remove();
+      }
     }
   };
 
-  moveNavContent(utils.$window.outerWidth());
-  utils.$window.on('resize', function () {
-    moveNavContent(utils.$window.outerWidth());
+  moveNavContent(window.innerWidth);
+  utils.resize(function () {
+    return moveNavContent(window.innerWidth);
   });
-});
-/*-----------------------------------------------
-|   Navbar
------------------------------------------------*/
+};
+/* -------------------------------------------------------------------------- */
 
-utils.$document.ready(function () {
-  var $window = utils.$window;
-  var navDropShadowFlag = true;
-  var ClassName = {
-    SHOW: 'show',
-    NAVBAR_GLASS_SHADOW: 'navbar-glass-shadow',
-    NAVBAR_VERTICAL_COLLAPSED: 'navbar-vertical-collapsed',
-    NAVBAR_VERTICAL_COLLAPSE_HOVER: 'navbar-vertical-collapsed-hover'
-  };
+/*                         Navbar Darken on scroll                        */
+
+/* -------------------------------------------------------------------------- */
+
+
+var navbarDarkenOnScroll = function navbarDarkenOnScroll() {
   var Selector = {
-    HTML: 'html',
-    NAVBAR: '.navbar:not(.navbar-vertical)',
-    NAVBAR_VERTICAL: '.navbar-vertical',
-    NAVBAR_VERTICAL_TOGGLE: '.navbar-vertical-toggle',
-    NAVBAR_VERTICAL_COLLAPSE: '#navbarVerticalCollapse',
-    NAVBAR_VERTICAL_CONTENT: '.navbar-vertical-content',
-    NAVBAR_VERTICAL_COLLAPSED: '.navbar-vertical-collapsed',
-    NAVBAR_VERTICAL_DROPDOWN_NAV: '.navbar-vertical .navbar-collapse .nav',
-    NAVBAR_VERTICAL_COLLAPSED_DROPDOWN_NAV: '.navbar-vertical-collapsed .navbar-vertical .navbar-collapse .nav',
-    MAIN_CONTENT: '.main .content',
-    NAVBAR_TOP: '.navbar-top',
-    OWL_CAROUSEL: '.owl-carousel',
-    ECHART_RESPONSIVE: '[data-echart-responsive]'
+    NAVBAR: '[data-navbar-darken-on-scroll]',
+    NAVBAR_COLLAPSE: '.navbar-collapse',
+    NAVBAR_TOGGLER: '.navbar-toggler'
+  };
+  var ClassNames = {
+    COLLAPSED: 'collapsed'
   };
   var Events = {
-    LOAD_SCROLL: 'load scroll',
     SCROLL: 'scroll',
-    CLICK: 'click',
-    RESIZE: 'resize',
+    SHOW_BS_COLLAPSE: 'show.bs.collapse',
+    HIDE_BS_COLLAPSE: 'hide.bs.collapse',
+    HIDDEN_BS_COLLAPSE: 'hidden.bs.collapse'
+  };
+  var DataKey = {
+    NAVBAR_DARKEN_ON_SCROLL: 'navbar-darken-on-scroll'
+  };
+  var navbar = document.querySelector(Selector.NAVBAR);
+
+  function removeNavbarBgClass() {
+    navbar.classList.remove('bg-dark');
+    navbar.classList.remove('bg-100');
+  }
+
+  var toggleThemeClass = function toggleThemeClass(theme) {
+    if (theme === 'dark') {
+      navbar.classList.remove('navbar-dark');
+      navbar.classList.add('navbar-light');
+    } else {
+      navbar.classList.remove('navbar-light');
+      navbar.classList.add('navbar-dark');
+    }
+  };
+
+  function getBgClassName(name, defaultColorName) {
+    var parent = document.documentElement;
+
+    var allColors = _objectSpread(_objectSpread({}, utils.getColors(parent)), utils.getGrays(parent));
+
+    var colorName = Object.keys(allColors).includes(name) ? name : defaultColorName;
+    var color = allColors[colorName];
+    var bgClassName = "bg-".concat(colorName);
+    return {
+      color: color,
+      bgClassName: bgClassName
+    };
+  }
+
+  if (navbar) {
+    var theme = localStorage.getItem('theme');
+    var defaultColorName = theme === 'dark' ? '100' : 'dark';
+    var name = utils.getData(navbar, DataKey.NAVBAR_DARKEN_ON_SCROLL);
+    toggleThemeClass(theme);
+    var themeController = document.body;
+    themeController.addEventListener('clickControl', function (_ref10) {
+      var _ref10$detail = _ref10.detail,
+          control = _ref10$detail.control,
+          value = _ref10$detail.value;
+
+      if (control === 'theme') {
+        toggleThemeClass(value);
+        defaultColorName = value === 'dark' ? '100' : 'dark';
+
+        if (navbar.classList.contains('bg-dark') || navbar.classList.contains('bg-100')) {
+          removeNavbarBgClass();
+          navbar.classList.add(getBgClassName(name, defaultColorName).bgClassName);
+        }
+      }
+    });
+    var windowHeight = window.innerHeight;
+    var html = document.documentElement;
+    var navbarCollapse = navbar.querySelector(Selector.NAVBAR_COLLAPSE);
+    var colorRgb = utils.hexToRgb(getBgClassName(name, defaultColorName).color);
+
+    var _window$getComputedSt = window.getComputedStyle(navbar),
+        backgroundImage = _window$getComputedSt.backgroundImage;
+
+    var transition = 'background-color 0.35s ease';
+    navbar.style.backgroundImage = 'none'; // Change navbar background color on scroll
+
+    window.addEventListener(Events.SCROLL, function () {
+      var scrollTop = html.scrollTop;
+      var alpha = scrollTop / windowHeight * 2;
+      alpha >= 1 && (alpha = 1);
+      navbar.style.backgroundColor = "rgba(".concat(colorRgb[0], ", ").concat(colorRgb[1], ", ").concat(colorRgb[2], ", ").concat(alpha, ")");
+      navbar.style.backgroundImage = alpha > 0 || utils.hasClass(navbarCollapse, 'show') ? backgroundImage : 'none';
+    }); // Toggle bg class on window resize
+
+    utils.resize(function () {
+      var breakPoint = utils.getBreakpoint(navbar);
+
+      if (window.innerWidth > breakPoint) {
+        removeNavbarBgClass();
+        navbar.style.backgroundImage = html.scrollTop ? backgroundImage : 'none';
+        navbar.style.transition = 'none';
+      } else if (!utils.hasClass(navbar.querySelector(Selector.NAVBAR_TOGGLER), ClassNames.COLLAPSED)) {
+        removeNavbarBgClass();
+        navbar.style.backgroundImage = backgroundImage;
+      }
+
+      if (window.innerWidth <= breakPoint) {
+        navbar.style.transition = utils.hasClass(navbarCollapse, 'show') ? transition : 'none';
+      }
+    });
+    navbarCollapse.addEventListener(Events.SHOW_BS_COLLAPSE, function () {
+      navbar.classList.add(getBgClassName(name, defaultColorName).bgClassName);
+      navbar.style.backgroundImage = backgroundImage;
+      navbar.style.transition = transition;
+    });
+    navbarCollapse.addEventListener(Events.HIDE_BS_COLLAPSE, function () {
+      removeNavbarBgClass();
+      !html.scrollTop && (navbar.style.backgroundImage = 'none');
+    });
+    navbarCollapse.addEventListener(Events.HIDDEN_BS_COLLAPSE, function () {
+      navbar.style.transition = 'none';
+    });
+  }
+};
+/* -------------------------------------------------------------------------- */
+
+/*                                 Navbar Top                                 */
+
+/* -------------------------------------------------------------------------- */
+
+
+var navbarTopDropShadow = function navbarTopDropShadow() {
+  var Selector = {
+    NAVBAR: '.navbar:not(.navbar-vertical)',
+    NAVBAR_VERTICAL: '.navbar-vertical',
+    NAVBAR_VERTICAL_CONTENT: '.navbar-vertical-content',
+    NAVBAR_VERTICAL_COLLAPSE: 'navbarVerticalCollapse'
+  };
+  var ClassNames = {
+    NAVBAR_GLASS_SHADOW: 'navbar-glass-shadow',
+    SHOW: 'show'
+  };
+  var Events = {
+    SCROLL: 'scroll',
     SHOW_BS_COLLAPSE: 'show.bs.collapse',
     HIDDEN_BS_COLLAPSE: 'hidden.bs.collapse'
   };
-  var $html = $(Selector.HTML);
-  var $navbar = $(Selector.NAVBAR);
-  var $navbarVerticalCollapse = $(Selector.NAVBAR_VERTICAL_COLLAPSE);
-  var $navbarVerticalContent = $(Selector.NAVBAR_VERTICAL_CONTENT);
-  var navbarVertical = $(Selector.NAVBAR_VERTICAL);
-  var breakPoint = utils.getBreakpoint(navbarVertical);
+  var navDropShadowFlag = true;
+  var $navbar = document.querySelector(Selector.NAVBAR);
+  var $navbarVertical = document.querySelector(Selector.NAVBAR_VERTICAL);
+  var $navbarVerticalContent = document.querySelector(Selector.NAVBAR_VERTICAL_CONTENT);
+  var $navbarVerticalCollapse = document.getElementById(Selector.NAVBAR_VERTICAL_COLLAPSE);
+  var html = document.documentElement;
+  var breakPoint = utils.getBreakpoint($navbarVertical);
 
   var setDropShadow = function setDropShadow($elem) {
-    if ($elem.scrollTop() > 0 && navDropShadowFlag) {
-      $navbar.addClass(ClassName.NAVBAR_GLASS_SHADOW);
+    if ($elem.scrollTop > 0 && navDropShadowFlag) {
+      $navbar && $navbar.classList.add(ClassNames.NAVBAR_GLASS_SHADOW);
     } else {
-      $navbar.removeClass(ClassName.NAVBAR_GLASS_SHADOW);
+      $navbar && $navbar.classList.remove(ClassNames.NAVBAR_GLASS_SHADOW);
     }
   };
 
-  $window.on(Events.LOAD_SCROLL, function () {
-    return setDropShadow($window);
+  window.addEventListener(Events.SCROLL, function () {
+    setDropShadow(html);
   });
-  $navbarVerticalContent.on('scroll', function () {
-    if ($window.width() < breakPoint) {
-      navDropShadowFlag = true;
-      setDropShadow($navbarVerticalContent);
-    }
-  });
-  $navbarVerticalCollapse.on(Events.SHOW_BS_COLLAPSE, function () {
-    if ($window.width() < breakPoint) {
-      navDropShadowFlag = false;
-      setDropShadow($window);
-    }
-  });
-  $navbarVerticalCollapse.on(Events.HIDDEN_BS_COLLAPSE, function () {
-    if ($navbarVerticalCollapse.hasClass(ClassName.SHOW) && $window.width() < breakPoint) {
-      navDropShadowFlag = false;
-    } else {
-      navDropShadowFlag = true;
-    }
 
-    setDropShadow($window);
-  }); // Expand or Collapse vertical navbar on mouse over and out
-
-  $navbarVerticalCollapse.hover(function (e) {
-    setTimeout(function () {
-      if ($(e.currentTarget).is(':hover')) {
-        $(Selector.NAVBAR_VERTICAL_COLLAPSED).addClass(ClassName.NAVBAR_VERTICAL_COLLAPSE_HOVER);
+  if ($navbarVerticalContent) {
+    $navbarVerticalContent.addEventListener(Events.SCROLL, function () {
+      if (window.outerWidth < breakPoint) {
+        navDropShadowFlag = true;
+        setDropShadow($navbarVerticalContent);
       }
-    }, 100);
-  }, function () {
-    $(Selector.NAVBAR_VERTICAL_COLLAPSED).removeClass(ClassName.NAVBAR_VERTICAL_COLLAPSE_HOVER);
-  }); // Set navbar top width from content
+    });
+  }
 
-  var setNavbarWidth = function setNavbarWidth() {
-    var contentWidth = $(Selector.MAIN_CONTENT).width() + 30;
-    $(Selector.NAVBAR_TOP).outerWidth(contentWidth);
-  }; // Toggle navbar vertical collapse on click
+  if ($navbarVerticalCollapse) {
+    $navbarVerticalCollapse.addEventListener(Events.SHOW_BS_COLLAPSE, function () {
+      if (window.outerWidth < breakPoint) {
+        navDropShadowFlag = false;
+        setDropShadow(html);
+      }
+    });
+  }
+
+  if ($navbarVerticalCollapse) {
+    $navbarVerticalCollapse.addEventListener(Events.HIDDEN_BS_COLLAPSE, function () {
+      if (utils.hasClass($navbarVerticalCollapse, ClassNames.SHOW) && window.outerWidth < breakPoint) {
+        navDropShadowFlag = false;
+      } else {
+        navDropShadowFlag = true;
+      }
+
+      setDropShadow(html);
+    });
+  }
+};
+/* -------------------------------------------------------------------------- */
+
+/*                               Navbar Vertical                              */
+
+/* -------------------------------------------------------------------------- */
 
 
-  utils.$document.on(Events.CLICK, Selector.NAVBAR_VERTICAL_TOGGLE, function (e) {
-    // Set collapse state on localStorage
-    var isNavbarVerticalCollapsed = JSON.parse(localStorage.getItem('isNavbarVerticalCollapsed'));
-    localStorage.setItem('isNavbarVerticalCollapsed', !isNavbarVerticalCollapsed); // Toggle class
-
-    $html.toggleClass(ClassName.NAVBAR_VERTICAL_COLLAPSED); // Set navbar top width
-
-    setNavbarWidth(); // Refresh Echarts
-
-    var $echarts = document.querySelectorAll(Selector.ECHART_RESPONSIVE);
-
-    if ($echarts.length) {
-      $.each($echarts, function (item, value) {
-        if ($(value).data('echart-responsive')) {
-          window.echarts.init(value).resize();
-        }
-      });
-    }
-
-    $(e.currentTarget).trigger('navbar.vertical.toggle');
-  }); // Set navbar top width on window resize
-
-  $window.on(Events.RESIZE, function () {
-    setNavbarWidth();
-  });
-});
-/*-----------------------------------------------
-|   Cookie Notice
------------------------------------------------*/
-
-utils.$document.ready(function () {
+var handleNavbarVerticalCollapsed = function handleNavbarVerticalCollapsed() {
   var Selector = {
-    NOTICE: '.notice',
-    DATA_TOGGLE_NOTICE: "[data-toggle='notice']"
-  };
-  var DataKeys = {
-    OPTIONS: 'options'
-  };
-  var CookieNames = {
-    COOKIE_NOTICE: 'cookieNotice'
+    HTML: 'html',
+    NAVBAR_VERTICAL_TOGGLE: '.navbar-vertical-toggle',
+    NAVBAR_VERTICAL_COLLAPSE: '.navbar-vertical .navbar-collapse',
+    ECHART_RESPONSIVE: '[data-echart-responsive]'
   };
   var Events = {
     CLICK: 'click',
-    HIDDEN_BS_TOAST: 'hidden.bs.toast'
+    MOUSE_OVER: 'mouseover',
+    MOUSE_LEAVE: 'mouseleave',
+    NAVBAR_VERTICAL_TOGGLE: 'navbar.vertical.toggle'
   };
-  var $notices = $(Selector.NOTICE);
-  var defaultOptions = {
-    autoShow: false,
-    autoShowDelay: 0,
-    showOnce: false,
-    cookieExpireTime: 3600000
+  var ClassNames = {
+    NAVBAR_VERTICAL_COLLAPSED: 'navbar-vertical-collapsed',
+    NAVBAR_VERTICAL_COLLAPSED_HOVER: 'navbar-vertical-collapsed-hover'
   };
-  $notices.each(function (index, value) {
-    var $this = $(value);
-    var options = $.extend(defaultOptions, $this.data(DataKeys.OPTIONS));
-    var cookieNotice;
+  var navbarVerticalToggle = document.querySelector(Selector.NAVBAR_VERTICAL_TOGGLE);
+  var html = document.querySelector(Selector.HTML);
+  var navbarVerticalCollapse = document.querySelector(Selector.NAVBAR_VERTICAL_COLLAPSE);
 
-    if (options.showOnce) {
-      cookieNotice = utils.getCookie(CookieNames.COOKIE_NOTICE);
-    }
+  if (navbarVerticalToggle) {
+    navbarVerticalToggle.addEventListener(Events.CLICK, function (e) {
+      navbarVerticalToggle.blur();
+      html.classList.toggle(ClassNames.NAVBAR_VERTICAL_COLLAPSED); // Set collapse state on localStorage
 
-    if (options.autoShow && cookieNotice === null) {
-      setTimeout(function () {
-        return $this.toast('show');
-      }, options.autoShowDelay);
-    }
-  });
-  $(Selector.NOTICE).on(Events.HIDDEN_BS_TOAST, function (e) {
-    var $this = $(e.currentTarget);
-    var options = $.extend(defaultOptions, $this.data(DataKeys.OPTIONS));
-    options.showOnce && utils.setCookie(CookieNames.COOKIE_NOTICE, false, options.cookieExpireTime);
-  });
-  utils.$document.on(Events.CLICK, Selector.DATA_TOGGLE_NOTICE, function (e) {
-    e.preventDefault();
-    var $this = $(e.currentTarget);
-    var $target = $($this.attr('href'));
-    $target.hasClass('show') ? $target.toast('hide') : $target.toast('show');
-  });
-});
-/*-----------------------------------------------
-|   Owl Carousel
------------------------------------------------*/
+      var isNavbarVerticalCollapsed = utils.getItemFromStore('isNavbarVerticalCollapsed');
+      utils.setItemToStore('isNavbarVerticalCollapsed', !isNavbarVerticalCollapsed);
+      var event = new CustomEvent(Events.NAVBAR_VERTICAL_TOGGLE);
+      e.currentTarget.dispatchEvent(event);
+    });
+  }
 
-var $carousel = $('.owl-carousel');
-utils.$document.ready(function () {
-  if ($carousel.length) {
-    var Selector = {
-      ALL_TIMELINE: '*[data-zanim-timeline]',
-      ACTIVE_ITEM: '.owl-item.active'
-    };
-    var owlZanim = {
-      zanimTimeline: function zanimTimeline($el) {
-        return $el.find(Selector.ALL_TIMELINE);
-      },
-      play: function play($el) {
-        if (this.zanimTimeline($el).length === 0) return;
-        $el.find(Selector.ACTIVE_ITEM + " > " + Selector.ALL_TIMELINE).zanimation(function (animation) {
-          animation.play();
-        });
-      },
-      kill: function kill($el) {
-        if (this.zanimTimeline($el).length === 0) return;
-        this.zanimTimeline($el).zanimation(function (animation) {
-          animation.kill();
-        });
+  if (navbarVerticalCollapse) {
+    navbarVerticalCollapse.addEventListener(Events.MOUSE_OVER, function () {
+      if (utils.hasClass(html, ClassNames.NAVBAR_VERTICAL_COLLAPSED)) {
+        html.classList.add(ClassNames.NAVBAR_VERTICAL_COLLAPSED_HOVER);
       }
-    };
-    $carousel.each(function (index, value) {
-      var $this = $(value);
-      var options = $this.data('options') || {};
-      utils.isRTL() && (options.rtl = true);
-      options.navText || (options.navText = ['<span class="fas fa-angle-left"></span>', '<span class="fas fa-angle-right"></span>']);
-      options.touchDrag = true;
-      $this.owlCarousel($.extend(options || {}, {
-        onInitialized: function onInitialized(event) {
-          owlZanim.play($(event.target));
-        },
-        onTranslate: function onTranslate(event) {
-          owlZanim.kill($(event.target));
-        },
-        onTranslated: function onTranslated(event) {
-          owlZanim.play($(event.target));
-        }
-      }));
+    });
+    navbarVerticalCollapse.addEventListener(Events.MOUSE_LEAVE, function () {
+      if (utils.hasClass(html, ClassNames.NAVBAR_VERTICAL_COLLAPSED_HOVER)) {
+        html.classList.remove(ClassNames.NAVBAR_VERTICAL_COLLAPSED_HOVER);
+      }
     });
   }
-
-  var $controllers = $('[data-owl-carousel-controller]');
-
-  if ($controllers.length) {
-    $controllers.each(function (index, value) {
-      var $this = $(value);
-      var $thumbs = $($this.data('owl-carousel-controller'));
-      $thumbs.find('.owl-item:first-child').addClass('current');
-      $thumbs.on('click', '.item', function (e) {
-        var thumbIndex = $(e.target).parents('.owl-item').index();
-        $('.owl-item').removeClass('current');
-        $(e.target).parents('.owl-item').addClass('current');
-        $this.trigger('to.owl.carousel', thumbIndex, 500);
-      });
-      $this.on('changed.owl.carousel', function (e) {
-        var itemIndex = e.item.index;
-        var item = itemIndex + 1;
-        $('.owl-item').removeClass('current');
-        $thumbs.find(".owl-item:nth-child(" + item + ")").addClass('current');
-        $thumbs.trigger('to.owl.carousel', itemIndex, 500);
-      });
-    });
-  } // Refresh owlCarousel
-
-
-  $('.navbar-vertical-toggle').on('navbar.vertical.toggle', function () {
-    $carousel.length && $carousel.owlCarousel('refresh');
-  });
-});
-/*-----------------------------------------------
-|   Perfect Scrollbar
------------------------------------------------*/
-
-utils.$document.ready(function () {
-  if (window.is.ie() || window.is.edge()) {
-    var scrollbars = document.querySelectorAll('.perfect-scrollbar');
-
-    if (scrollbars.length) {
-      $.each(scrollbars, function (item, value) {
-        var $this = $(value);
-        var userOptions = $this.data('options');
-        var options = $.extend({
-          wheelPropagation: true,
-          suppressScrollX: true,
-          suppressScrollY: false
-        }, userOptions);
-        var ps = new PerfectScrollbar(value, options);
-        ps.update();
-      });
-    }
-  }
-});
+};
 /*-----------------------------------------------
 |   Inline Player [plyr]
 -----------------------------------------------*/
 
-/*
-  global Plyr
-*/
 
-utils.$document.ready(function () {
-  var $players = $('.player');
-
-  if ($players.length) {
-    $players.each(function (index, value) {
-      return new Plyr($(value), {
+var plyrInit = function plyrInit() {
+  if (window.Plyr) {
+    var plyrs = document.querySelectorAll('.player');
+    plyrs.forEach(function (plyr) {
+      var userOptions = utils.getData(plyr, 'options');
+      var defaultOptions = {
         captions: {
           active: true
         }
-      });
+      };
+
+      var options = window._.merge(defaultOptions, userOptions);
+
+      return new window.Plyr(plyr, options);
     });
   }
+};
+/* -------------------------------------------------------------------------- */
 
-  return false;
-});
+/*                                   Popover                                  */
+
+/* -------------------------------------------------------------------------- */
+
+
+var popoverInit = function popoverInit() {
+  var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
+  popoverTriggerList.map(function (popoverTriggerEl) {
+    return new window.bootstrap.Popover(popoverTriggerEl);
+  });
+};
+/* -------------------------------------------------------------------------- */
+
+/*                         Bootstrap Animated Progress                        */
+
+/* -------------------------------------------------------------------------- */
+
+
+var progressAnimationToggle = function progressAnimationToggle() {
+  var animatedProgress = document.querySelectorAll('[data-progress-animation]');
+  animatedProgress.forEach(function (progress) {
+    progress.addEventListener('click', function (e) {
+      var progressID = utils.getData(e.currentTarget, 'progressAnimation');
+      var $progress = document.getElementById(progressID);
+      $progress.classList.toggle('progress-bar-animated');
+    });
+  });
+};
+/* -------------------------------------------------------------------------- */
+
+/*                               Progressbar JS                               */
+
+/* -------------------------------------------------------------------------- */
+
 /*
- global ProgressBar
+  global ProgressBar
 */
 
-utils.$document.ready(function () {
+
+var progressBar = function progressBar() {
   var merge = window._.merge; // progressbar.js@1.0.0 version is used
   // Docs: http://progressbarjs.readthedocs.org/en/1.0.0/
 
@@ -4945,53 +3787,49 @@ utils.$document.ready(function () {
   |   Progress Circle
   -----------------------------------------------*/
 
-  var progresCircle = $('.progress-circle');
+  var progresCircle = document.querySelectorAll('.progress-circle');
 
   if (progresCircle.length) {
-    progresCircle.each(function (index, value) {
-      var $this = $(value);
-      var userOptions = $this.data('options');
-      var defaultOptions = {
-        strokeWidth: 2,
-        trailWidth: 2,
-        trailColor: utils.grays['200'],
-        easing: 'easeInOut',
-        duration: 3000,
-        svgStyle: {
-          'stroke-linecap': 'round',
-          display: 'block',
-          width: '100%'
-        },
-        text: {
-          autoStyleContainer: false
-        },
-        // Set default step function for all animate calls
-        step: function step(state, circle) {
-          // Change stroke color during progress
-          // circle.path.setAttribute('stroke', state.color);
-          // Change stroke width during progress
-          // circle.path.setAttribute('stroke-width', state.width);
-          var percentage = Math.round(circle.value() * 100);
-          circle.setText("<span class='value'>" + percentage + "<b>%</b></span> <span>" + (userOptions.text || '') + "</span>");
-        }
-      }; // Assign default color for IE
+    progresCircle.forEach(function (item) {
+      var userOptions = utils.getData(item, 'options');
 
-      var color = userOptions.color && userOptions.color.includes('url');
+      var getDefaultOptions = function getDefaultOptions() {
+        return {
+          strokeWidth: 2,
+          trailWidth: 2,
+          trailColor: utils.getGrays()['200'],
+          color: utils.getGrays()['400'],
+          easing: 'easeInOut',
+          duration: 3000,
+          svgStyle: {
+            'stroke-linecap': 'round',
+            display: 'block',
+            width: '100%'
+          },
+          text: {
+            autoStyleContainer: false
+          },
+          // Set default step function for all animate calls
+          step: function step(state, circle) {
+            // Change stroke color during progress
+            // circle.path.setAttribute('stroke', state.color);
+            // Change stroke width during progress
+            // circle.path.setAttribute('stroke-width', state.width);
+            var percentage = Math.round(circle.value() * 100);
+            circle.setText("<span class='value'>".concat(percentage, "<b>%</b></span> <span>").concat(userOptions.text || '', "</span>"));
+          }
+        };
+      };
 
-      if (window.is.ie() && color) {
-        userOptions.color = utils.colors.primary;
-      }
-
-      var options = merge(defaultOptions, userOptions);
-      var bar = new ProgressBar.Circle(value, options);
-      var linearGradient = "<defs>\n          <linearGradient id=\"gradient\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"0%\" gradientUnits=\"userSpaceOnUse\">\n            <stop offset=\"0%\" stop-color='#1970e2' />\n            <stop offset=\"100%\" stop-color='#4695ff' />\n          </linearGradient>\n        </defs>"; // Disable gradient color in IE
-
-      !window.is.ie() && bar.svg.insertAdjacentHTML('beforeEnd', linearGradient);
+      var options = merge(getDefaultOptions(), userOptions);
+      var bar = new ProgressBar.Circle(item, options);
+      var linearGradient = "<defs>\n        <linearGradient id=\"gradient\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"0%\" gradientUnits=\"userSpaceOnUse\">\n          <stop offset=\"0%\" stop-color='#1970e2' />\n          <stop offset=\"100%\" stop-color='#4695ff' />\n        </linearGradient>\n      </defs>";
+      bar.svg.insertAdjacentHTML('beforeEnd', linearGradient);
       var playProgressTriggered = false;
 
       var progressCircleAnimation = function progressCircleAnimation() {
         if (!playProgressTriggered) {
-          if (utils.isScrolledIntoView(value) || utils.nua.match(/puppeteer/i)) {
+          if (utils.isScrolledIntoView(item).partial) {
             bar.animate(options.progress / 100);
             playProgressTriggered = true;
           }
@@ -5001,83 +3839,33 @@ utils.$document.ready(function () {
       };
 
       progressCircleAnimation();
-      utils.$window.scroll(function () {
+      window.addEventListener('scroll', function () {
         progressCircleAnimation();
       });
-    });
-  }
-  /*-----------------------------------------------
-  |   Progress Line
-  -----------------------------------------------*/
+      document.body.addEventListener('clickControl', function (_ref11) {
+        var control = _ref11.detail.control;
 
+        if (control === 'theme') {
+          bar.trail.setAttribute('stroke', utils.getGrays()['200']);
 
-  var progressLine = $('.progress-line');
-
-  if (progressLine.length) {
-    progressLine.each(function (index, value) {
-      var $this = $(value);
-      var options = $this.data('options');
-      var bar = new ProgressBar.Line(value, {
-        strokeWidth: 1,
-        easing: 'easeInOut',
-        duration: 3000,
-        color: '#333',
-        trailColor: '#eee',
-        trailWidth: 1,
-        svgStyle: {
-          width: '100%',
-          height: '0.25rem',
-          'stroke-linecap': 'round',
-          'border-radius': '0.125rem'
-        },
-        text: {
-          style: {
-            transform: null
-          },
-          autoStyleContainer: false
-        },
-        from: {
-          color: '#aaa'
-        },
-        to: {
-          color: '#111'
-        },
-        step: function step(state, line) {
-          line.setText("<span class='value'>" + Math.round(line.value() * 100) + "<b>%</b></span> <span>" + options.text + "</span>");
-        }
-      });
-      var playProgressTriggered = false;
-
-      var progressLineAnimation = function progressLineAnimation() {
-        if (!playProgressTriggered) {
-          if (utils.isScrolledIntoView(value) || utils.nua.match(/puppeteer/i)) {
-            bar.animate(options.progress / 100);
-            playProgressTriggered = true;
+          if (!bar.path.getAttribute('stroke').includes('url')) {
+            bar.path.setAttribute('stroke', utils.getGrays()['400']);
           }
         }
-
-        return playProgressTriggered;
-      };
-
-      progressLineAnimation();
-      utils.$window.scroll(function () {
-        progressLineAnimation();
       });
     });
   }
-});
+};
 /*-----------------------------------------------
-|   Increment/Decrement Input Fields
+|  Quantity
 -----------------------------------------------*/
 
-utils.$document.ready(function () {
+
+var quantityInit = function quantityInit() {
   var Selector = {
-    DATA_FIELD: '[data-field]',
-    INPUT_GROUP: '.input-group'
-  };
-  var DATA_KEY = {
-    FIELD: 'field',
-    TYPE: 'type'
+    DATA_QUANTITY_BTN: '[data-quantity] [data-type]',
+    DATA_QUANTITY: '[data-quantity]',
+    DATA_QUANTITY_INPUT: '[data-quantity] input[type="number"]'
   };
   var Events = {
     CLICK: 'click'
@@ -5085,360 +3873,570 @@ utils.$document.ready(function () {
   var Attributes = {
     MIN: 'min'
   };
-  utils.$document.on(Events.CLICK, Selector.DATA_FIELD, function (e) {
-    var $this = $(e.target);
-    var inputField = $this.data(DATA_KEY.FIELD);
-    var $inputField = $this.parents(Selector.INPUT_GROUP).children("." + inputField);
-    var $btnType = $this.data(DATA_KEY.TYPE);
-    var value = parseInt($inputField.val(), 10);
-    var min = $inputField.attr(Attributes.MIN);
-    if (min) min = parseInt(min, 10);else min = 0;
+  var DataKey = {
+    TYPE: 'type'
+  };
+  var quantities = document.querySelectorAll(Selector.DATA_QUANTITY_BTN);
+  quantities.forEach(function (quantity) {
+    quantity.addEventListener(Events.CLICK, function (e) {
+      var el = e.currentTarget;
+      var type = utils.getData(el, DataKey.TYPE);
+      var numberInput = el.closest(Selector.DATA_QUANTITY).querySelector(Selector.DATA_QUANTITY_INPUT);
+      var min = numberInput.getAttribute(Attributes.MIN);
+      var value = parseInt(numberInput.value, 10);
 
-    if ($btnType === 'plus') {
-      value += 1;
-    } else if (value > min) value -= 1;
+      if (type === 'plus') {
+        value += 1;
+      } else {
+        value = value > min ? value -= 1 : value;
+      }
 
-    $inputField.val(value);
-  });
-});
-/*-----------------------------------------------
-|   Raty
------------------------------------------------*/
-
-utils.$document.ready(function () {
-  var ratings = $('.raty');
-
-  if (ratings.length) {
-    ratings.each(function (index, value) {
-      var $this = $(value);
-      var options = $.extend({
-        starHalf: 'star-half-png text-warning',
-        starOff: 'star-off-png text-300',
-        starOn: 'star-on-png text-warning',
-        starType: 'span',
-        size: 30
-      }, $this.data('options'));
-      $(value).raty(options);
+      numberInput.value = value;
     });
-  }
-});
+  });
+};
 /* -------------------------------------------------------------------------- */
 
-/*                             Autocomplete Search                            */
+/*                               Ratings                               */
 
 /* -------------------------------------------------------------------------- */
 
-utils.$document.ready(function () {
+
+var ratingInit = function ratingInit() {
+  var raters = document.querySelectorAll('[data-rater]');
+  raters.forEach(function (rater) {
+    var options = _objectSpread({
+      reverse: utils.getItemFromStore('isRTL'),
+      starSize: 32,
+      step: 0.5,
+      element: rater,
+      rateCallback: function rateCallback(rating, done) {
+        this.setRating(rating);
+        done();
+      }
+    }, utils.getData(rater, 'rater'));
+
+    return window.raterJs(options);
+  });
+};
+/* -------------------------------------------------------------------------- */
+
+/*                                Scroll To Top                               */
+
+/* -------------------------------------------------------------------------- */
+
+
+var scrollToTop = function scrollToTop() {
+  document.querySelectorAll('[data-anchor] > a, [data-scroll-to]').forEach(function (anchor) {
+    anchor.addEventListener('click', function (e) {
+      var _utils$getData2;
+
+      e.preventDefault();
+      var el = e.target;
+      var id = utils.getData(el, 'scroll-to') || el.getAttribute('href');
+      window.scroll({
+        top: (_utils$getData2 = utils.getData(el, 'offset-top')) !== null && _utils$getData2 !== void 0 ? _utils$getData2 : utils.getOffset(document.querySelector(id)).top - 100,
+        left: 0,
+        behavior: 'smooth'
+      });
+      window.location.hash = id;
+    });
+  });
+};
+/* -------------------------------------------------------------------------- */
+
+/*                                 Scrollbars                                 */
+
+/* -------------------------------------------------------------------------- */
+
+
+var scrollbarInit = function scrollbarInit() {
+  Array.prototype.forEach.call(document.querySelectorAll('.scrollbar-overlay'), function (el) {
+    return new window.OverlayScrollbars(el, {
+      scrollbars: {
+        autoHide: 'leave',
+        autoHideDelay: 200
+      }
+    });
+  });
+};
+
+var searchInit = function searchInit() {
   var Selectors = {
-    DROPDOWN: '.dropdown',
-    SEARCH_DISMISS: '[data-dismiss="search"]',
-    DROPDOWN_TOGGLE: '[data-toggle="dropdown"]',
+    SEARCH_DISMISS: '[data-bs-dismiss="search"]',
+    DROPDOWN_TOGGLE: '[data-bs-toggle="dropdown"]',
+    DROPDOWN_MENU: '.dropdown-menu',
     SEARCH_BOX: '.search-box',
     SEARCH_INPUT: '.search-input',
-    SEARCH_TOGGLE: '[data-toggle="search"]'
+    SEARCH_TOGGLE: '[data-bs-toggle="search"]'
+  };
+  var ClassName = {
+    SHOW: 'show'
+  };
+  var Attribute = {
+    ARIA_EXPANDED: 'aria-expanded'
   };
   var Events = {
     CLICK: 'click',
     FOCUS: 'focus',
-    SHOW_BS_DROPDOWN: 'show.bs.dropdown'
+    SHOW_BS_DROPDOWN: 'show.bs.dropdown',
+    SEARCH_CLOSE: 'search.close'
   };
-  var $searchAreas = $(Selectors.SEARCH_BOX);
 
   var hideSearchSuggestion = function hideSearchSuggestion(searchArea) {
     var el = searchArea.querySelector(Selectors.SEARCH_TOGGLE);
-    var dropdown = $(el).dropdown();
-    dropdown == null ? void 0 : dropdown.dropdown('hide');
+    var dropdownMenu = searchArea.querySelector(Selectors.DROPDOWN_MENU);
+    el.setAttribute(Attribute.ARIA_EXPANDED, 'false');
+    el.classList.remove(ClassName.SHOW);
+    dropdownMenu.classList.remove(ClassName.SHOW);
   };
+
+  var searchAreas = document.querySelectorAll(Selectors.SEARCH_BOX);
 
   var hideAllSearchAreas = function hideAllSearchAreas() {
-    $searchAreas.each(function (index, value) {
-      return hideSearchSuggestion(value);
-    });
+    searchAreas.forEach(hideSearchSuggestion);
   };
 
-  $searchAreas.each(function (index, value) {
-    var input = value.querySelector(Selectors.SEARCH_INPUT);
-    var btnDropdownClose = value.querySelector(Selectors.SEARCH_DISMISS);
-    input.addEventListener(Events.FOCUS, function () {
-      hideAllSearchAreas();
-      var el = value.querySelector(Selectors.SEARCH_TOGGLE);
-      var dropdown = $(el).dropdown();
-      dropdown.dropdown('show');
-    });
-    document.addEventListener(Events.CLICK, function (_ref) {
-      var target = _ref.target;
-      !value.contains(target) && hideSearchSuggestion(value);
-    });
-    btnDropdownClose && btnDropdownClose.addEventListener(Events.CLICK, function () {
-      hideSearchSuggestion(value);
-      input.value = '';
-    });
-  });
-  $(Selectors.DROPDOWN).on(Events.SHOW_BS_DROPDOWN, function () {
-    return hideAllSearchAreas();
-  });
-});
-/*-----------------------------------------------
-|   Select2
------------------------------------------------*/
+  searchAreas.forEach(function (searchArea) {
+    var input = searchArea.querySelector(Selectors.SEARCH_INPUT);
+    var btnDropdownClose = searchArea.querySelector(Selectors.SEARCH_DISMISS);
+    var dropdownMenu = searchArea.querySelector(Selectors.DROPDOWN_MENU);
 
-utils.$document.ready(function () {
-  var select2 = $('.selectpicker');
-  select2.length && select2.each(function (index, value) {
-    var $this = $(value);
-    var options = $.extend({
-      theme: 'bootstrap4'
-    }, $this.data('options'));
-    $this.select2(options);
-  });
-});
-/*
-  global Stickyfill
-*/
-
-/*-----------------------------------------------
-|   Sticky fill
------------------------------------------------*/
-
-utils.$document.ready(function () {
-  Stickyfill.add($('.sticky-top'));
-  Stickyfill.add($('.sticky-bottom'));
-});
-/*-----------------------------------------------
-|   Sticky Kit
------------------------------------------------*/
-
-utils.$document.ready(function () {
-  if (window.is.ie()) {
-    var stickyKits = $('.sticky-kit');
-
-    if (stickyKits.length) {
-      stickyKits.each(function (index, value) {
-        var $this = $(value);
-
-        var options = _objectSpread({}, $this.data('options'));
-
-        $this.stick_in_parent(options);
+    if (input) {
+      input.addEventListener(Events.FOCUS, function () {
+        hideAllSearchAreas();
+        var el = searchArea.querySelector(Selectors.SEARCH_TOGGLE);
+        el.setAttribute(Attribute.ARIA_EXPANDED, 'true');
+        el.classList.add(ClassName.SHOW);
+        dropdownMenu.classList.add(ClassName.SHOW);
       });
     }
-  }
-});
-/*-----------------------------------------------
-|   Tabs
------------------------------------------------*/
 
-utils.$document.ready(function () {
-  var $fancyTabs = $('.fancy-tab');
-
-  if ($fancyTabs.length) {
-    var Selector = {
-      TAB_BAR: '.nav-bar',
-      TAB_BAR_ITEM: '.nav-bar-item',
-      TAB_CONTENTS: '.tab-contents'
-    };
-    var ClassName = {
-      ACTIVE: 'active',
-      TRANSITION_REVERSE: 'transition-reverse',
-      TAB_INDICATOR: 'tab-indicator'
-    };
-    /*-----------------------------------------------
-    |   Function for active tab indicator change
-    -----------------------------------------------*/
-
-    var updateIncicator = function updateIncicator($indicator, $tabs, $tabnavCurrentItem) {
-      var _$tabnavCurrentItem$p = $tabnavCurrentItem.position(),
-          left = _$tabnavCurrentItem$p.left;
-
-      var right = $tabs.children(Selector.TAB_BAR).outerWidth() - (left + $tabnavCurrentItem.outerWidth());
-      $indicator.css({
-        left: left,
-        right: right
-      });
-    };
-
-    $fancyTabs.each(function (index, value) {
-      var $tabs = $(value);
-      var $navBar = $tabs.children(Selector.TAB_BAR);
-      var $tabnavCurrentItem = $navBar.children(Selector.TAB_BAR_ITEM + "." + ClassName.ACTIVE);
-      $navBar.append("\n        <div class=" + ClassName.TAB_INDICATOR + "></div>\n      ");
-      var $indicator = $navBar.children("." + ClassName.TAB_INDICATOR);
-      var $preIndex = $tabnavCurrentItem.index();
-      updateIncicator($indicator, $tabs, $tabnavCurrentItem);
-      $navBar.children(Selector.TAB_BAR_ITEM).click(function (e) {
-        $tabnavCurrentItem = $(e.currentTarget);
-        var $currentIndex = $tabnavCurrentItem.index();
-        var $tabContent = $tabs.children(Selector.TAB_CONTENTS).children().eq($currentIndex);
-        $tabnavCurrentItem.siblings().removeClass(ClassName.ACTIVE);
-        $tabnavCurrentItem.addClass(ClassName.ACTIVE);
-        $tabContent.siblings().removeClass(ClassName.ACTIVE);
-        $tabContent.addClass(ClassName.ACTIVE);
-        /*-----------------------------------------------
-        |   Indicator Transition
-        -----------------------------------------------*/
-
-        updateIncicator($indicator, $tabs, $tabnavCurrentItem);
-
-        if ($currentIndex - $preIndex <= 0) {
-          $indicator.addClass(ClassName.TRANSITION_REVERSE);
-        } else {
-          $indicator.removeClass(ClassName.TRANSITION_REVERSE);
-        }
-
-        $preIndex = $currentIndex;
-      });
-      utils.$window.on('resize', function () {
-        updateIncicator($indicator, $tabs, $tabnavCurrentItem);
-      });
+    document.addEventListener(Events.CLICK, function (_ref12) {
+      var target = _ref12.target;
+      !searchArea.contains(target) && hideSearchSuggestion(searchArea);
     });
-  }
-  /*-----------------------------------------------
-  |   Product Review Tab
-  -----------------------------------------------*/
-
-
-  var $review = $('[data-tab-target]');
-  $review.click(function (e) {
-    var $this = $(e.currentTarget);
-    var $reviewTab = $($this.data('tab-target'));
-    $reviewTab.trigger('click');
+    btnDropdownClose && btnDropdownClose.addEventListener(Events.CLICK, function (e) {
+      hideSearchSuggestion(searchArea);
+      input.value = '';
+      var event = new CustomEvent(Events.SEARCH_CLOSE);
+      e.currentTarget.dispatchEvent(event);
+    });
   });
-});
-/*-----------------------------------------------
-|   TINYMCE
------------------------------------------------*/
-
-utils.$document.ready(function () {
-  var tinymces = $('.tinymce');
-
-  if (tinymces.length) {
-    window.tinymce.init({
-      selector: '.tinymce',
-      height: '50vh',
-      menubar: false,
-      skin: utils.settings.tinymce.theme,
-      content_style: ".mce-content-body { color: " + utils.grays.black + " }",
-      mobile: {
-        theme: 'mobile',
-        toolbar: ['undo', 'bold']
-      },
-      statusbar: false,
-      plugins: 'link,image,lists,table,media',
-      toolbar: 'styleselect | bold italic link bullist numlist image blockquote table media undo redo'
+  document.querySelectorAll(Selectors.DROPDOWN_TOGGLE).forEach(function (dropdown) {
+    dropdown.addEventListener(Events.SHOW_BS_DROPDOWN, function () {
+      hideAllSearchAreas();
     });
-  }
-});
+  });
+};
+/* -------------------------------------------------------------------------- */
+
+/*                               Settings Panel                               */
+
+/* -------------------------------------------------------------------------- */
+
+
+var settingsPanelInit = function settingsPanelInit() {
+  var modals = document.querySelectorAll('.modal-theme');
+  var showModal = true;
+  modals.forEach(function (item) {
+    var modal = new window.bootstrap.Modal(item);
+
+    var options = _objectSpread({
+      autoShow: false,
+      autoShowDelay: 0,
+      showOnce: false
+    }, utils.getData(item, 'options'));
+
+    var showOnce = options.showOnce,
+        autoShow = options.autoShow,
+        autoShowDelay = options.autoShowDelay;
+
+    if (showOnce) {
+      var hasModal = utils.getCookie('modal');
+      showModal = hasModal === null;
+    }
+
+    if (autoShow && showModal) {
+      setTimeout(function () {
+        modal.show();
+      }, autoShowDelay);
+    }
+
+    item.addEventListener('hidden.bs.modal', function (e) {
+      var el = e.currentTarget;
+
+      var modalOptions = _objectSpread({
+        cookieExpireTime: 7200000,
+        showOnce: false
+      }, utils.getData(el, 'options'));
+
+      modalOptions.showOnce && utils.setCookie('modal', false, modalOptions.cookieExpireTime);
+    });
+  });
+};
 /*-----------------------------------------------
-|   Toast [bootstrap 4]
+|  Swiper
 -----------------------------------------------*/
 
-utils.$document.ready(function () {
-  return $('.toast').toast();
-});
-/*-----------------------------------------------
-|   Toastr
------------------------------------------------*/
 
-utils.$document.ready(function () {
-  var $notifications = $('[data-notification]');
-  $notifications.each(function (index, value) {
-    var _window3 = window,
-        toastr = _window3.toastr;
-    var $this = $(value);
-    var config = $this.data('notification');
-    var defaultOptions = {
-      closeButton: true,
-      newestOnTop: false,
-      positionClass: 'toast-bottom-right'
-    };
-    $this.on('click', function () {
-      var type = config.type,
-          title = config.title,
-          message = config.message;
-      var mergedOptions = $.extend(defaultOptions, config);
-      toastr.options.positionClass !== mergedOptions.positionClass && toastr.remove();
-      toastr.options = mergedOptions;
+var swiperInit = function swiperInit() {
+  var swipers = document.querySelectorAll('[data-swiper]');
+  var navbarVerticalToggle = document.querySelector('.navbar-vertical-toggle');
+  swipers.forEach(function (swiper) {
+    var options = utils.getData(swiper, 'swiper');
+    var thumbsOptions = options.thumb;
+    var thumbsInit;
 
-      switch (type) {
-        case 'success':
-          toastr.success(message, title);
-          break;
+    if (thumbsOptions) {
+      var thumbImages = swiper.querySelectorAll('img');
+      var slides = '';
+      thumbImages.forEach(function (img) {
+        slides += "\n          <div class='swiper-slide '>\n            <img class='img-fluid rounded mt-1' src=".concat(img.src, " alt=''/>\n          </div>\n        ");
+      });
+      var thumbs = document.createElement('div');
+      thumbs.setAttribute('class', 'swiper-container thumb');
+      thumbs.innerHTML = "<div class='swiper-wrapper'>".concat(slides, "</div>");
 
-        case 'warning':
-          toastr.warning(message, title);
-          break;
+      if (thumbsOptions.parent) {
+        var parent = document.querySelector(thumbsOptions.parent);
+        parent.parentNode.appendChild(thumbs);
+      } else {
+        swiper.parentNode.appendChild(thumbs);
+      }
 
-        case 'error':
-          toastr.error(message, title);
-          break;
+      thumbsInit = new window.Swiper(thumbs, thumbsOptions);
+    }
+
+    var swiperNav = swiper.querySelector('.swiper-nav');
+    var newSwiper = new window.Swiper(swiper, _objectSpread(_objectSpread({}, options), {}, {
+      navigation: {
+        nextEl: swiperNav === null || swiperNav === void 0 ? void 0 : swiperNav.querySelector('.swiper-button-next'),
+        prevEl: swiperNav === null || swiperNav === void 0 ? void 0 : swiperNav.querySelector('.swiper-button-prev')
+      },
+      thumbs: {
+        swiper: thumbsInit
+      }
+    }));
+
+    if (navbarVerticalToggle) {
+      navbarVerticalToggle.addEventListener('navbar.vertical.toggle', function () {
+        newSwiper.update();
+      });
+    }
+  });
+};
+/* -------------------------------------------------------------------------- */
+
+/*                                Theme Control                               */
+
+/* -------------------------------------------------------------------------- */
+
+/* eslint-disable no-param-reassign */
+
+
+var initialDomSetup = function initialDomSetup(element) {
+  if (!element) return;
+  var dataUrlDom = element.querySelector('[data-theme-control = "navbarPosition"]');
+  var hasDataUrl = dataUrlDom ? getData(dataUrlDom, 'page-url') : null;
+  element.querySelectorAll('[data-theme-control]').forEach(function (el) {
+    var inputDataAttributeValue = getData(el, 'theme-control');
+    var localStorageValue = getItemFromStore(inputDataAttributeValue);
+
+    if (inputDataAttributeValue === 'navbarStyle' && !hasDataUrl && getItemFromStore('navbarPosition') === 'top') {
+      el.setAttribute('disabled', true);
+    }
+
+    if (el.type === 'checkbox') {
+      if (inputDataAttributeValue === 'theme') {
+        localStorageValue === 'dark' && el.setAttribute('checked', true);
+      } else {
+        localStorageValue && el.setAttribute('checked', true);
+      }
+    } else {
+      var isChecked = localStorageValue === el.value;
+      isChecked && el.setAttribute('checked', true);
+    }
+  });
+};
+
+var changeTheme = function changeTheme(element) {
+  element.querySelectorAll('[data-theme-control = "theme"]').forEach(function (el) {
+    var inputDataAttributeValue = getData(el, 'theme-control');
+    var localStorageValue = getItemFromStore(inputDataAttributeValue);
+
+    if (el.type === 'checkbox') {
+      localStorageValue === 'dark' ? el.checked = true : el.checked = false;
+    } else {
+      localStorageValue === el.value ? el.checked = true : el.checked = false;
+    }
+  });
+};
+
+var themeControl = function themeControl() {
+  var themeController = new DomNode(document.body);
+  var navbarVertical = document.querySelector('.navbar-vertical');
+  initialDomSetup(themeController.node);
+  themeController.on('click', function (e) {
+    var target = new DomNode(e.target);
+
+    if (target.data('theme-control')) {
+      var control = target.data('theme-control');
+      var value = e.target[e.target.type === 'radio' ? 'value' : 'checked'];
+
+      if (control === 'theme') {
+        typeof value === 'boolean' && (value = value ? 'dark' : 'light');
+      }
+
+      setItemToStore(control, value);
+
+      switch (control) {
+        case 'theme':
+          {
+            document.documentElement.classList[value === 'dark' ? 'add' : 'remove']('dark');
+            var clickControl = new CustomEvent('clickControl', {
+              detail: {
+                control: control,
+                value: value
+              }
+            });
+            e.currentTarget.dispatchEvent(clickControl);
+            changeTheme(themeController.node);
+            break;
+          }
+
+        case 'navbarStyle':
+          {
+            navbarVertical.classList.remove('navbar-card');
+            navbarVertical.classList.remove('navbar-inverted');
+            navbarVertical.classList.remove('navbar-vibrant');
+
+            if (value !== 'transparent') {
+              navbarVertical.classList.add("navbar-".concat(value));
+            }
+
+            break;
+          }
+
+        case 'navbarPosition':
+          {
+            var pageUrl = getData(target.node, 'page-url');
+            pageUrl ? window.location.replace(pageUrl) : window.location.reload();
+            break;
+          }
 
         default:
-          toastr.info(message, title);
-          break;
+          window.location.reload();
+      }
+    }
+  });
+};
+/* -------------------------------------------------------------------------- */
+
+/*                                   Tinymce                                  */
+
+/* -------------------------------------------------------------------------- */
+
+
+var tinymceInit = function tinymceInit() {
+  if (window.tinymce) {
+    var tinymces = document.querySelectorAll('.tinymce');
+
+    if (tinymces.length) {
+      window.tinymce.init({
+        selector: '.tinymce',
+        height: '50vh',
+        menubar: false,
+        skin: utils.settings.tinymce.theme,
+        content_style: ".mce-content-body { color: ".concat(utils.getGrays().black, " }"),
+        mobile: {
+          theme: 'mobile',
+          toolbar: ['undo', 'bold']
+        },
+        statusbar: false,
+        plugins: 'link,image,lists,table,media',
+        toolbar: 'styleselect | bold italic link bullist numlist image blockquote table media undo redo',
+        directionality: utils.getItemFromStore('isRTL') ? 'rtl' : 'ltr',
+        theme_advanced_toolbar_align: 'center'
+      });
+    }
+
+    var themeController = document.body;
+    themeController && themeController.addEventListener('clickControl', function (_ref13) {
+      var control = _ref13.detail.control;
+
+      if (control === 'theme') {
+        window.tinyMCE.editors.forEach(function (el) {
+          el.dom.addStyle(".mce-content-body{color: ".concat(utils.getGrays().black, " !important;}"));
+        });
       }
     });
+  }
+};
+/* -------------------------------------------------------------------------- */
+
+/*                                    Toast                                   */
+
+/* -------------------------------------------------------------------------- */
+
+
+var toastInit = function toastInit() {
+  var toastElList = [].slice.call(document.querySelectorAll('.toast'));
+  toastElList.map(function (toastEl) {
+    return new window.bootstrap.Toast(toastEl);
   });
-});
-/*-----------------------------------------------
-|   Tootltip [bootstrap 4]
------------------------------------------------*/
+  var liveToastBtn = document.getElementById('liveToastBtn');
 
-utils.$document.ready(function () {
-  // https://getbootstrap.com/docs/4.0/components/tooltips/#example-enable-tooltips-everywhere
-  $('[data-toggle="tooltip"]').tooltip();
-  $('[data-toggle="popover"]').popover();
-});
-/*-----------------------------------------------
-|   Typed Text
------------------------------------------------*/
+  if (liveToastBtn) {
+    var liveToast = new window.bootstrap.Toast(document.getElementById('liveToast'));
+    liveToastBtn.addEventListener('click', function () {
+      liveToast && liveToast.show();
+    });
+  }
+};
+/* -------------------------------------------------------------------------- */
 
-/*
-  global Typed
- */
+/*                                   Tooltip                                  */
 
-utils.$document.ready(function () {
-  var typedText = $('.typed-text');
+/* -------------------------------------------------------------------------- */
 
-  if (typedText.length) {
-    typedText.each(function (index, value) {
-      return new Typed(value, {
-        strings: $(value).data('typed-text'),
+
+var tooltipInit = function tooltipInit() {
+  var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+  tooltipTriggerList.map(function (tooltipTriggerEl) {
+    return new window.bootstrap.Tooltip(tooltipTriggerEl, {
+      trigger: 'hover'
+    });
+  });
+};
+/* -------------------------------------------------------------------------- */
+
+/*                                 Typed Text                                 */
+
+/* -------------------------------------------------------------------------- */
+
+
+var typedTextInit = function typedTextInit() {
+  var typedTexts = document.querySelectorAll('.typed-text');
+
+  if (typedTexts.length && window.Typed) {
+    typedTexts.forEach(function (typedText) {
+      return new window.Typed(typedText, {
+        strings: utils.getData(typedText, 'typedText'),
         typeSpeed: 100,
         loop: true,
         backDelay: 1500
       });
     });
   }
-});
-/*-----------------------------------------------
-|   YTPlayer
------------------------------------------------*/
+};
+/* -------------------------------------------------------------------------- */
 
-utils.$document.ready(function () {
-  var Selector = {
-    BG_YOUTUBE: '.bg-youtube',
-    BG_HOLDER: '.bg-holder'
-  };
-  var DATA_KEY = {
-    PROPERTY: 'property'
-  };
-  var $youtubeBackground = $(Selector.BG_YOUTUBE);
+/*                                 step wizard                                */
 
-  if ($youtubeBackground.length) {
-    $youtubeBackground.each(function (index, value) {
-      var $this = $(value);
-      $this.data(DATA_KEY.PROPERTY, $.extend($this.data(DATA_KEY.PROPERTY), {
-        showControls: false,
-        loop: true,
-        autoPlay: true,
-        mute: true,
-        containment: $this.parent(Selector.BG_HOLDER)
-      }));
-      $this.YTPlayer();
+/* -------------------------------------------------------------------------- */
+
+
+var wizardInit = function wizardInit() {
+  var wizards = document.querySelectorAll('.theme-wizard');
+  var tabPillEl = document.querySelectorAll('#pill-tab2 [data-bs-toggle="pill"]');
+  var tabProgressBar = document.querySelector('.theme-wizard .progress');
+  wizards.forEach(function (wizard) {
+    var tabToggleButtonEl = wizard.querySelectorAll('[data-wizard-step]');
+    var inputEmail = wizard.querySelector('[data-wizard-validate-email]');
+    var emailPattern = inputEmail.getAttribute('pattern');
+    var inputPassword = wizard.querySelector('[data-wizard-validate-password]');
+    var inputConfirmPassword = wizard.querySelector('[data-wizard-validate-confirm-password]');
+    var form = wizard.querySelector('[novalidate]');
+    var nextButton = wizard.querySelector('.next button');
+    var prevButton = wizard.querySelector('.previous button');
+    var cardFooter = wizard.querySelector('.theme-wizard .card-footer');
+    var count = 0;
+
+    var validatePattern = function validatePattern(pattern, value) {
+      var regexPattern = new RegExp(pattern);
+      return regexPattern.test(String(value).toLowerCase());
+    };
+
+    prevButton.classList.add('d-none'); // on button click tab change
+
+    nextButton.addEventListener('click', function () {
+      if ((!(inputEmail.value && validatePattern(emailPattern, inputEmail.value)) || !inputPassword.value || !inputConfirmPassword.value) && form.className.includes('needs-validation')) {
+        form.classList.add('was-validated');
+      } else {
+        count += 1;
+        var tab = new window.bootstrap.Tab(tabToggleButtonEl[count]);
+        tab.show();
+      }
+    });
+    prevButton.addEventListener('click', function () {
+      count -= 1;
+      var tab = new window.bootstrap.Tab(tabToggleButtonEl[count]);
+      tab.show();
+    });
+
+    if (tabToggleButtonEl.length) {
+      tabToggleButtonEl.forEach(function (item, index) {
+        /* eslint-disable */
+        item.addEventListener('show.bs.tab', function (e) {
+          if ((!(inputEmail.value && validatePattern(emailPattern, inputEmail.value)) || !inputPassword.value || !inputConfirmPassword.value) && form.className.includes('needs-validation')) {
+            e.preventDefault();
+            form.classList.add('was-validated');
+            return null;
+            /* eslint-enable */
+          }
+
+          count = index; // can't go back tab
+
+          if (count === tabToggleButtonEl.length - 1) {
+            tabToggleButtonEl.forEach(function (tab) {
+              tab.setAttribute('data-bs-toggle', 'modal');
+              tab.setAttribute('data-bs-target', '#error-modal');
+            });
+          } //add done class
+
+
+          for (var i = 0; i < count; i += 1) {
+            tabToggleButtonEl[i].classList.add('done');
+          } //remove done class
+
+
+          for (var j = count; j < tabToggleButtonEl.length; j += 1) {
+            tabToggleButtonEl[j].classList.remove('done');
+          } // card footer remove at last step
+
+
+          if (count > tabToggleButtonEl.length - 2) {
+            item.classList.add('done');
+            cardFooter.classList.add('d-none');
+          } else {
+            cardFooter.classList.remove('d-none');
+          } // prev-button removing
+
+
+          if (count > 0) {
+            prevButton.classList.remove('d-none');
+          } else {
+            prevButton.classList.add('d-none');
+          }
+        });
+      });
+    }
+  }); // control wizard progressbar
+
+  if (tabPillEl.length) {
+    var dividedProgressbar = 100 / tabPillEl.length;
+    tabProgressBar.querySelector('.progress-bar').style.width = "".concat(dividedProgressbar, "%");
+    tabPillEl.forEach(function (item, index) {
+      item.addEventListener('show.bs.tab', function () {
+        tabProgressBar.querySelector('.progress-bar').style.width = "".concat(dividedProgressbar * (index + 1), "%");
+      });
     });
   }
-});
-var _window4 = window,
-    dayjs = _window4.dayjs;
+};
+
+var _window3 = window,
+    dayjs = _window3.dayjs;
 var currentDay = dayjs && dayjs().format('DD');
 var currentMonth = dayjs && dayjs().format('MM');
 var prevMonth = dayjs && dayjs().subtract(1, 'month').format('MM');
@@ -5446,78 +4444,78 @@ var nextMonth = dayjs && dayjs().add(1, 'month').format('MM');
 var currentYear = dayjs && dayjs().format('YYYY');
 var events = [{
   title: 'Boot Camp',
-  start: currentYear + "-" + currentMonth + "-01 10:00:00",
-  end: currentYear + "-" + currentMonth + "-03 16:00:00",
+  start: "".concat(currentYear, "-").concat(currentMonth, "-01 10:00:00"),
+  end: "".concat(currentYear, "-").concat(currentMonth, "-03 16:00:00"),
   description: "Boston Harbor Now in partnership with the Friends of Christopher Columbus Park, the Wharf District Council and the City of Boston is proud to announce the New Year's Eve Midnight Harbor Fireworks! This beloved nearly 40-year old tradition is made possible by the generous support of local waterfront organizations and businesses and the support of the City of Boston and the Office of Mayor Marty Walsh.",
   className: 'bg-soft-success',
   location: 'Boston Harborwalk, Christopher Columbus Park, </br> Boston, MA 02109, United States',
   organizer: 'Boston Harbor Now'
 }, {
   title: 'Crain\'s New York Business ',
-  start: currentYear + "-" + currentMonth + "-11",
+  start: "".concat(currentYear, "-").concat(currentMonth, "-11"),
   description: "Crain's 2020 Hall of Fame. Sponsored Content By Crain's Content Studio. Crain's Content Studio Presents: New Jersey: Perfect for Business. Crain's Business Forum: Letitia James, New York State Attorney General. Crain's NYC Summit: Examining racial disparities during the pandemic",
   className: 'bg-soft-primary'
 }, {
   title: 'Conference',
-  start: currentYear + "-" + currentMonth + "-" + currentDay,
+  start: "".concat(currentYear, "-").concat(currentMonth, "-").concat(currentDay),
   description: 'The Milken Institute Global Conference gathered the best minds in the world to tackle some of its most stubborn challenges. It was a unique experience in which individuals with the power to enact change connected with experts who are reinventing health, technology, philanthropy, industry, and media.',
   className: 'bg-soft-success',
   allDay: true,
   schedules: [{
     title: 'Reporting',
-    start: currentYear + "-" + currentMonth + "-" + currentDay + " 11:00:00",
+    start: "".concat(currentYear, "-").concat(currentMonth, "-").concat(currentDay, " 11:00:00"),
     description: 'Time to start the conference and will briefly describe all information about the event.  ',
     className: 'event-bg-soft-success'
   }, {
     title: 'Lunch',
-    start: currentYear + "-" + currentMonth + "-" + currentDay + " 14:00:00",
+    start: "".concat(currentYear, "-").concat(currentMonth, "-").concat(currentDay, " 14:00:00"),
     description: 'Lunch facility for all the attendance in the conference.',
     className: 'event-bg-soft-success'
   }, {
     title: 'Contest',
-    start: currentYear + "-" + currentMonth + "-" + currentDay + " 16:00:00",
+    start: "".concat(currentYear, "-").concat(currentMonth, "-").concat(currentDay, " 16:00:00"),
     description: 'The starting of the programming contest',
     className: 'event-bg-soft-success'
   }, {
     title: 'Dinner',
-    start: currentYear + "-" + currentMonth + "-" + currentDay + " 22:00:00",
+    start: "".concat(currentYear, "-").concat(currentMonth, "-").concat(currentDay, " 22:00:00"),
     description: 'Dinner facility for all the attendance in the conference',
     className: 'event-bg-soft-success'
   }]
 }, {
-  title: "ICT Expo " + currentYear + " - Product Release",
-  start: currentYear + "-" + currentMonth + "-16 10:00:00",
-  description: "ICT Expo " + currentYear + " is the largest private-sector exposition aimed at showcasing IT and ITES products and services in Switzerland.",
-  end: currentYear + "-" + currentMonth + "-18 16:00:00",
+  title: "ICT Expo ".concat(currentYear, " - Product Release"),
+  start: "".concat(currentYear, "-").concat(currentMonth, "-16 10:00:00"),
+  description: "ICT Expo ".concat(currentYear, " is the largest private-sector exposition aimed at showcasing IT and ITES products and services in Switzerland."),
+  end: "".concat(currentYear, "-").concat(currentMonth, "-18 16:00:00"),
   className: 'bg-soft-warning'
 }, {
   title: 'Meeting',
-  start: currentYear + "-" + currentMonth + "-07 10:00:00",
+  start: "".concat(currentYear, "-").concat(currentMonth, "-07 10:00:00"),
   description: 'Discuss about the upcoming projects in current year and assign all tasks to the individuals'
 }, {
   title: 'Contest',
-  start: currentYear + "-" + currentMonth + "-14 10:00:00",
+  start: "".concat(currentYear, "-").concat(currentMonth, "-14 10:00:00"),
   description: 'PeaceX is an international peace and amity organisation that aims at casting a pall at the striking issues surmounting the development of peoples and is committed to impacting the lives of young people all over the world.'
 }, {
   title: 'Event With Url',
-  start: currentYear + "-" + currentMonth + "-23",
+  start: "".concat(currentYear, "-").concat(currentMonth, "-23"),
   description: 'Sample example of a event with url. Click the event, will redirect to the given link.',
   className: 'bg-soft-success',
   url: 'http://google.com'
 }, {
   title: 'Competition',
-  start: currentYear + "-" + currentMonth + "-26",
+  start: "".concat(currentYear, "-").concat(currentMonth, "-26"),
   description: 'The Future of Zambia – Top 30 Under 30 is an annual award, ranking scheme, and recognition platform for young Zambian achievers under the age of 30, who are building brands, creating jobs, changing the game, and transforming the country.',
   className: 'bg-soft-danger'
 }, {
   title: 'Birthday Party',
-  start: currentYear + "-" + nextMonth + "-05",
+  start: "".concat(currentYear, "-").concat(nextMonth, "-05"),
   description: 'Will celebrate birthday party with my friends and family',
   className: 'bg-soft-primary'
 }, {
   title: 'Click for Google',
   url: 'http://google.com/',
-  start: currentYear + "-" + prevMonth + "-10",
+  start: "".concat(currentYear, "-").concat(prevMonth, "-10"),
   description: 'Applications are open for the New Media Writing Prize 2020. The New Media Writing Prize (NMWP) showcases exciting and inventive stories and poetry that integrate a variety of formats, platforms, and digital media.',
   className: 'bg-soft-primary'
 }];
@@ -5525,29 +4523,29 @@ var events = [{
 |   Calendar
 -----------------------------------------------*/
 
-utils.$document.ready(function () {
+var appCalendarInit = function appCalendarInit() {
   var Selectors = {
-    ADD_EVENT_FORM: '#addEventForm',
-    ADD_EVENT_MODAL: '#addEvent',
     ACTIVE: '.active',
-    CALENDAR: 'appCalendar',
+    ADD_EVENT_FORM: '#addEventForm',
+    ADD_EVENT_MODAL: '#addEventModal',
+    CALENDAR: '#appCalendar',
     CALENDAR_TITLE: '.calendar-title',
-    NAVBAR_VERTICAL_TOGGLE: '.navbar-vertical-toggle',
-    EVENT_DETAILS_MODAL: '#eventDetails',
-    EVENT_DETAILS_MODAL_CONTENT: '#eventDetails .modal-content',
-    DATA_EVENT: '[data-event]',
     DATA_CALENDAR_VIEW: '[data-fc-view]',
+    DATA_EVENT: '[data-event]',
     DATA_VIEW_TITLE: '[data-view-title]',
+    EVENT_DETAILS_MODAL: '#eventDetailsModal',
+    EVENT_DETAILS_MODAL_CONTENT: '#eventDetailsModal .modal-content',
+    EVENT_START_DATE: '#addEventModal [name="startDate"]',
     INPUT_TITLE: '[name="title"]'
   };
   var Events = {
     CLICK: 'click',
-    NAVBAR_VERTICAL_TOGGLE: 'navbar.vertical.toggle',
     SHOWN_BS_MODAL: 'shown.bs.modal',
     SUBMIT: 'submit'
   };
   var DataKeys = {
-    EVENT: 'event'
+    EVENT: 'event',
+    FC_VIEW: 'fc-view'
   };
   var ClassNames = {
     ACTIVE: 'active'
@@ -5557,13 +4555,16 @@ utils.$document.ready(function () {
   }, []);
 
   var updateTitle = function updateTitle(title) {
-    return $(Selectors.CALENDAR_TITLE).text(title);
+    document.querySelector(Selectors.CALENDAR_TITLE).textContent = title;
   };
 
-  var calendarEl = document.getElementById(Selectors.CALENDAR);
+  var appCalendar = document.querySelector(Selectors.CALENDAR);
+  var addEventForm = document.querySelector(Selectors.ADD_EVENT_FORM);
+  var addEventModal = document.querySelector(Selectors.ADD_EVENT_MODAL);
+  var eventDetailsModal = document.querySelector(Selectors.EVENT_DETAILS_MODAL);
 
-  if (calendarEl) {
-    var calendar = renderCalendar(calendarEl, {
+  if (appCalendar) {
+    var calendar = renderCalendar(appCalendar, {
       headerToolbar: false,
       dayMaxEvents: 2,
       height: 800,
@@ -5585,58 +4586,64 @@ utils.$document.ready(function () {
           window.open(info.event.url, '_blank');
           info.jsEvent.preventDefault();
         } else {
-          var template = getTemplate(info);
-          $(Selectors.EVENT_DETAILS_MODAL_CONTENT).html(template);
-          $(Selectors.EVENT_DETAILS_MODAL).modal('show');
+          var template = getTemplate(info.event);
+          document.querySelector(Selectors.EVENT_DETAILS_MODAL_CONTENT).innerHTML = template;
+          var modal = new window.bootstrap.Modal(eventDetailsModal);
+          modal.show();
         }
       },
       dateClick: function dateClick(info) {
-        $(Selectors.ADD_EVENT_MODAL).modal('show');
-        /* eslint-disable-next-line */
+        var modal = new window.bootstrap.Modal(addEventModal);
+        modal.show();
+        /*eslint-disable-next-line*/
 
-        var flatpickr = document.querySelector("#addEvent [name='startDate']")._flatpickr;
+        var flatpickr = document.querySelector(Selectors.EVENT_START_DATE)._flatpickr;
 
         flatpickr.setDate([info.dateStr]);
       }
     });
     updateTitle(calendar.currentData.viewTitle);
-    $(document).on(Events.CLICK, Selectors.DATA_EVENT, function (_ref2) {
-      var currentTarget = _ref2.currentTarget;
-      var type = $(currentTarget).data(DataKeys.EVENT);
+    document.querySelectorAll(Selectors.DATA_EVENT).forEach(function (button) {
+      button.addEventListener(Events.CLICK, function (e) {
+        var el = e.currentTarget;
+        var type = utils.getData(el, DataKeys.EVENT);
 
-      switch (type) {
-        case 'prev':
-          calendar.prev();
-          updateTitle(calendar.currentData.viewTitle);
-          break;
+        switch (type) {
+          case 'prev':
+            calendar.prev();
+            updateTitle(calendar.currentData.viewTitle);
+            break;
 
-        case 'next':
-          calendar.next();
-          updateTitle(calendar.currentData.viewTitle);
-          break;
+          case 'next':
+            calendar.next();
+            updateTitle(calendar.currentData.viewTitle);
+            break;
 
-        case 'today':
-          calendar.today();
-          updateTitle(calendar.currentData.viewTitle);
-          break;
+          case 'today':
+            calendar.today();
+            updateTitle(calendar.currentData.viewTitle);
+            break;
 
-        default:
-          calendar.today();
-          updateTitle(calendar.currentData.viewTitle);
-          break;
-      }
+          default:
+            calendar.today();
+            updateTitle(calendar.currentData.viewTitle);
+            break;
+        }
+      });
     });
-    $(document).on('click', Selectors.DATA_CALENDAR_VIEW, function (e) {
-      e.preventDefault();
-      var el = $(e.currentTarget);
-      var text = el.text();
-      el.parent().find('.active').removeClass(ClassNames.ACTIVE);
-      el.addClass('active');
-      $(Selectors.DATA_VIEW_TITLE).text(text);
-      calendar.changeView(el.data('fc-view'));
-      updateTitle(calendar.currentData.viewTitle);
+    document.querySelectorAll(Selectors.DATA_CALENDAR_VIEW).forEach(function (link) {
+      link.addEventListener(Events.CLICK, function (e) {
+        e.preventDefault();
+        var el = e.currentTarget;
+        var text = el.textContent;
+        el.parentElement.querySelector(Selectors.ACTIVE).classList.remove(ClassNames.ACTIVE);
+        el.classList.add(ClassNames.ACTIVE);
+        document.querySelector(Selectors.DATA_VIEW_TITLE).textContent = text;
+        calendar.changeView(utils.getData(el, DataKeys.FC_VIEW));
+        updateTitle(calendar.currentData.viewTitle);
+      });
     });
-    document.querySelector(Selectors.ADD_EVENT_FORM).addEventListener(Events.SUBMIT, function (e) {
+    addEventForm && addEventForm.addEventListener(Events.SUBMIT, function (e) {
       e.preventDefault();
       var _e$target = e.target,
           title = _e$target.title,
@@ -5650,26 +4657,5907 @@ utils.$document.ready(function () {
         start: startDate.value,
         end: endDate.value ? endDate.value : null,
         allDay: allDay.checked,
-        className: allDay.checked && label.value ? "bg-soft-" + label.value : '',
+        className: allDay.checked && label.value ? "bg-soft-".concat(label.value) : '',
         description: description.value
       });
       e.target.reset();
-      $(Selectors.ADD_EVENT_MODAL).modal('hide');
+      window.bootstrap.Modal.getInstance(addEventModal).hide();
     });
   }
 
-  $(Selectors.ADD_EVENT_MODAL).on(Events.SHOWN_BS_MODAL, function (_ref3) {
-    var currentTarget = _ref3.currentTarget;
+  addEventModal && addEventModal.addEventListener(Events.SHOWN_BS_MODAL, function (_ref14) {
+    var currentTarget = _ref14.currentTarget;
     currentTarget.querySelector(Selectors.INPUT_TITLE).focus();
   });
-});
+};
+/*-----------------------------------------------
+|   Project Management Calendar
+-----------------------------------------------*/
+
+
+var managementCalendarInit = function managementCalendarInit() {
+  var Selectors = {
+    ADD_EVENT_FORM: '#addEventForm',
+    ADD_EVENT_MODAL: '#addEventModal',
+    CALENDAR: '#managementAppCalendar',
+    EVENT_DETAILS_MODAL: '#eventDetailsModal',
+    EVENT_DETAILS_MODAL_CONTENT: '#eventDetailsModal .modal-content',
+    DATA_EVENT: '[data-event]',
+    DATA_VIEW_TITLE: '[data-view-title]',
+    EVENT_START_DATE: '#addEventModal [name="startDate"]',
+    EVENT_MANAGEMENT_INFO: '[data-calendar-events]'
+  };
+  var Events = {
+    CLICK: 'click',
+    SUBMIT: 'submit'
+  };
+  var managementEventList = [];
+  var DataKeys = {
+    EVENT: 'event'
+  };
+  var managementCalendar = document.querySelector(Selectors.CALENDAR);
+
+  if (managementCalendar) {
+    var calendarData = utils.getData(managementCalendar, 'calendar-option');
+    var managementCalendarEvents = document.getElementById(calendarData === null || calendarData === void 0 ? void 0 : calendarData.events);
+    var addEventForm = document.querySelector(Selectors.ADD_EVENT_FORM);
+    var addEventModal = document.querySelector(Selectors.ADD_EVENT_MODAL);
+    var eventDetailsModal = document.querySelector(Selectors.EVENT_DETAILS_MODAL);
+
+    var updateTitle = function updateTitle(title) {
+      var selectTitle = document.getElementById(calendarData === null || calendarData === void 0 ? void 0 : calendarData.title);
+
+      if (selectTitle) {
+        selectTitle.textContent = title;
+      }
+    };
+
+    var updateDay = function updateDay(day) {
+      var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      var selectDay = document.getElementById(calendarData === null || calendarData === void 0 ? void 0 : calendarData.day);
+
+      if (selectDay) {
+        selectDay.textContent = days[day];
+      }
+    };
+
+    if (managementEvents) {
+      managementEvents.forEach(function (e) {
+        managementEventList.push({
+          start: e.start,
+          end: e.end,
+          display: 'background',
+          classNames: "border border-2 border-".concat(e.classNames, " bg-100")
+        });
+      });
+    }
+
+    if (managementCalendarEvents) {
+      managementEvents.forEach(function (e) {
+        managementCalendarEvents.innerHTML += "\n          <li class= 'border-top pt-3 mb-3 pb-1 cursor-pointer' data-calendar-events>\n            <div class= 'border-start border-3 border-".concat(e.classNames, " ps-3 mt-1'>\n              <h6 class=\"mb-1 fw-semi-bold text-700\">").concat(e.title, "</h6>\n              <p class= 'fs--2 text-600 mb-0'>").concat(e.startTime || '', " ").concat(e.endTime ? '-' : '', " ").concat(e.endTime || '', "</p>\n            </div>\n          </li> ");
+      });
+    }
+
+    var eventManagementInfo = document.querySelectorAll(Selectors.EVENT_MANAGEMENT_INFO);
+
+    if (eventManagementInfo) {
+      eventManagementInfo.forEach(function (li, index) {
+        li.addEventListener(Events.CLICK, function () {
+          var event = managementEvents[index];
+          var template = getTemplate(event);
+          document.querySelector(Selectors.EVENT_DETAILS_MODAL_CONTENT).innerHTML = template;
+          var modal = new window.bootstrap.Modal(eventDetailsModal);
+          modal.show();
+        });
+      });
+    }
+
+    if (managementCalendar) {
+      var calendar = renderCalendar(managementCalendar, {
+        headerToolbar: false,
+        dayMaxEvents: 2,
+        height: 360,
+        stickyHeaderDates: false,
+        dateClick: function dateClick(info) {
+          var modal = new window.bootstrap.Modal(addEventModal);
+          modal.show();
+          /*eslint-disable-next-line*/
+
+          var flatpickr = document.querySelector(Selectors.EVENT_START_DATE)._flatpickr;
+
+          flatpickr.setDate([info.dateStr]);
+        },
+        events: managementEventList
+      });
+      updateTitle(calendar.currentData.viewTitle);
+      updateDay(calendar.currentData.currentDate.getDay());
+      document.querySelectorAll(Selectors.DATA_EVENT).forEach(function (button) {
+        button.addEventListener(Events.CLICK, function (e) {
+          var el = e.currentTarget;
+          var type = utils.getData(el, DataKeys.EVENT);
+
+          switch (type) {
+            case 'prev':
+              calendar.prev();
+              updateTitle(calendar.currentData.viewTitle);
+              break;
+
+            case 'next':
+              calendar.next();
+              updateTitle(calendar.currentData.viewTitle);
+              break;
+
+            case 'today':
+              calendar.today();
+              updateTitle(calendar.currentData.viewTitle);
+              break;
+
+            default:
+              calendar.today();
+              updateTitle(calendar.currentData.viewTitle);
+              break;
+          }
+        });
+      });
+
+      if (addEventForm) {
+        addEventForm.addEventListener(Events.SUBMIT, function (e) {
+          e.preventDefault();
+          e.target.reset();
+          window.bootstrap.Modal.getInstance(addEventModal).hide();
+        });
+      }
+    }
+  }
+};
+
+var thisDay = window.dayjs && window.dayjs().format('DD');
+var plus2Day = window.dayjs && window.dayjs().add(2, 'day').format('DD');
+var thisMonthNumber = window.dayjs && window.dayjs().format('MM');
+var thisMonthName = window.dayjs && window.dayjs().format('MMM');
+var upcomingMonthNumber = window.dayjs && window.dayjs().add(1, 'month').format('MM');
+var upcomingMonthName = window.dayjs && window.dayjs().format('MMM');
+var thisYear = window.dayjs && window.dayjs().format('YYYY');
+var managementEvents = [{
+  title: 'Monthly team meeting for Falcon React Project',
+  start: "".concat(thisYear, "-").concat(thisMonthNumber, "-07"),
+  end: "".concat(thisYear, "-").concat(thisMonthNumber, "-09"),
+  startTime: "07 ".concat(thisMonthName, ", ").concat(thisYear),
+  endTime: "10 ".concat(thisMonthName, ", ").concat(thisYear),
+  classNames: 'primary',
+  extendedProps: {
+    description: 'Boston Harbor Now in partnership with the Friends of Christopher Columbus Park, the Wharf District Council.',
+    location: 'Boston Harborwalk, Christopher Columbus Park, </br> Boston, MA 02109, United States',
+    organizer: 'Boston Harbor Now'
+  }
+}, {
+  title: 'Newmarket Nights',
+  start: "".concat(thisYear, "-").concat(thisMonthNumber, "-16"),
+  end: "".concat(thisYear, "-").concat(thisMonthNumber, "-18"),
+  startTime: "16 ".concat(thisMonthName, ", ").concat(thisYear),
+  classNames: 'success',
+  extendedProps: {
+    description: 'Boston Harbor Now in partnership with the Friends of Christopher Columbus Park, the Wharf District Council.',
+    location: 'Boston Harborwalk, Christopher Columbus Park, </br> Boston, MA 02109, United States',
+    organizer: 'Boston Harbor Now'
+  }
+}, {
+  title: 'Folk Festival',
+  start: "".concat(thisYear, "-").concat(thisMonthNumber, "-25"),
+  end: "".concat(thisYear, "-").concat(thisMonthNumber, "-28"),
+  startTime: "07 ".concat(thisMonthName, ", ").concat(thisYear),
+  endTime: "10 ".concat(thisMonthName, ", ").concat(thisYear),
+  classNames: 'warning',
+  extendedProps: {
+    description: 'Boston Harbor Now in partnership with the Friends of Christopher Columbus Park, the Wharf District Council.',
+    location: 'Boston Harborwalk, Christopher Columbus Park, </br> Boston, MA 02109, United States',
+    organizer: 'Boston Harbor Now'
+  }
+}, {
+  title: 'Film Festival',
+  start: "".concat(thisYear, "-").concat(upcomingMonthNumber, "-").concat(thisDay),
+  end: "".concat(thisYear, "-").concat(upcomingMonthNumber, "-").concat(plus2Day),
+  startTime: "07 ".concat(upcomingMonthName, ", ").concat(thisYear),
+  endTime: "10 ".concat(upcomingMonthName, ", ").concat(thisYear),
+  classNames: 'danger',
+  extendedProps: {
+    description: 'Boston Harbor Now in partnership with the Friends of Christopher Columbus Park, the Wharf District Council.',
+    location: 'Boston Harborwalk, Christopher Columbus Park, </br> Boston, MA 02109, United States',
+    organizer: 'Boston Harbor Now'
+  }
+}, {
+  title: 'Meeting',
+  start: "".concat(thisYear, "-").concat(upcomingMonthNumber, "-28"),
+  startTime: "07 ".concat(upcomingMonthName, ", ").concat(thisYear),
+  classNames: 'warning',
+  extendedProps: {
+    description: 'Boston Harbor Now in partnership with the Friends of Christopher Columbus Park, the Wharf District Council.',
+    location: 'Boston Harborwalk, Christopher Columbus Park, </br> Boston, MA 02109, United States',
+    organizer: 'Boston Harbor Now'
+  }
+}];
 
 var getStackIcon = function getStackIcon(icon, transform) {
-  return "\n      <span class=\"fa-stack ml-n1 mr-3\">\n        <i class=\"fas fa-circle fa-stack-2x text-200\"></i>\n        <i class=\"" + icon + " fa-stack-1x text-primary\" data-fa-transform=" + transform + "></i>\n      </span>\n    ";
+  return "\n  <span class=\"fa-stack ms-n1 me-3\">\n    <i class=\"fas fa-circle fa-stack-2x text-200\"></i>\n    <i class=\"".concat(icon, " fa-stack-1x text-primary\" data-fa-transform=").concat(transform, "></i>\n  </span>\n");
 };
 
-var getTemplate = function getTemplate(info) {
-  return "\n  <div class=\"modal-header px-card bg-light border-0 flex-between-center\">\n    <div>\n      <h5 class=\"mb-0\">" + info.event.title + "</h5>\n      " + (info.event.extendedProps.organizer ? "<p class=\"mb-0 fs--1 mt-1\">\n          by <a href=\"#!\">" + info.event.extendedProps.organizer + "</a>\n        </p>" : '') + "\n    </div>\n    \n    <button class=\"close fs-0 px-card\" data-dismiss=\"modal\" aria-label=\"Close\">\n      <span class=\"fas fa-times\"></span>\n    </button>\n  </div>\n  <div class=\"modal-body px-card pb-card pt-1 fs--1\">\n    " + (info.event.extendedProps.description ? "\n        <div class=\"media mt-3\">\n          " + getStackIcon('fas fa-align-left') + "\n          <div class=\"media-body\">\n            <h6>Description</h6>\n            <p class=\"mb-0\">\n              \n            " + info.event.extendedProps.description.split(' ').slice(0, 30).join(' ') + "\n            </p>\n          </div>\n        </div>\n      " : '') + " \n    <div class=\"media mt-3\">\n      " + getStackIcon('fas fa-calendar-check') + "\n      <div class=\"media-body\">\n          <h6>Date and Time</h6>\n          <p class=\"mb-1\">\n            " + (window.dayjs && window.dayjs(info.event.start).format('dddd, MMMM D, YYYY, h:mm A')) + " \n            " + (info.event.end ? "\u2013 <br/>" + (window.dayjs && window.dayjs(info.event.end).subtract(1, 'day').format('dddd, MMMM D, YYYY, h:mm A')) : '') + "\n          </p>\n      </div>\n    </div>\n    " + (info.event.extendedProps.location ? "\n          <div class=\"media mt-3\">\n            " + getStackIcon('fas fa-map-marker-alt') + "\n            <div class=\"media-body\">\n                <h6>Location</h6>\n                <div class=\"mb-1\">" + info.event.extendedProps.location + "</div>\n            </div>\n          </div>\n        " : '') + "\n    " + (info.event.extendedProps.schedules ? "\n          <div class=\"media mt-3\">\n          " + getStackIcon('fas fa-clock') + "\n          <div class=\"media-body\">\n              <h6>Schedule</h6>\n              \n              <ul class=\"list-unstyled timeline mb-0\">\n                " + info.event.extendedProps.schedules.map(function (schedule) {
-    return "<li>" + schedule.title + "</li>";
-  }).join('') + "\n              </ul>\n          </div>\n        " : '') + "\n    </div>\n  </div>\n  <div class=\"modal-footer d-flex justify-content-end bg-light px-card border-top-0\">\n    <a href=\"pages/event-create.html\" class=\"btn btn-falcon-default btn-sm\">\n      <span class=\"fas fa-pencil-alt fs--2 mr-2\"></span> Edit\n    </a>\n    <a href='pages/event-detail.html' class=\"btn btn-falcon-primary btn-sm\">\n      See more details\n      <span class=\"fas fa-angle-right fs--2 ml-1\"></span>\n    </a>\n  </div\n  ";
+var getTemplate = function getTemplate(event) {
+  return "\n<div class=\"modal-header bg-light ps-card pe-5 border-bottom-0\">\n  <div>\n    <h5 class=\"modal-title mb-0\">".concat(event.title, "</h5>\n    ").concat(event.extendedProps.organizer ? "<p class=\"mb-0 fs--1 mt-1\">\n        by <a href=\"#!\">".concat(event.extendedProps.organizer, "</a>\n      </p>") : '', "\n  </div>\n  <button type=\"button\" class=\"btn-close position-absolute end-0 top-0 mt-3 me-3\" data-bs-dismiss=\"modal\" aria-label=\"Close\"></button>\n</div>\n<div class=\"modal-body px-card pb-card pt-1 fs--1\">\n  ").concat(event.extendedProps.description ? "\n      <div class=\"d-flex mt-3\">\n        ".concat(getStackIcon('fas fa-align-left'), "\n        <div class=\"flex-1\">\n          <h6>Description</h6>\n          <p class=\"mb-0\">\n            \n          ").concat(event.extendedProps.description.split(' ').slice(0, 30).join(' '), "\n          </p>\n        </div>\n      </div>\n    ") : '', " \n  <div class=\"d-flex mt-3\">\n    ").concat(getStackIcon('fas fa-calendar-check'), "\n    <div class=\"flex-1\">\n        <h6>Date and Time</h6>\n        <p class=\"mb-1\">\n          ").concat(window.dayjs && window.dayjs(event.start).format('dddd, MMMM D, YYYY, h:mm A'), " \n          ").concat(event.end ? "\u2013 <br/>".concat(window.dayjs && window.dayjs(event.end).subtract(1, 'day').format('dddd, MMMM D, YYYY, h:mm A')) : '', "\n        </p>\n    </div>\n  </div>\n  ").concat(event.extendedProps.location ? "\n        <div class=\"d-flex mt-3\">\n          ".concat(getStackIcon('fas fa-map-marker-alt'), "\n          <div class=\"flex-1\">\n              <h6>Location</h6>\n              <p class=\"mb-0\">").concat(event.extendedProps.location, "</p>\n          </div>\n        </div>\n      ") : '', "\n  ").concat(event.schedules ? "\n        <div class=\"d-flex mt-3\">\n        ".concat(getStackIcon('fas fa-clock'), "\n        <div class=\"flex-1\">\n            <h6>Schedule</h6>\n            \n            <ul class=\"list-unstyled timeline mb-0\">\n              ").concat(event.schedules.map(function (schedule) {
+    return "<li>".concat(schedule.title, "</li>");
+  }).join(''), "\n            </ul>\n        </div>\n      ") : '', "\n  </div>\n</div>\n<div class=\"modal-footer d-flex justify-content-end bg-light px-card border-top-0\">\n  <a href=\"").concat(document.location.href.split('/').slice(0, 5).join('/'), "/app/events/create-an-event.html\" class=\"btn btn-falcon-default btn-sm\">\n    <span class=\"fas fa-pencil-alt fs--2 mr-2\"></span> Edit\n  </a>\n  <a href='").concat(document.location.href.split('/').slice(0, 5).join('/'), "/app/events/event-detail.html' class=\"btn btn-falcon-primary btn-sm\">\n    See more details\n    <span class=\"fas fa-angle-right fs--2 ml-1\"></span>\n  </a>\n</div>\n");
 };
+/* -------------------------------------------------------------------------- */
+
+/*                                  bar-chart                                 */
+
+/* -------------------------------------------------------------------------- */
+
+
+var barChartInit = function barChartInit() {
+  var barChartElement = document.getElementById('chartjs-bar-chart');
+
+  var getOptions = function getOptions() {
+    return {
+      type: 'bar',
+      data: {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+        datasets: [{
+          label: '# of Votes',
+          data: [12, 19, 3, 5, 6, 3],
+          backgroundColor: [utils.rgbaColor(utils.getColor('secondary'), 0.2), utils.rgbaColor(utils.getColor('warning'), 0.2), utils.rgbaColor(utils.getColor('info'), 0.2), utils.rgbaColor(utils.getColor('success'), 0.2), utils.rgbaColor(utils.getColor('info'), 0.2), utils.rgbaColor(utils.getColor('primary'), 0.2)],
+          borderColor: [utils.getColor('secondary'), utils.getColor('warning'), utils.getColor('info'), utils.getColor('success'), utils.getColor('info'), utils.getColor('primary')],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        plugins: {
+          tooltip: chartJsDefaultTooltip()
+        },
+        scales: {
+          x: {
+            grid: {
+              color: utils.rgbaColor(utils.getGrays().black, 0.1)
+            }
+          },
+          y: {
+            grid: {
+              color: utils.rgbaColor(utils.getGrays().black, 0.1),
+              drawBorder: true
+            }
+          }
+        }
+      }
+    };
+  };
+
+  chartJsInit(barChartElement, getOptions);
+};
+/* eslint-disable */
+
+/* -------------------------------------------------------------------------- */
+
+/*                            Chart Bubble                                    */
+
+/* -------------------------------------------------------------------------- */
+
+
+var chartBubble = function chartBubble() {
+  var pie = document.getElementById('chartjs-bubble-chart');
+
+  var getOptions = function getOptions() {
+    return {
+      type: 'bubble',
+      data: {
+        datasets: [{
+          label: 'Dataset 1',
+          data: getBubbleDataset(5, 5, 15, 0, 100),
+          backgroundColor: utils.getSoftColors()['primary'],
+          hoverBackgroundColor: utils.getColors()['primary']
+        }, {
+          label: 'Dataset 2',
+          data: getBubbleDataset(5, 5, 15, 0, 100),
+          backgroundColor: utils.getSoftColors()['success'],
+          hoverBackgroundColor: utils.getColors()['success']
+        }, {
+          label: 'Dataset 3',
+          data: getBubbleDataset(5, 5, 15, 0, 100),
+          backgroundColor: utils.getSoftColors()['danger'],
+          hoverBackgroundColor: utils.getColors()['danger']
+        }]
+      },
+      options: {
+        plugins: {
+          legend: {
+            position: 'top'
+          },
+          tooltip: chartJsDefaultTooltip()
+        },
+        scales: {
+          x: {
+            grid: {
+              color: utils.rgbaColor(utils.getGrays()['black'], 0.1)
+            }
+          },
+          y: {
+            grid: {
+              color: utils.rgbaColor(utils.getGrays()['black'], 0.1)
+            }
+          }
+        }
+      }
+    };
+  };
+
+  chartJsInit(pie, getOptions);
+};
+/* -------------------------------------------------------------------------- */
+
+/*                            Chart Combo                                  */
+
+/* -------------------------------------------------------------------------- */
+
+
+var chartCombo = function chartCombo() {
+  var combo = document.getElementById('chartjs-combo-chart');
+
+  var getOptions = function getOptions() {
+    return {
+      type: 'bar',
+      data: {
+        labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+        datasets: [{
+          type: 'line',
+          label: 'Dataset 1',
+          borderColor: utils.getColor('primary'),
+          borderWidth: 2,
+          fill: false,
+          data: [55, 80, -60, -22, -50, 40, 90]
+        }, {
+          type: 'bar',
+          label: 'Dataset 2',
+          backgroundColor: utils.getSoftColors().danger,
+          data: [4, -80, 90, -22, 70, 35, -50],
+          borderWidth: 1
+        }, {
+          type: 'bar',
+          label: 'Dataset 3',
+          backgroundColor: utils.getSoftColors().primary,
+          data: [-30, 30, -18, 100, -45, -25, -50],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        maintainAspectRatio: false,
+        plugins: {
+          tooltip: chartJsDefaultTooltip()
+        },
+        scales: {
+          x: {
+            grid: {
+              color: utils.rgbaColor(utils.getGrays().black, 0.1)
+            }
+          },
+          y: {
+            grid: {
+              color: utils.rgbaColor(utils.getGrays().black, 0.1)
+            }
+          }
+        }
+      }
+    };
+  };
+
+  chartJsInit(combo, getOptions);
+};
+/* -------------------------------------------------------------------------- */
+
+/*                            Chart Doughnut                                  */
+
+/* -------------------------------------------------------------------------- */
+
+
+var chartDoughnut = function chartDoughnut() {
+  var doughnut = document.getElementById('chartjs-doughnut-chart');
+
+  var getOptions = function getOptions() {
+    return {
+      type: 'doughnut',
+      data: {
+        datasets: [{
+          data: [5, 3, 2, 1, 1],
+          backgroundColor: [utils.rgbaColor(utils.getColor('facebook'), 0.2), utils.rgbaColor(utils.getColor('youtube'), 0.2), utils.rgbaColor(utils.getColor('twitter'), 0.2), utils.rgbaColor(utils.getColor('linkedin'), 0.2), utils.rgbaColor(utils.getColor('github'), 0.2)],
+          borderWidth: 1,
+          borderColor: [utils.getColor('facebook'), utils.getColor('youtube'), utils.getColor('twitter'), utils.getColor('linkedin'), utils.getColor('github')]
+        }],
+        labels: ['Facebook', 'Youtube', 'Twitter', 'Linkedin', 'GitHub']
+      },
+      options: {
+        plugins: {
+          tooltip: chartJsDefaultTooltip()
+        },
+        maintainAspectRatio: false
+      }
+    };
+  };
+
+  chartJsInit(doughnut, getOptions);
+};
+/* -------------------------------------------------------------------------- */
+
+/*                            Chart Line                                  */
+
+/* -------------------------------------------------------------------------- */
+
+
+var chartLine = function chartLine() {
+  var line = document.getElementById('chartjs-line-chart');
+
+  var getOptions = function getOptions() {
+    return {
+      type: 'bar',
+      data: {
+        labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+        datasets: [{
+          type: 'line',
+          label: 'Dataset 1',
+          borderColor: utils.getColor('primary'),
+          borderWidth: 2,
+          fill: false,
+          data: [55, 80, 60, 22, 50, 40, 90],
+          tension: 0.3
+        }]
+      },
+      options: {
+        plugins: {
+          tooltip: chartJsDefaultTooltip()
+        },
+        scales: {
+          x: {
+            grid: {
+              color: utils.rgbaColor(utils.getGrays().black, 0.1)
+            }
+          },
+          y: {
+            grid: {
+              color: utils.rgbaColor(utils.getGrays().black, 0.1)
+            }
+          }
+        }
+      }
+    };
+  };
+
+  chartJsInit(line, getOptions);
+};
+/* -------------------------------------------------------------------------- */
+
+/*                            Chart Pie                                  */
+
+/* -------------------------------------------------------------------------- */
+
+
+var chartPie = function chartPie() {
+  var pie = document.getElementById('chartjs-pie-chart');
+
+  var getOptions = function getOptions() {
+    return {
+      type: 'pie',
+      data: {
+        datasets: [{
+          data: [5, 3, 2, 1, 1],
+          backgroundColor: [utils.rgbaColor(utils.getColor('facebook'), 0.75), utils.rgbaColor(utils.getColor('youtube'), 0.75), utils.rgbaColor(utils.getColor('twitter'), 0.75), utils.rgbaColor(utils.getColor('linkedin'), 0.75), utils.rgbaColor(utils.getColor('github'), 0.75)],
+          borderWidth: 1,
+          borderColor: utils.getGrays()['100']
+        }],
+        labels: ['Facebook', 'Youtube', 'Twitter', 'Linkedin', 'GitHub']
+      },
+      options: {
+        plugins: {
+          tooltip: chartJsDefaultTooltip()
+        },
+        maintainAspectRatio: false
+      }
+    };
+  };
+
+  chartJsInit(pie, getOptions);
+};
+/* -------------------------------------------------------------------------- */
+
+/*                            Chart Polar                                  */
+
+/* -------------------------------------------------------------------------- */
+
+
+var chartPolar = function chartPolar() {
+  var polar = document.getElementById('chartjs-polar-chart');
+
+  var getOptions = function getOptions() {
+    return {
+      type: 'polarArea',
+      data: {
+        datasets: [{
+          data: [10, 20, 50, 40, 30],
+          backgroundColor: [utils.rgbaColor(utils.getColor('facebook'), 0.5), utils.rgbaColor(utils.getColor('youtube'), 0.5), utils.rgbaColor(utils.getColor('twitter'), 0.5), utils.rgbaColor(utils.getColor('linkedin'), 0.5), utils.rgbaColor(utils.getColor('success'), 0.5)],
+          borderWidth: 1,
+          borderColor: utils.getGrays()['400']
+        }],
+        labels: ['Facebook', 'Youtube', 'Twitter', 'Linkedin', 'Medium']
+      },
+      options: {
+        plugins: {
+          tooltip: chartJsDefaultTooltip()
+        },
+        maintainAspectRatio: false,
+        scales: {
+          r: {
+            grid: {
+              color: utils.rgbaColor(utils.getGrays().black, 0.1)
+            }
+          }
+        }
+      }
+    };
+  };
+
+  chartJsInit(polar, getOptions);
+};
+/* -------------------------------------------------------------------------- */
+
+/*                            Chart Radar                                  */
+
+/* -------------------------------------------------------------------------- */
+
+
+var chartRadar = function chartRadar() {
+  var radar = document.getElementById('chartjs-radar-chart');
+
+  var getOptions = function getOptions() {
+    return {
+      type: 'radar',
+      data: {
+        labels: ['English', 'Maths', 'Physics', 'Chemistry', 'Biology', 'History'],
+        datasets: [{
+          label: 'Student A',
+          backgroundColor: utils.rgbaColor(utils.getColor('success'), 0.5),
+          data: [65, 75, 70, 80, 60, 80],
+          borderWidth: 1
+        }, {
+          label: 'Student B',
+          backgroundColor: utils.rgbaColor(utils.getColor('primary'), 0.5),
+          data: [54, 65, 60, 70, 70, 75],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        plugins: {
+          tooltip: chartJsDefaultTooltip()
+        },
+        maintainAspectRatio: false,
+        scales: {
+          r: {
+            grid: {
+              color: utils.rgbaColor(utils.getGrays().black, 0.1)
+            }
+          }
+        }
+      }
+    };
+  };
+
+  chartJsInit(radar, getOptions);
+};
+/* -------------------------------------------------------------------------- */
+
+/*                            Chart Scatter                                   */
+
+/* -------------------------------------------------------------------------- */
+
+
+var chartScatter = function chartScatter() {
+  var scatter = document.getElementById('chartjs-scatter-chart');
+
+  var getOptions = function getOptions() {
+    return {
+      type: 'scatter',
+      data: {
+        datasets: [{
+          label: 'Dataset one',
+          data: [{
+            x: -98,
+            y: 42
+          }, {
+            x: -85,
+            y: -29
+          }, {
+            x: -87,
+            y: -70
+          }, {
+            x: -53,
+            y: 28
+          }, {
+            x: -29,
+            y: 4
+          }, {
+            x: -2,
+            y: -42
+          }, {
+            x: 5,
+            y: 3
+          }, {
+            x: 39,
+            y: 19
+          }, {
+            x: 49,
+            y: 79
+          }, {
+            x: 83,
+            y: -9
+          }, {
+            x: 93,
+            y: 12
+          }],
+          pointBackgroundColor: utils.getColor('primary'),
+          borderColor: utils.getColor('primary'),
+          borderWidth: 1
+        }, {
+          label: 'Dataset Two',
+          data: [{
+            x: 53,
+            y: 12
+          }, {
+            x: -78,
+            y: 42
+          }, {
+            x: -65,
+            y: -39
+          }, {
+            x: -57,
+            y: -20
+          }, {
+            x: 57,
+            y: 28
+          }, {
+            x: -35,
+            y: 75
+          }, {
+            x: -29,
+            y: -43
+          }, {
+            x: 15,
+            y: 31
+          }, {
+            x: 97,
+            y: 19
+          }, {
+            x: 49,
+            y: 69
+          }, {
+            x: 33,
+            y: -57
+          }],
+          pointBackgroundColor: utils.getColor('warning'),
+          borderColor: utils.getColor('warning'),
+          borderWidth: 1,
+          borderRadius: '50%'
+        }]
+      },
+      options: {
+        plugins: {
+          tooltip: chartJsDefaultTooltip()
+        },
+        scales: {
+          x: {
+            grid: {
+              color: utils.rgbaColor(utils.getGrays().black, 0.1)
+            }
+          },
+          y: {
+            grid: {
+              color: utils.rgbaColor(utils.getGrays().black, 0.1)
+            }
+          }
+        },
+        animation: {
+          duration: 2000
+        }
+      }
+    };
+  };
+
+  chartJsInit(scatter, getOptions);
+};
+/* -------------------------------------------------------------------------- */
+
+/*                            ChartJs Initialization                          */
+
+/* -------------------------------------------------------------------------- */
+
+
+var chartJsInit = function chartJsInit(chartEl, config) {
+  if (!chartEl) return;
+  var ctx = chartEl.getContext('2d');
+  var chart = new window.Chart(ctx, config());
+  var themeController = document.body;
+  themeController.addEventListener('clickControl', function (_ref15) {
+    var control = _ref15.detail.control;
+
+    if (control === 'theme') {
+      chart.destroy();
+      chart = new window.Chart(ctx, config());
+    }
+
+    return null;
+  });
+};
+
+var chartJsDefaultTooltip = function chartJsDefaultTooltip() {
+  return {
+    backgroundColor: utils.getGrays()['100'],
+    borderColor: utils.getGrays()['300'],
+    borderWidth: 1,
+    titleColor: utils.getGrays().black,
+    callbacks: {
+      labelTextColor: function labelTextColor() {
+        return utils.getGrays().black;
+      }
+    }
+  };
+};
+
+var getBubbleDataset = function getBubbleDataset(count, rmin, rmax, min, max) {
+  var arr = Array.from(Array(count).keys());
+  return arr.map(function () {
+    return {
+      x: utils.getRandomNumber(min, max),
+      y: utils.getRandomNumber(min, max),
+      r: utils.getRandomNumber(rmin, rmax)
+    };
+  });
+};
+/* eslint-disable */
+
+/* -------------------------------------------------------------------------- */
+
+/*                            Chart Scatter                                   */
+
+/* -------------------------------------------------------------------------- */
+
+
+var productShareDoughnutInit = function productShareDoughnutInit() {
+  var marketShareDoughnutElement = document.getElementById('marketShareDoughnut');
+
+  var getOptions = function getOptions() {
+    return {
+      type: 'doughnut',
+      data: {
+        labels: ['Flacon', 'Sparrow'],
+        datasets: [{
+          data: [50, 88],
+          backgroundColor: [utils.getColor('primary'), utils.getColor('300')],
+          borderColor: [utils.getColor('primary'), utils.getColor('300')]
+        }]
+      },
+      options: {
+        tooltips: chartJsDefaultTooltip(),
+        rotation: -90,
+        circumference: '180',
+        cutout: '80%',
+        plugins: {
+          legend: {
+            display: false
+          }
+        }
+      }
+    };
+  };
+
+  chartJsInit(marketShareDoughnutElement, getOptions);
+};
+/* -------------------------------------------------------------------------- */
+
+/*                             Echarts Active Users                           */
+
+/* -------------------------------------------------------------------------- */
+
+
+var activeUsersChartReportInit = function activeUsersChartReportInit() {
+  var $echartsActiveUsersChart = document.querySelector('.echart-active-users-report');
+
+  if ($echartsActiveUsersChart) {
+    var userOptions = utils.getData($echartsActiveUsersChart, 'options');
+    var chart = window.echarts.init($echartsActiveUsersChart);
+
+    var _tooltipFormatter = function _tooltipFormatter(params) {
+      return "\n      <div>\n        <p class='mb-2 text-600'>".concat(window.dayjs(params[0].axisValue).format('MMM DD, YYYY'), "</p>\n        <div class='ms-1'>\n          <h6 class=\"fs--1 text-700\"><span class=\"fas fa-circle text-primary me-2\"></span>").concat(params[0].value, "</h6>\n          <h6 class=\"fs--1 text-700\"><span class=\"fas fa-circle text-success me-2\"></span>").concat(params[1].value, "</h6>\n          <h6 class=\"fs--1 text-700\"><span class=\"fas fa-circle text-info me-2\"></span>").concat(params[2].value, "</h6>\n        </div>\n      </div>\n      ");
+    };
+
+    var getDefaultOptions = function getDefaultOptions() {
+      return {
+        color: [utils.getColor('primary'), utils.getColor('success'), utils.getColor('info')],
+        tooltip: {
+          trigger: 'axis',
+          padding: [7, 10],
+          backgroundColor: utils.getGrays()['100'],
+          borderColor: utils.getGrays()['300'],
+          textStyle: {
+            color: utils.getColors().dark
+          },
+          borderWidth: 1,
+          transitionDuration: 0,
+          position: function position(pos, params, dom, rect, size) {
+            return getPosition(pos, params, dom, rect, size);
+          },
+          formatter: _tooltipFormatter
+        },
+        xAxis: {
+          type: 'category',
+          data: utils.getPastDates(30).map(function (date) {
+            return window.dayjs(date).format('DD MMM, YYYY');
+          }),
+          boundaryGap: false,
+          silent: true,
+          axisPointer: {
+            lineStyle: {
+              color: utils.getGrays()['300']
+            }
+          },
+          splitLine: {
+            show: false
+          },
+          axisLine: {
+            lineStyle: {
+              color: utils.getGrays()['300']
+            }
+          },
+          axisTick: {
+            show: true,
+            length: 20,
+            lineStyle: {
+              color: utils.getGrays()['200']
+            },
+            interval: 5
+          },
+          axisLabel: {
+            color: utils.getGrays()['600'],
+            formatter: function formatter(value) {
+              return window.dayjs(value).format('MMM DD');
+            },
+            align: 'left',
+            fontSize: 11,
+            padding: [0, 0, 0, 5],
+            interval: 5
+          }
+        },
+        yAxis: {
+          type: 'value',
+          position: 'right',
+          axisPointer: {
+            show: false
+          },
+          splitLine: {
+            lineStyle: {
+              color: utils.getGrays()['200']
+            }
+          },
+          axisLabel: {
+            show: true,
+            color: utils.getGrays()['600'],
+            formatter: function formatter(value) {
+              return "".concat(Math.round(value / 1000 * 10) / 10, "k");
+            }
+          },
+          axisTick: {
+            show: false
+          },
+          axisLine: {
+            show: false
+          }
+        },
+        series: [{
+          type: 'line',
+          data: [4164, 4652, 4817, 4841, 4920, 5439, 5486, 5498, 5512, 5538, 5841, 5877, 6086, 6146, 6199, 6431, 6704, 7939, 8127, 8296, 8322, 8389, 8411, 8502, 8868, 8977, 9273, 9325, 9345, 9430],
+          showSymbol: false,
+          symbol: 'circle',
+          itemStyle: {
+            borderColor: utils.getColors().primary,
+            borderWidth: 2
+          },
+          lineStyle: {
+            color: utils.getColor('primary')
+          },
+          symbolSize: 2
+        }, {
+          type: 'line',
+          data: [2164, 2292, 2386, 2430, 2528, 3045, 3255, 3295, 3481, 3604, 3688, 3840, 3932, 3949, 4003, 4298, 4424, 4869, 4922, 4973, 5155, 5267, 5566, 5689, 5692, 5758, 5773, 5799, 5960, 6000],
+          showSymbol: false,
+          symbol: 'circle',
+          itemStyle: {
+            borderColor: utils.getColors().success,
+            borderWidth: 2
+          },
+          lineStyle: {
+            color: utils.getColor('success')
+          },
+          symbolSize: 2
+        }, {
+          type: 'line',
+          data: [1069, 1089, 1125, 1141, 1162, 1179, 1185, 1216, 1274, 1322, 1346, 1395, 1439, 1564, 1581, 1590, 1656, 1815, 1868, 2010, 2133, 2179, 2264, 2265, 2278, 2343, 2354, 2456, 2472, 2480],
+          showSymbol: false,
+          symbol: 'circle',
+          itemStyle: {
+            borderColor: utils.getColors().info,
+            borderWidth: 2
+          },
+          lineStyle: {
+            color: utils.getColor('info')
+          },
+          symbolSize: 2
+        }],
+        grid: {
+          right: '30px',
+          left: '5px',
+          bottom: '20px',
+          top: '20px'
+        }
+      };
+    };
+
+    echartSetOption(chart, userOptions, getDefaultOptions);
+  }
+};
+/* -------------------------------------------------------------------------- */
+
+/*                                Audience Chart                              */
+
+/* -------------------------------------------------------------------------- */
+
+
+var audienceChartInit = function audienceChartInit() {
+  var data = {
+    dates: utils.getPastDates(7),
+    dataset: {
+      users: [[504, 333, 400, 606, 451, 685, 404], [237, 229, 707, 575, 420, 536, 258]],
+      sessions: [[322, 694, 235, 537, 791, 292, 806], [584, 661, 214, 286, 526, 707, 627]],
+      rate: [[789, 749, 412, 697, 633, 254, 472], [276, 739, 525, 394, 643, 653, 719]],
+      duration: [[625, 269, 479, 654, 549, 305, 671], [499, 670, 550, 222, 696, 695, 469]]
+    }
+  };
+
+  var tooltipFormatter = function tooltipFormatter(params) {
+    var percentage = (params[0].value - params[1].value) / params[1].value * 100;
+    var perTemp = "\n      <div class=\"d-flex align-items-center ms-2\">\n        <span class=\"fas fa-caret-".concat(percentage < 0 ? 'down' : 'up', " text-").concat(percentage < 0 ? 'danger' : 'success', "\"></span>\n        <h6 class=\"fs--2 mb-0 ms-1 fw-semi-bold\">").concat(Math.abs(percentage).toFixed(2), " %</h6>\n      </div>\n    ");
+    var currentDate = new Date(params[0].axisValue);
+    var prevDate = new Date(new Date().setDate(currentDate.getDate() - 7));
+    return "<div>\n          <p class='mb-0 fs--2 text-600'>".concat(window.dayjs(params[0].axisValue).format('MMM DD'), " vs ").concat(window.dayjs(prevDate).format('MMM DD'), "</p>\n          <div class=\"d-flex align-items-center\">\n            <p class='mb-0 text-600 fs--1'>\n              Users: <span class='text-800 fw-semi-bold fs--1'>").concat(params[0].data, "</span>\n            </p>\n            ").concat(perTemp, "\n          </div>\n        </div>");
+  };
+
+  var getDefaultOptions = function getDefaultOptions(data1, data2) {
+    return function () {
+      return {
+        color: utils.getGrays().white,
+        tooltip: {
+          trigger: 'axis',
+          padding: [7, 10],
+          backgroundColor: utils.getGrays()['100'],
+          borderColor: utils.getGrays()['300'],
+          textStyle: {
+            color: utils.getColors().dark
+          },
+          borderWidth: 1,
+          transitionDuration: 0,
+          position: function position(pos, params, dom, rect, size) {
+            return getPosition(pos, params, dom, rect, size);
+          },
+          axisPointer: {
+            type: 'none'
+          },
+          formatter: tooltipFormatter
+        },
+        xAxis: {
+          type: 'category',
+          data: data.dates,
+          axisLabel: {
+            color: utils.getGrays()['600'],
+            formatter: function formatter(value) {
+              return window.dayjs(value).format('MMM DD');
+            },
+            align: 'left',
+            fontSize: 11,
+            padding: [0, 0, 0, 5],
+            showMaxLabel: false
+          },
+          axisLine: {
+            lineStyle: {
+              color: utils.getGrays()['200']
+            }
+          },
+          axisTick: {
+            show: true,
+            length: 20,
+            lineStyle: {
+              color: utils.getGrays()['200']
+            }
+          },
+          boundaryGap: false
+        },
+        yAxis: {
+          position: 'right',
+          axisPointer: {
+            type: 'none'
+          },
+          axisTick: 'none',
+          splitLine: {
+            lineStyle: {
+              color: utils.getGrays()['200']
+            }
+          },
+          axisLine: {
+            show: false
+          },
+          axisLabel: {
+            color: utils.getGrays()['600']
+          }
+        },
+        series: [{
+          type: 'line',
+          data: data1,
+          showSymbol: false,
+          symbol: 'circle',
+          itemStyle: {
+            borderColor: utils.getColors().primary,
+            borderWidth: 2
+          },
+          lineStyle: {
+            color: utils.getColor('primary')
+          },
+          areaStyle: {
+            color: {
+              type: 'linear',
+              x: 0,
+              y: 0,
+              x2: 0,
+              y2: 1,
+              colorStops: [{
+                offset: 0,
+                color: utils.rgbaColor(utils.getColors().primary, 0.2)
+              }, {
+                offset: 1,
+                color: utils.rgbaColor(utils.getColors().primary, 0)
+              }]
+            }
+          }
+        }, {
+          type: 'line',
+          data: data2,
+          symbol: 'none',
+          lineStyle: {
+            type: 'dashed',
+            width: 1,
+            color: utils.getColor('info')
+          }
+        }],
+        grid: {
+          right: '40px',
+          left: '5px',
+          bottom: '10%',
+          top: '3%'
+        }
+      };
+    };
+  };
+
+  var initChart = function initChart(el, options) {
+    var userOptions = utils.getData(el, 'options');
+    var chart = window.echarts.init(el);
+    echartSetOption(chart, userOptions, options);
+  };
+
+  var tab = document.querySelector('#audience-chart-tab');
+
+  if (tab) {
+    initChart(document.querySelector('.echart-audience'), getDefaultOptions(data.dataset.users[0], data.dataset.users[1]));
+    var triggerTabList = Array.from(tab.querySelectorAll('[data-bs-toggle="tab"]'));
+    triggerTabList.forEach(function (triggerEl) {
+      triggerEl.addEventListener('shown.bs.tab', function () {
+        var key = triggerEl.href.split('#').pop();
+        var $echartAudience = document.getElementById(key).querySelector('.echart-audience');
+        initChart($echartAudience, getDefaultOptions(data.dataset[key][0], data.dataset[key][1]));
+      });
+    });
+  }
+};
+/* -------------------------------------------------------------------------- */
+
+/*                     Echart Bar Member info                                 */
+
+/* -------------------------------------------------------------------------- */
+
+
+var basicEchartsInit = function basicEchartsInit() {
+  var $echartBasicCharts = document.querySelectorAll('[data-echarts]');
+  $echartBasicCharts.forEach(function ($echartBasicChart) {
+    var userOptions = utils.getData($echartBasicChart, 'echarts');
+    var chart = window.echarts.init($echartBasicChart);
+
+    var getDefaultOptions = function getDefaultOptions() {
+      return {
+        color: utils.getColors().primary,
+        tooltip: {
+          trigger: 'item',
+          axisPointer: {
+            type: 'none'
+          },
+          padding: [7, 10],
+          backgroundColor: utils.getGrays()['100'],
+          borderColor: utils.getGrays()['300'],
+          textStyle: {
+            color: utils.getColors().dark
+          },
+          borderWidth: 1,
+          transitionDuration: 0,
+          position: function position(pos, params, dom, rect, size) {
+            return getPosition(pos, params, dom, rect, size);
+          }
+        },
+        xAxis: {
+          type: 'category',
+          show: false,
+          boundaryGap: false
+        },
+        yAxis: {
+          show: false,
+          type: 'value',
+          boundaryGap: false
+        },
+        series: [{
+          type: 'bar',
+          symbol: 'none',
+          areaStyle: {
+            color: {
+              type: 'linear',
+              x: 0,
+              y: 0,
+              x2: 0,
+              y2: 1,
+              colorStops: [{
+                offset: 0,
+                color: utils.rgbaColor(utils.getColor('primary'), 0.25)
+              }, {
+                offset: 1,
+                color: utils.rgbaColor(utils.getColor('primary'), 0)
+              }]
+            }
+          }
+        }],
+        grid: {
+          right: '0',
+          left: '0',
+          bottom: '0',
+          top: '0'
+        }
+      };
+    };
+
+    echartSetOption(chart, userOptions, getDefaultOptions);
+  });
+};
+/* -------------------------------------------------------------------------- */
+
+/*                             Echarts Bounce Rate                            */
+
+/* -------------------------------------------------------------------------- */
+
+
+var bounceRateChartInit = function bounceRateChartInit() {
+  var $echartsBounceRateChart = document.querySelector('.echart-bounce-rate');
+
+  var tooltipFormatter = function tooltipFormatter(params) {
+    return "<div>\n          <p class='mb-0 text-600'>".concat(window.dayjs(params[0].axisValue).format('DD, MMMM'), "</p>\n          <div class=\"d-flex align-items-center\">\n            <p class=\"mb-0 text-600\">\n              Rate : <span class='text-800'>").concat(params[0].value, "%</span>\n            </p>\n          </div>\n        </div>");
+  };
+
+  var dataset = {
+    week: [41, 45, 37, 44, 35, 39, 43],
+    month: [40, 37, 42, 44, 36, 39, 37, 43, 38, 35, 43, 39, 42, 36, 37, 36, 42, 44, 34, 41, 37, 41, 40, 40, 43, 34, 41, 35, 44, 41, 40]
+  };
+
+  if ($echartsBounceRateChart) {
+    var userOptions = utils.getData($echartsBounceRateChart, 'options');
+    var chart = window.echarts.init($echartsBounceRateChart);
+
+    var getDefaultOptions = function getDefaultOptions() {
+      return {
+        color: utils.getGrays().white,
+        title: {
+          text: 'Bounce Rate',
+          padding: [5, 0, 0, 0],
+          textStyle: {
+            color: utils.getGrays()['900'],
+            fontSize: 13,
+            fontWeight: 600
+          }
+        },
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: {
+            type: 'none'
+          },
+          padding: [7, 10],
+          backgroundColor: utils.getGrays()['100'],
+          borderColor: utils.getGrays()['300'],
+          textStyle: {
+            color: utils.getColors().dark
+          },
+          borderWidth: 1,
+          transitionDuration: 0,
+          position: function position(pos, params, dom, rect, size) {
+            return getPosition(pos, params, dom, rect, size);
+          },
+          formatter: tooltipFormatter
+        },
+        xAxis: {
+          type: 'category',
+          data: utils.getPastDates(30).map(function (date) {
+            return window.dayjs(date).format('DD MMM, YYYY');
+          }),
+          axisPointer: {
+            lineStyle: {
+              color: utils.getGrays()['300']
+            }
+          },
+          splitLine: {
+            show: false
+          },
+          axisLine: {
+            lineStyle: {
+              color: utils.getGrays()['400']
+            }
+          },
+          axisTick: {
+            show: false
+          },
+          axisLabel: {
+            color: utils.getGrays()['600'],
+            formatter: function formatter(value) {
+              return window.dayjs(value).format('MMM DD');
+            },
+            fontSize: 11
+          }
+        },
+        yAxis: {
+          type: 'value',
+          axisPointer: {
+            show: false
+          },
+          splitLine: {
+            lineStyle: {
+              color: utils.getGrays()['200']
+            }
+          },
+          axisLabel: {
+            show: true,
+            color: utils.getGrays()['600'],
+            formatter: function formatter(value) {
+              return "".concat(value, "%");
+            },
+            margin: 15
+          },
+          axisTick: {
+            show: false
+          },
+          axisLine: {
+            show: false
+          }
+        },
+        series: [{
+          type: 'line',
+          data: [40, 37, 42, 44, 36, 39, 37, 43, 38, 35, 43, 39, 42, 36, 37, 36, 42, 44, 34, 41, 37, 41, 40, 40, 43, 34, 41, 35, 44, 41, 40],
+          showSymbol: false,
+          symbol: 'circle',
+          itemStyle: {
+            borderColor: utils.getColors().primary,
+            borderWidth: 2
+          },
+          lineStyle: {
+            color: utils.getColor('primary')
+          },
+          symbolSize: 2
+        }],
+        grid: {
+          right: '10px',
+          left: '40px',
+          bottom: '10%',
+          top: '13%'
+        }
+      };
+    };
+
+    echartSetOption(chart, userOptions, getDefaultOptions);
+    var selectMenu = document.querySelector("[data-target='.echart-bounce-rate']");
+
+    if (selectMenu) {
+      selectMenu.addEventListener('change', function (e) {
+        var value = e.currentTarget.value;
+        chart.setOption({
+          xAxis: {
+            data: utils.getPastDates(value).map(function (date) {
+              return window.dayjs(date).format('DD MMM, YYYY');
+            })
+          },
+          series: [{
+            data: dataset[value]
+          }]
+        });
+      });
+    }
+  }
+};
+/* -------------------------------------------------------------------------- */
+
+/*                             Echarts Candle Chart                           */
+
+/* -------------------------------------------------------------------------- */
+
+
+var candleChartInit = function candleChartInit() {
+  var ECHART_CANDLE_CHART = '.echart-candle-chart';
+  var ECHART_ZOOM_IN = "[data-zoom='in']";
+  var ECHART_ZOOM_OUT = "[data-zoom='out']";
+  var $echartsCandleChart = document.querySelector(ECHART_CANDLE_CHART);
+
+  if ($echartsCandleChart) {
+    var userOptions = utils.getData($echartsCandleChart, 'options');
+    var chart = window.echarts.init($echartsCandleChart);
+    var $echartsZoomIn = document.getElementById($echartsCandleChart.dataset.actionTarget).querySelector(ECHART_ZOOM_IN);
+    var $echartsZoomOut = document.getElementById($echartsCandleChart.dataset.actionTarget).querySelector(ECHART_ZOOM_OUT);
+
+    var _utils$getColors = utils.getColors(),
+        warning = _utils$getColors.warning;
+
+    var _utils$getColors2 = utils.getColors(),
+        primary = _utils$getColors2.primary;
+
+    var splitData = function splitData(rawData) {
+      var categoryData = [];
+      var values = [];
+      rawData.forEach(function (item) {
+        categoryData.push(item.splice(0, 1)[0]);
+        values.push(item);
+      });
+      return {
+        categoryData: categoryData,
+        values: values
+      };
+    };
+
+    var data = splitData([['2013/1/24', 2320.26, 2320.26, 2287.3, 2362.94], ['2013/1/25', 2300, 2291.3, 2288.26, 2308.38], ['2013/1/28', 2295.35, 2346.5, 2295.35, 2346.92], ['2013/1/29', 2347.22, 2358.98, 2337.35, 2363.8], ['2013/1/30', 2360.75, 2382.48, 2347.89, 2383.76], ['2013/1/31', 2383.43, 2385.42, 2371.23, 2391.82], ['2013/2/1', 2377.41, 2419.02, 2369.57, 2421.15], ['2013/2/4', 2425.92, 2428.15, 2417.58, 2440.38], ['2013/2/5', 2411, 2433.13, 2403.3, 2437.42], ['2013/2/6', 2432.68, 2434.48, 2427.7, 2441.73], ['2013/2/7', 2430.69, 2418.53, 2394.22, 2433.89], ['2013/2/8', 2416.62, 2432.4, 2414.4, 2443.03], ['2013/2/18', 2441.91, 2421.56, 2415.43, 2444.8], ['2013/2/19', 2420.26, 2382.91, 2373.53, 2427.07], ['2013/2/20', 2383.49, 2397.18, 2370.61, 2397.94], ['2013/2/21', 2378.82, 2325.95, 2309.17, 2378.82], ['2013/2/22', 2322.94, 2314.16, 2308.76, 2330.88], ['2013/2/25', 2320.62, 2325.82, 2315.01, 2338.78], ['2013/2/26', 2313.74, 2293.34, 2289.89, 2340.71], ['2013/2/27', 2297.77, 2313.22, 2292.03, 2324.63], ['2013/2/28', 2322.32, 2365.59, 2308.92, 2366.16], ['2013/3/1', 2364.54, 2359.51, 2330.86, 2369.65], ['2013/3/4', 2332.08, 2273.4, 2259.25, 2333.54], ['2013/3/5', 2274.81, 2326.31, 2270.1, 2328.14], ['2013/3/6', 2333.61, 2347.18, 2321.6, 2351.44], ['2013/3/7', 2340.44, 2324.29, 2304.27, 2352.02], ['2013/3/8', 2326.42, 2318.61, 2314.59, 2333.67], ['2013/3/11', 2314.68, 2310.59, 2296.58, 2320.96], ['2013/3/12', 2309.16, 2286.6, 2264.83, 2333.29], ['2013/3/13', 2282.17, 2263.97, 2253.25, 2286.33], ['2013/3/14', 2255.77, 2270.28, 2253.31, 2276.22], ['2013/3/15', 2269.31, 2278.4, 2250, 2312.08], ['2013/3/18', 2267.29, 2240.02, 2239.21, 2276.05], ['2013/3/19', 2244.26, 2257.43, 2232.02, 2261.31], ['2013/3/20', 2257.74, 2317.37, 2257.42, 2317.86], ['2013/3/21', 2318.21, 2324.24, 2311.6, 2330.81], ['2013/3/22', 2321.4, 2328.28, 2314.97, 2332], ['2013/3/25', 2334.74, 2326.72, 2319.91, 2344.89], ['2013/3/26', 2318.58, 2297.67, 2281.12, 2319.99], ['2013/3/27', 2299.38, 2301.26, 2289, 2323.48], ['2013/3/28', 2273.55, 2236.3, 2232.91, 2273.55], ['2013/3/29', 2238.49, 2236.62, 2228.81, 2246.87], ['2013/4/1', 2229.46, 2234.4, 2227.31, 2243.95], ['2013/4/2', 2234.9, 2227.74, 2220.44, 2253.42], ['2013/4/3', 2232.69, 2225.29, 2217.25, 2241.34], ['2013/4/8', 2196.24, 2211.59, 2180.67, 2212.59], ['2013/4/9', 2215.47, 2225.77, 2215.47, 2234.73], ['2013/4/10', 2224.93, 2226.13, 2212.56, 2233.04], ['2013/4/11', 2236.98, 2219.55, 2217.26, 2242.48], ['2013/4/12', 2218.09, 2206.78, 2204.44, 2226.26]]);
+    var zoomStart = 0;
+    var zoomEnd = 70;
+
+    var getDefaultOptions = function getDefaultOptions() {
+      return {
+        tooltip: {
+          trigger: 'axis',
+          // axisPointer: {
+          //   type: "cross",
+          // },
+          padding: [7, 10],
+          backgroundColor: utils.getGrays()['100'],
+          borderColor: utils.getGrays()['300'],
+          textStyle: {
+            color: utils.getColors().dark
+          },
+          borderWidth: 1,
+          position: function position(pos, params, dom, rect, size) {
+            return getPosition(pos, params, dom, rect, size);
+          }
+        },
+        xAxis: {
+          type: 'category',
+          data: data.categoryData,
+          scale: true,
+          splitLine: {
+            show: false
+          },
+          splitNumber: 10,
+          min: 'dataMin',
+          max: 'dataMax',
+          boundaryGap: true,
+          axisPointer: {
+            lineStyle: {
+              color: utils.getGrays()['300'],
+              type: 'dashed'
+            }
+          },
+          axisLine: {
+            lineStyle: {
+              color: utils.getGrays()['300'],
+              type: 'solid'
+            }
+          },
+          axisTick: {
+            show: false
+          },
+          axisLabel: {
+            color: utils.getGrays()['600'],
+            formatter: function formatter(value) {
+              return new Date(value).toLocaleString('en-US', {
+                month: 'short',
+                day: 'numeric'
+              });
+            },
+            margin: 15,
+            fontWeight: 500
+          }
+        },
+        yAxis: {
+          scale: true,
+          position: 'right',
+          axisPointer: {
+            show: false
+          },
+          splitLine: {
+            lineStyle: {
+              color: utils.getGrays()['200'],
+              type: 'dashed'
+            }
+          },
+          boundaryGap: false,
+          axisLabel: {
+            show: true,
+            color: utils.getGrays()['600'],
+            margin: 15,
+            fontWeight: 500
+          },
+          axisTick: {
+            show: false
+          },
+          axisLine: {
+            show: false
+          }
+        },
+        dataZoom: [{
+          type: 'inside',
+          start: zoomStart,
+          end: zoomEnd
+        }],
+        series: [{
+          name: 'candlestick',
+          type: 'candlestick',
+          data: data.values,
+          itemStyle: {
+            color: warning,
+            color0: primary,
+            borderColor: warning,
+            borderColor0: primary
+          }
+        }],
+        grid: {
+          right: '70px',
+          left: '20px',
+          bottom: '15%',
+          top: '20px'
+        }
+      };
+    };
+
+    echartSetOption(chart, userOptions, getDefaultOptions);
+
+    var dispatchZoomAction = function dispatchZoomAction() {
+      chart.dispatchAction({
+        type: 'dataZoom',
+        start: zoomStart,
+        end: zoomEnd
+      });
+    };
+
+    $echartsZoomIn.addEventListener('click', function () {
+      if (zoomEnd > 10) {
+        zoomEnd -= 10;
+      }
+
+      if (zoomEnd <= 10) {
+        $echartsZoomIn.disabled = true;
+      }
+
+      if (zoomEnd > 0) {
+        $echartsZoomOut.disabled = false;
+        dispatchZoomAction();
+      }
+    });
+    $echartsZoomOut.addEventListener('click', function () {
+      if (zoomEnd < 100) {
+        zoomEnd += 10;
+      }
+
+      if (zoomEnd >= 100) {
+        $echartsZoomOut.disabled = true;
+      }
+
+      if (zoomEnd > 0) {
+        $echartsZoomIn.disabled = false;
+        dispatchZoomAction();
+      }
+    });
+    chart.on('dataZoom', function (params) {
+      if (params.batch) {
+        zoomStart = params.batch[0].start;
+        zoomEnd = params.batch[0].end;
+      }
+    });
+  }
+};
+/* -------------------------------------------------------------------------- */
+
+/*                             Echarts Total Sales                            */
+
+/* -------------------------------------------------------------------------- */
+
+
+var closedVsGoalInit = function closedVsGoalInit() {
+  var ECHART_LINE_TOTAL_SALES = '.echart-closed-vs-goal';
+  var $echartsLineTotalSales = document.querySelector(ECHART_LINE_TOTAL_SALES);
+  var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+  if ($echartsLineTotalSales) {
+    // Get options from data attribute
+    var userOptions = utils.getData($echartsLineTotalSales, 'options');
+    var chart = window.echarts.init($echartsLineTotalSales);
+
+    var getDefaultOptions = function getDefaultOptions() {
+      return {
+        color: [utils.getColors().primary, utils.getColors().warning],
+        tooltip: {
+          trigger: 'axis',
+          padding: [7, 10],
+          backgroundColor: utils.getGrays()['100'],
+          borderColor: utils.getGrays()['300'],
+          textStyle: {
+            color: utils.getColors().dark
+          },
+          borderWidth: 1,
+          formatter: tooltipFormatter,
+          transitionDuration: 0,
+          position: function position(pos, params, dom, rect, size) {
+            return getPosition(pos, params, dom, rect, size);
+          }
+        },
+        legend: {
+          left: 'left',
+          data: ['Closed Amount', 'Revenue Date'],
+          itemWidth: 10,
+          itemHeight: 10,
+          borderRadius: 0,
+          icon: 'circle',
+          inactiveColor: utils.getGrays()['400'],
+          textStyle: {
+            color: utils.getGrays()['700']
+          },
+          itemGap: 20
+        },
+        xAxis: {
+          type: 'category',
+          name: 'Closed Date',
+          nameGap: 50,
+          nameLocation: 'center',
+          offset: 0,
+          nameTextStyle: {
+            color: utils.getGrays()['700']
+          },
+          data: ['2019-06-15', '2019-06-22', '2019-06-29', '2019-07-06', '2019-07-13', '2019-07-20', '2019-07-27', '2019-07-12', '2019-07-03'],
+          boundaryGap: false,
+          axisPointer: {
+            lineStyle: {
+              color: utils.getGrays()['300'],
+              type: 'dashed'
+            }
+          },
+          splitLine: {
+            show: false
+          },
+          axisLine: {
+            lineStyle: {
+              color: utils.rgbaColor('#000', 0.01),
+              type: 'dashed'
+            }
+          },
+          axisTick: {
+            show: false
+          },
+          axisLabel: {
+            color: utils.getGrays()['400'],
+            formatter: function formatter(value) {
+              var date = new Date(value);
+              return "".concat(date.getDate(), " ").concat(months[date.getMonth()], " , 21");
+            },
+            margin: 20
+          }
+        },
+        yAxis: {
+          type: 'value',
+          name: 'Closed Amount',
+          nameGap: 85,
+          nameLocation: 'middle',
+          nameTextStyle: {
+            color: utils.getGrays()['700']
+          },
+          splitNumber: 3,
+          axisPointer: {
+            show: false
+          },
+          splitLine: {
+            lineStyle: {
+              color: utils.getGrays()['200']
+            }
+          },
+          boundaryGap: false,
+          axisLabel: {
+            show: true,
+            color: utils.getGrays()['400'],
+            formatter: function formatter(value) {
+              return "$".concat(value);
+            },
+            margin: 15
+          },
+          axisTick: {
+            show: false
+          },
+          axisLine: {
+            show: false
+          }
+        },
+        series: [{
+          type: 'line',
+          name: 'Closed Amount',
+          data: [0, 5000, 18000, 40000, 58000, 65000, 90000, 110000, 140000],
+          symbolSize: 5,
+          symbol: 'circle',
+          smooth: false,
+          hoverAnimation: true,
+          lineStyle: {
+            color: utils.rgbaColor(utils.getColor('primary'))
+          },
+          itemStyle: {
+            borderColor: utils.rgbaColor(utils.getColor('primary'), 0.6),
+            borderWidth: 2
+          }
+        }, {
+          type: 'line',
+          name: 'Revenue Date',
+          data: [0, 10000, 24000, 35000, 45000, 53000, 57000, 68000, 79000],
+          symbolSize: 5,
+          symbol: 'circle',
+          smooth: false,
+          hoverAnimation: true,
+          lineStyle: {
+            color: utils.rgbaColor(utils.getColor('warning'))
+          },
+          itemStyle: {
+            borderColor: utils.rgbaColor(utils.getColor('warning'), 0.6),
+            borderWidth: 2
+          }
+        }],
+        grid: {
+          right: '25px',
+          left: '100px',
+          bottom: '60px',
+          top: '35px'
+        }
+      };
+    };
+
+    echartSetOption(chart, userOptions, getDefaultOptions);
+  }
+};
+/* -------------------------------------------------------------------------- */
+
+/*                                Audience Chart                              */
+
+/* -------------------------------------------------------------------------- */
+
+
+var revenueChartInit = function revenueChartInit() {
+  var data = {
+    dates: utils.getDates(new Date('5-6-2019'), new Date('5-6-2021'), 1000 * 60 * 60 * 24 * 30),
+    dataset: {
+      revenue: [[645, 500, 550, 550, 473, 405, 286, 601, 743, 450, 604, 815, 855, 722, 700, 896, 866, 952, 719, 558, 737, 885, 972, 650, 600], [440, 250, 270, 400, 175, 180, 200, 400, 600, 380, 340, 550, 650, 450, 400, 688, 650, 721, 500, 300, 445, 680, 568, 400, 371]],
+      users: [[545, 500, 650, 727, 773, 705, 686, 501, 643, 580, 604, 615, 755, 722, 727, 816, 836, 952, 719, 758, 937, 785, 872, 850, 800], [340, 360, 230, 250, 410, 430, 450, 200, 220, 540, 500, 250, 355, 320, 500, 630, 680, 500, 520, 550, 750, 720, 700, 780, 750]],
+      deals: [[545, 400, 450, 627, 473, 450, 460, 780, 770, 800, 504, 550, 500, 530, 727, 716, 736, 820, 719, 758, 737, 885, 872, 850, 800], [245, 300, 450, 427, 273, 250, 260, 580, 570, 500, 402, 450, 400, 330, 527, 516, 536, 620, 519, 558, 537, 483, 472, 250, 300]],
+      profit: [[545, 400, 450, 627, 673, 605, 686, 501, 843, 518, 504, 715, 955, 622, 627, 716, 736, 952, 619, 558, 937, 785, 872, 550, 400], [340, 360, 330, 300, 410, 380, 450, 400, 420, 240, 200, 250, 355, 320, 500, 630, 680, 400, 420, 450, 650, 620, 700, 450, 340]]
+    }
+  };
+
+  var tooltipFormatter = function tooltipFormatter(params) {
+    return "<div class=\"card\">\n                <div class=\"card-header bg-light py-2\">\n                  <h6 class=\"text-600 mb-0\">".concat(params[0].axisValue, "</h6>\n                </div>\n              <div class=\"card-body py-2\">\n                <h6 class=\"text-600 fw-normal\">\n                  <span class=\"fas fa-circle text-primary me-2\"></span>Revenue: \n                  <span class=\"fw-medium\">$").concat(params[0].data, "</span></h6>\n                <h6 class=\"text-600 mb-0 fw-normal\"> \n                  <span class=\"fas fa-circle text-warning me-2\"></span>Revenue Goal: \n                  <span class=\"fw-medium\">$").concat(params[1].data, "</span></h6>\n              </div>\n            </div>");
+  };
+
+  var getDefaultOptions = function getDefaultOptions(data1, data2) {
+    return function () {
+      return {
+        color: utils.getGrays().white,
+        tooltip: {
+          trigger: 'axis',
+          padding: 0,
+          backgroundColor: 'transparent',
+          borderWidth: 0,
+          transitionDuration: 0,
+          position: function position(pos, params, dom, rect, size) {
+            return getPosition(pos, params, dom, rect, size);
+          },
+          axisPointer: {
+            type: 'none'
+          },
+          formatter: tooltipFormatter
+        },
+        xAxis: {
+          type: 'category',
+          data: utils.getPastDates(25).map(function (date) {
+            return window.dayjs(date).format('DD MMM, YYYY');
+          }),
+          axisLabel: {
+            color: utils.getGrays()['600'],
+            formatter: function formatter(value) {
+              return window.dayjs(value).format('MMM DD');
+            },
+            align: 'left',
+            fontSize: 11,
+            padding: [0, 0, 0, 5],
+            showMaxLabel: false
+          },
+          axisLine: {
+            show: false
+          },
+          axisTick: {
+            show: false
+          },
+          boundaryGap: true
+        },
+        yAxis: {
+          position: 'right',
+          axisPointer: {
+            type: 'none'
+          },
+          axisTick: 'none',
+          splitLine: {
+            show: false
+          },
+          axisLine: {
+            show: false
+          },
+          axisLabel: {
+            show: false
+          }
+        },
+        series: [{
+          type: 'bar',
+          name: 'Revenue',
+          data: data1,
+          lineStyle: {
+            color: utils.getColor('primary')
+          },
+          itemStyle: {
+            barBorderRadius: [4, 4, 0, 0],
+            color: utils.getGrays()['100'],
+            borderColor: utils.getGrays()['300'],
+            borderWidth: 1
+          },
+          emphasis: {
+            itemStyle: {
+              color: utils.getColor('primary')
+            }
+          }
+        }, {
+          type: 'line',
+          name: 'Revenue Goal',
+          data: data2,
+          symbol: 'circle',
+          symbolSize: 6,
+          animation: false,
+          itemStyle: {
+            color: utils.getColor('warning')
+          },
+          lineStyle: {
+            type: 'dashed',
+            width: 2,
+            color: utils.getColor('warning')
+          }
+        }],
+        grid: {
+          right: 5,
+          left: 5,
+          bottom: '8%',
+          top: '5%'
+        }
+      };
+    };
+  };
+
+  var initChart = function initChart(el, options) {
+    var userOptions = utils.getData(el, 'options');
+    var chart = window.echarts.init(el);
+    echartSetOption(chart, userOptions, options);
+  };
+
+  var chartKeys = ['revenue', 'users', 'deals', 'profit'];
+  chartKeys.forEach(function (key) {
+    var el = document.querySelector(".echart-crm-".concat(key));
+    el && initChart(el, getDefaultOptions(data.dataset[key][0], data.dataset[key][1]));
+  });
+};
+/* -------------------------------------------------------------------------- */
+
+/*                             Echarts Bounce Rate                            */
+
+/* -------------------------------------------------------------------------- */
+
+
+var dealStorageFunnelInit = function dealStorageFunnelInit() {
+  var $echartDealStorageFunnel = document.querySelector('.echart-deal-storage-funnel');
+
+  if ($echartDealStorageFunnel) {
+    var userOptions = utils.getData($echartDealStorageFunnel, 'options');
+    var data = userOptions.data,
+        dataAxis1 = userOptions.dataAxis1,
+        dataAxis2 = userOptions.dataAxis2;
+    var chart = window.echarts.init($echartDealStorageFunnel);
+
+    var getDefaultOptions = function getDefaultOptions() {
+      return {
+        yAxis: [{
+          data: dataAxis1,
+          axisLabel: {
+            inside: true,
+            textStyle: {
+              color: utils.getGrays()['700'],
+              fontWeight: 500,
+              fontSize: 11,
+              fontFamily: 'poppins'
+            }
+          },
+          axisTick: {
+            show: false
+          },
+          axisLine: {
+            show: false
+          },
+          z: 10
+        }, {
+          data: dataAxis2,
+          axisLabel: {
+            inside: false,
+            textStyle: {
+              color: utils.getColors().primary,
+              fontWeight: 500,
+              fontSize: 11,
+              fontFamily: 'poppins'
+            },
+            borderRadius: 5,
+            backgroundColor: utils.getSoftColors().primary,
+            padding: [6, 16, 6, 16],
+            width: 115
+          },
+          axisTick: {
+            show: false
+          },
+          axisLine: {
+            show: false
+          },
+          z: 10
+        }],
+        xAxis: {
+          type: 'value',
+          min: 0,
+          max: 35,
+          axisLine: {
+            show: false
+          },
+          splitLine: {
+            show: false
+          },
+          inverse: true,
+          axisTick: {
+            show: false
+          },
+          axisLabel: {
+            show: false
+          }
+        },
+        series: [{
+          type: 'bar',
+          showBackground: true,
+          barWidth: 25,
+          label: {
+            show: true,
+            formatter: '{c} ',
+            position: 'insideLeft'
+          },
+          backgroundStyle: {
+            color: utils.getGrays()['200'],
+            borderRadius: 5
+          },
+          itemStyle: {
+            color: utils.getColors().primary,
+            borderRadius: 5
+          },
+          data: data
+        }],
+        grid: {
+          right: '65px',
+          left: '0',
+          bottom: '0',
+          top: '0'
+        }
+      };
+    };
+
+    echartSetOption(chart, userOptions, getDefaultOptions);
+  }
+};
+/* eslint-disable */
+
+
+var getPosition = function getPosition(pos, params, dom, rect, size) {
+  return {
+    top: pos[1] - size.contentSize[1] - 10,
+    left: pos[0] - size.contentSize[0] / 2
+  };
+};
+
+var echartSetOption = function echartSetOption(chart, userOptions, getDefaultOptions) {
+  var themeController = document.body; // Merge user options with lodash
+
+  chart.setOption(window._.merge(getDefaultOptions(), userOptions));
+  themeController.addEventListener('clickControl', function (_ref16) {
+    var control = _ref16.detail.control;
+
+    if (control === 'theme') {
+      chart.setOption(window._.merge(getDefaultOptions(), userOptions));
+    }
+  });
+};
+
+var tooltipFormatter = function tooltipFormatter(params) {
+  var tooltipItem = "";
+  params.forEach(function (el) {
+    tooltipItem = tooltipItem + "<div class='ms-1'> \n        <h6 class=\"text-700\"><span class=\"fas fa-circle me-1 fs--2\" style=\"color:".concat(el.borderColor ? el.borderColor : el.color, "\"></span>\n          ").concat(el.seriesName, " : ").concat(_typeof(el.value) === 'object' ? el.value[1] : el.value, "\n        </h6>\n      </div>");
+  });
+  return "<div>\n            <p class='mb-2 text-600'>\n              ".concat(window.dayjs(params[0].axisValue).isValid() ? window.dayjs(params[0].axisValue).format('MMMM DD') : params[0].axisValue, "\n            </p>\n            ").concat(tooltipItem, "\n          </div>");
+};
+
+var resizeEcharts = function resizeEcharts() {
+  var $echarts = document.querySelectorAll('[data-echart-responsive]');
+
+  if ($echarts.length) {
+    $echarts.forEach(function (item) {
+      if (utils.getData(item, 'echart-responsive')) {
+        if (!(item.closest('.tab-pane') && window.getComputedStyle(item.closest('.tab-pane')).display === 'none')) {
+          window.echarts.init(item).resize();
+        }
+      }
+    });
+  }
+};
+
+utils.resize(function () {
+  return resizeEcharts();
+});
+var navbarVerticalToggle = document.querySelector('.navbar-vertical-toggle');
+navbarVerticalToggle && navbarVerticalToggle.addEventListener('navbar.vertical.toggle', function () {
+  return resizeEcharts();
+});
+var echartTabs = document.querySelectorAll('[data-tab-has-echarts]');
+echartTabs && echartTabs.forEach(function (tab) {
+  tab.addEventListener('shown.bs.tab', function (e) {
+    var el = e.target;
+    var hash = el.hash;
+    var id = hash || el.dataset.bsTarget;
+    var content = document.getElementById(id.substring(1));
+    var chart = content === null || content === void 0 ? void 0 : content.querySelector('[data-echart-tab]');
+    chart && window.echarts.init(chart).resize();
+  });
+});
+/* -------------------------------------------------------------------------- */
+
+/*                             Echarts Gross Revenue                          */
+
+/* -------------------------------------------------------------------------- */
+
+var grossRevenueChartInit = function grossRevenueChartInit() {
+  var ECHART_GROSS_REVENUE = '.echart-gross-revenue-chart';
+  var $echartsGrossRevenue = document.querySelector(ECHART_GROSS_REVENUE);
+  var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+  if ($echartsGrossRevenue) {
+    // Get options from data attribute
+    var userOptions = utils.getData($echartsGrossRevenue, 'options');
+    var chart = window.echarts.init($echartsGrossRevenue);
+    var SELECT_MONTH = "#".concat(userOptions.monthSelect);
+    var LEGEND_MONTH_TARGET = userOptions.target;
+    var LEGEND_CURRENT_MONTH = "#".concat(userOptions.optionOne);
+    var LEGEND_PREV_MONTH = "#".concat(userOptions.optionTwo);
+    var $legendCurrentMonth = document.getElementById(LEGEND_MONTH_TARGET).querySelector(LEGEND_CURRENT_MONTH);
+    var $legendPrevMonth = document.getElementById(LEGEND_MONTH_TARGET).querySelector(LEGEND_PREV_MONTH);
+
+    var dates = function dates(month) {
+      return utils.getDates(window.dayjs().month(month).date(1), window.dayjs().month(Number(month) + 1).date(0), 1000 * 60 * 60 * 24 * 3);
+    };
+
+    var monthsnumber = [[20, 40, 20, 80, 50, 80, 120, 80, 50, 120, 110, 110], [60, 80, 60, 80, 65, 130, 120, 100, 30, 40, 30, 70], [100, 70, 80, 50, 120, 100, 130, 140, 90, 100, 40, 50], [80, 50, 60, 40, 60, 120, 100, 130, 60, 80, 50, 60], [70, 80, 100, 70, 90, 60, 80, 130, 40, 60, 50, 80], [90, 40, 80, 80, 100, 140, 100, 130, 90, 60, 70, 50], [80, 60, 80, 60, 40, 100, 120, 100, 30, 40, 30, 70], [20, 40, 20, 50, 70, 60, 110, 80, 90, 30, 50, 50], [60, 70, 30, 40, 80, 140, 80, 140, 120, 130, 100, 110], [90, 90, 40, 60, 40, 110, 90, 110, 60, 80, 60, 70], [50, 80, 50, 80, 50, 80, 120, 80, 50, 120, 110, 110], [60, 90, 60, 70, 40, 70, 100, 140, 30, 40, 30, 70], [20, 40, 20, 50, 30, 80, 120, 100, 30, 40, 30, 70]];
+
+    var _tooltipFormatter2 = function _tooltipFormatter2(params) {
+      var currentDate = window.dayjs(params[0].axisValue);
+      var tooltipItem = '';
+      params.forEach(function (el) {
+        tooltipItem += "<h6 class=\"fs--1 text-700\"><span class=\"fas fa-circle me-2\" style=\"color:".concat(el.borderColor, "\"></span>\n        ").concat(currentDate.format('MMM DD'), " : ").concat(el.value, "\n      </h6>");
+      });
+      return "<div class='ms-1'>\n                ".concat(tooltipItem, "\n              </div>");
+    };
+
+    var getDefaultOptions = function getDefaultOptions() {
+      return {
+        title: {
+          text: 'Sales over time',
+          textStyle: {
+            fontWeight: 500,
+            fontSize: 13,
+            fontFamily: 'poppins'
+          }
+        },
+        legend: {
+          show: false,
+          data: ['currentMonth', 'prevMonth']
+        },
+        color: utils.getGrays().white,
+        tooltip: {
+          trigger: 'axis',
+          padding: [7, 10],
+          backgroundColor: utils.getGrays()['100'],
+          borderColor: utils.getGrays()['300'],
+          textStyle: {
+            color: utils.getColors().dark
+          },
+          borderWidth: 1,
+          formatter: _tooltipFormatter2,
+          transitionDuration: 0,
+          position: function position(pos, params, dom, rect, size) {
+            return getPosition(pos, params, dom, rect, size);
+          }
+        },
+        xAxis: {
+          type: 'category',
+          data: dates(0),
+          boundaryGap: false,
+          axisPointer: {
+            lineStyle: {
+              color: utils.getGrays()['300'],
+              type: 'dashed'
+            }
+          },
+          axisLine: {
+            lineStyle: {
+              color: utils.getGrays()['300'],
+              type: 'solid'
+            }
+          },
+          axisTick: {
+            show: false
+          },
+          axisLabel: {
+            color: utils.getGrays()['400'],
+            formatter: function formatter(value) {
+              var date = new Date(value);
+              return "".concat(months[date.getMonth()].substring(0, 3), " ").concat(date.getDate());
+            },
+            margin: 15
+          },
+          splitLine: {
+            show: true,
+            lineStyle: {
+              color: utils.getGrays()['300'],
+              type: 'dashed'
+            }
+          }
+        },
+        yAxis: {
+          type: 'value',
+          axisPointer: {
+            show: false
+          },
+          splitLine: {
+            lineStyle: {
+              color: utils.getGrays()['300']
+            }
+          },
+          boundaryGap: false,
+          axisLabel: {
+            show: true,
+            color: utils.getGrays()['400'],
+            margin: 15
+          },
+          axisTick: {
+            show: false
+          },
+          axisLine: {
+            show: false
+          }
+        },
+        series: [{
+          name: 'prevMonth',
+          type: 'line',
+          data: monthsnumber[0],
+          lineStyle: {
+            color: utils.getGrays()['300']
+          },
+          itemStyle: {
+            borderColor: utils.getGrays()['300'],
+            borderWidth: 2
+          },
+          symbol: 'none',
+          smooth: false,
+          hoverAnimation: true
+        }, {
+          name: 'currentMonth',
+          type: 'line',
+          data: monthsnumber[1],
+          lineStyle: {
+            color: utils.getColors().primary
+          },
+          itemStyle: {
+            borderColor: utils.getColors().primary,
+            borderWidth: 2
+          },
+          symbol: 'none',
+          smooth: false,
+          hoverAnimation: true
+        }],
+        grid: {
+          right: '8px',
+          left: '40px',
+          bottom: '15%',
+          top: '20%'
+        }
+      };
+    };
+
+    echartSetOption(chart, userOptions, getDefaultOptions); // Change chart options accordiong to the selected month
+
+    var monthSelect = document.querySelector(SELECT_MONTH);
+    var month = 0;
+    var currentMonthData = monthsnumber[Number(month) + 1];
+    var prevMonthData = monthsnumber[monthSelect.selectedIndex];
+    monthSelect.addEventListener('change', function (e) {
+      month = e.currentTarget.value;
+      currentMonthData = monthsnumber[Number(month) + 1];
+      prevMonthData = monthsnumber[month];
+      $legendCurrentMonth.querySelector('.text').innerText = months[month];
+      $legendPrevMonth.querySelector('.text').innerText = months[month - 1] ? months[month - 1] : 'Dec';
+      chart.setOption({
+        xAxis: {
+          data: dates(month)
+        },
+        series: [{
+          data: currentMonthData
+        }, {
+          data: prevMonthData
+        }]
+      });
+    });
+    $legendCurrentMonth.addEventListener('click', function () {
+      $legendCurrentMonth.classList.toggle('opacity-50');
+      chart.dispatchAction({
+        type: 'legendToggleSelect',
+        name: 'currentMonth'
+      });
+    });
+    $legendPrevMonth.addEventListener('click', function () {
+      $legendPrevMonth.classList.toggle('opacity-50');
+      chart.dispatchAction({
+        type: 'legendToggleSelect',
+        name: 'prevMonth'
+      });
+    });
+  }
+};
+/* -------------------------------------------------------------------------- */
+
+/*                                Traffic Channels                           */
+
+/* -------------------------------------------------------------------------- */
+
+
+var leadConversionInit = function leadConversionInit() {
+  var $leadConversion = document.querySelector('.echart-lead-conversion');
+
+  if ($leadConversion) {
+    var userOptions = utils.getData($leadConversion, 'options');
+    var chart = window.echarts.init($leadConversion);
+
+    var getDefaultOptions = function getDefaultOptions() {
+      return {
+        color: [utils.rgbaColor(utils.getColors().primary, 0.7), utils.rgbaColor(utils.getColors().info, 0.6), utils.rgbaColor(utils.getColors().secondary, 0.2), utils.rgbaColor(utils.getColors().warning, 0.6)],
+        legend: {
+          data: ['Campaigns', 'Lead', 'Opportunity', 'Deal'],
+          left: '0%',
+          icon: 'circle',
+          inactiveColor: utils.getGrays()['400'],
+          textStyle: {
+            color: utils.getGrays()['700']
+          },
+          itemGap: 10
+        },
+        yAxis: {
+          type: 'category',
+          data: ['kerry Ingram', 'Bradie Pitter', 'Harrington', 'Ashley Shaw', 'Jenny Horas', 'Chris Pratt'],
+          axisLine: {
+            show: false
+          },
+          boundaryGap: false,
+          splitLine: {
+            lineStyle: {
+              color: utils.getGrays()['200']
+            }
+          },
+          axisTick: {
+            show: false
+          },
+          axisLabel: {
+            color: utils.getGrays()['600']
+          }
+        },
+        xAxis: {
+          type: 'value',
+          splitLine: {
+            lineStyle: {
+              color: utils.getGrays()['200']
+            }
+          },
+          axisLine: {
+            show: false
+          },
+          axisTick: {
+            show: false
+          },
+          axisLabel: {
+            show: false
+          }
+        },
+        tooltip: {
+          trigger: 'axis',
+          padding: [7, 10],
+          axisPointer: {
+            type: 'none'
+          },
+          backgroundColor: utils.getGrays()['100'],
+          borderColor: utils.getGrays()['300'],
+          textStyle: {
+            color: utils.getColors().dark
+          },
+          borderWidth: 1,
+          transitionDuration: 0,
+          position: function position(pos, params, dom, rect, size) {
+            return getPosition(pos, params, dom, rect, size);
+          },
+          formatter: tooltipFormatter
+        },
+        series: [{
+          name: 'Campaigns',
+          type: 'bar',
+          stack: 'total',
+          data: [1405, 1300, 1620, 1430, 1500, 1520],
+          barWidth: '20%'
+        }, {
+          name: 'Lead',
+          type: 'bar',
+          stack: 'total',
+          data: [320, 302, 301, 334, 340, 390],
+          barWidth: '20%'
+        }, {
+          name: 'Opportunity',
+          type: 'bar',
+          stack: 'total',
+          data: [220, 182, 351, 234, 290, 300],
+          barWidth: '20%'
+        }, {
+          name: 'Deal',
+          type: 'bar',
+          stack: 'total',
+          data: [120, 182, 191, 134, 190, 170],
+          barWidth: '20%'
+        }],
+        grid: {
+          right: 5,
+          left: 5,
+          bottom: 8,
+          top: 60,
+          containLabel: true
+        }
+      };
+    };
+
+    echartSetOption(chart, userOptions, getDefaultOptions);
+  }
+};
+/* -------------------------------------------------------------------------- */
+
+/*                             Echarts Line Payment                           */
+
+/* -------------------------------------------------------------------------- */
+
+
+var linePaymentChartInit = function linePaymentChartInit() {
+  var $echartsLinePaymentChart = document.querySelector('.echart-line-payment');
+  var dataset = {
+    all: [4, 1, 6, 2, 7, 12, 4, 6, 5, 4, 5, 10],
+    successful: [3, 1, 4, 1, 5, 9, 2, 6, 5, 3, 5, 8],
+    failed: [1, 0, 2, 1, 2, 1, 1, 0, 0, 1, 0, 2]
+  };
+  var labels = ['9:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '1:00 PM', '2:00 PM', '3:00 PM', '4:00 PM', '5:00 PM', '6:00 PM', '7:00 PM', '8:00 PM'];
+
+  if ($echartsLinePaymentChart) {
+    var userOptions = utils.getData($echartsLinePaymentChart, 'options');
+    var chart = window.echarts.init($echartsLinePaymentChart);
+
+    var getDefaultOptions = function getDefaultOptions() {
+      return {
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: {
+            type: 'none'
+          },
+          padding: [7, 10],
+          backgroundColor: utils.getGrays()['100'],
+          borderColor: utils.getGrays()['300'],
+          borderWidth: 1,
+          transitionDuration: 0,
+          formatter: function formatter(params) {
+            return "".concat(params[0].axisValue, " - ").concat(params[0].value, " USD");
+          },
+          textStyle: {
+            fontWeight: 500,
+            fontSize: 12,
+            color: utils.getColors().dark
+          }
+        },
+        xAxis: {
+          type: 'category',
+          data: labels,
+          splitLine: {
+            show: true,
+            lineStyle: {
+              color: utils.rgbaColor('#fff', 0.1)
+            },
+            interval: 0
+          },
+          axisLine: {
+            lineStyle: {
+              color: utils.rgbaColor('#fff', 0.1)
+            }
+          },
+          axisTick: {
+            show: true,
+            length: 10,
+            lineStyle: {
+              color: utils.rgbaColor('#fff', 0.1)
+            }
+          },
+          axisLabel: {
+            color: utils.getGrays()['400'],
+            fontWeight: 600,
+            formatter: function formatter(value) {
+              return value.substring(0, value.length - 3);
+            },
+            fontSize: 12,
+            interval: window.innerWidth < 768 ? 'auto' : 0,
+            margin: 15
+          },
+          boundaryGap: false
+        },
+        yAxis: {
+          type: 'value',
+          axisPointer: {
+            show: false
+          },
+          splitLine: {
+            show: false
+          },
+          axisLabel: {
+            show: false
+          },
+          axisTick: {
+            show: false
+          },
+          axisLine: {
+            show: false
+          }
+        },
+        series: [{
+          type: 'line',
+          smooth: true,
+          data: dataset.successful.map(function (d) {
+            return (d * 3.14).toFixed(2);
+          }),
+          symbol: 'emptyCircle',
+          itemStyle: {
+            color: localStorage.getItem('theme') === 'light' ? utils.getGrays().white : utils.getColors().primary
+          },
+          lineStyle: {
+            color: localStorage.getItem('theme') === 'light' ? utils.rgbaColor(utils.getGrays().white, 0.8) : utils.getColors().primary
+          },
+          areaStyle: {
+            color: {
+              type: 'linear',
+              x: 0,
+              y: 0,
+              x2: 0,
+              y2: 1,
+              colorStops: [{
+                offset: 0,
+                color: localStorage.getItem('theme') === 'light' ? 'rgba(255, 255, 255, 0.5)' : utils.rgbaColor(utils.getColors().primary, 0.5)
+              }, {
+                offset: 1,
+                color: localStorage.getItem('theme') === 'light' ? 'rgba(255, 255, 255, 0)' : utils.rgbaColor(utils.getColors().primary, 0)
+              }]
+            }
+          },
+          emphasis: {
+            lineStyle: {
+              width: 2
+            }
+          }
+        }],
+        grid: {
+          right: 15,
+          left: 15,
+          bottom: '15%',
+          top: 0
+        }
+      };
+    };
+
+    echartSetOption(chart, userOptions, getDefaultOptions);
+    utils.resize(function () {
+      if (window.innerWidth < 768) {
+        chart.setOption({
+          xAxis: {
+            axisLabel: {
+              interval: 'auto'
+            }
+          }
+        });
+      }
+    });
+    var selectMenu = document.querySelector('#dashboard-chart-select');
+
+    if (selectMenu) {
+      selectMenu.addEventListener('change', function (e) {
+        var value = e.currentTarget.value;
+        chart.setOption({
+          series: [{
+            data: dataset[value].map(function (d) {
+              return (d * 3.14).toFixed(2);
+            })
+          }]
+        });
+      });
+    }
+  }
+};
+/* -------------------------------------------------------------------------- */
+
+/*                                Session By Country Map                      */
+
+/* -------------------------------------------------------------------------- */
+
+
+var locationBySessionInit = function locationBySessionInit() {
+  var $locationBySessionMap = document.querySelector('.echart-location-by-session-map');
+  var data = [{
+    name: 'Afghanistan',
+    value: 28397.812
+  }, {
+    name: 'Angola',
+    value: 19549.124
+  }, {
+    name: 'Albania',
+    value: 3150.143
+  }, {
+    name: 'United Arab Emirates',
+    value: 8441.537
+  }, {
+    name: 'Argentina',
+    value: 40374.224
+  }, {
+    name: 'Armenia',
+    value: 2963.496
+  }, {
+    name: 'French Southern and Antarctic Lands',
+    value: 268.065
+  }, {
+    name: 'Australia',
+    value: 22404.488
+  }, {
+    name: 'Austria',
+    value: 8401.924
+  }, {
+    name: 'Azerbaijan',
+    value: 9094.718
+  }, {
+    name: 'Burundi',
+    value: 9232.753
+  }, {
+    name: 'Belgium',
+    value: 10941.288
+  }, {
+    name: 'Benin',
+    value: 9509.798
+  }, {
+    name: 'Burkina Faso',
+    value: 15540.284
+  }, {
+    name: 'Bangladesh',
+    value: 151125.475
+  }, {
+    name: 'Bulgaria',
+    value: 7389.175
+  }, {
+    name: 'The Bahamas',
+    value: 66402.316
+  }, {
+    name: 'Bosnia and Herzegovina',
+    value: 3845.929
+  }, {
+    name: 'Belarus',
+    value: 9491.07
+  }, {
+    name: 'Belize',
+    value: 308.595
+  }, {
+    name: 'Bermuda',
+    value: 64.951
+  }, {
+    name: 'Bolivia',
+    value: 716.939
+  }, {
+    name: 'Brazil',
+    value: 195210.154
+  }, {
+    name: 'Brunei',
+    value: 27.223
+  }, {
+    name: 'Bhutan',
+    value: 716.939
+  }, {
+    name: 'Botswana',
+    value: 1969.341
+  }, {
+    name: 'Central African Rep.',
+    value: 4349.921
+  }, {
+    name: 'Canada',
+    value: 34126.24
+  }, {
+    name: 'Switzerland',
+    value: 7830.534
+  }, {
+    name: 'Chile',
+    value: 17150.76
+  }, {
+    name: 'China',
+    value: 1359821.465
+  }, {
+    name: "Côte d'Ivoire",
+    value: 60508.978
+  }, {
+    name: 'Cameroon',
+    value: 20624.343
+  }, {
+    name: 'Dem. Rep. Congo',
+    value: 62191.161
+  }, {
+    name: 'Congo',
+    value: 3573.024
+  }, {
+    name: 'Colombia',
+    value: 46444.798
+  }, {
+    name: 'Costa Rica',
+    value: 4669.685
+  }, {
+    name: 'Cuba',
+    value: 11281.768
+  }, {
+    name: 'Northern Cyprus',
+    value: 1.468
+  }, {
+    name: 'Cyprus',
+    value: 1103.685
+  }, {
+    name: 'Czech Republic',
+    value: 10553.701
+  }, {
+    name: 'Germany',
+    value: 83017.404
+  }, {
+    name: 'Djibouti',
+    value: 834.036
+  }, {
+    name: 'Denmark',
+    value: 5550.959
+  }, {
+    name: 'Dominican Republic',
+    value: 10016.797
+  }, {
+    name: 'Algeria',
+    value: 37062.82
+  }, {
+    name: 'Ecuador',
+    value: 15001.072
+  }, {
+    name: 'Egypt',
+    value: 78075.705
+  }, {
+    name: 'Eritrea',
+    value: 5741.159
+  }, {
+    name: 'Spain',
+    value: 46182.038
+  }, {
+    name: 'Estonia',
+    value: 1298.533
+  }, {
+    name: 'Ethiopia',
+    value: 87095.281
+  }, {
+    name: 'Finland',
+    value: 5367.693
+  }, {
+    name: 'Fiji',
+    value: 860.559
+  }, {
+    name: 'Falkland Islands',
+    value: 49.581
+  }, {
+    name: 'France',
+    value: 63230.866
+  }, {
+    name: 'Gabon',
+    value: 1556.222
+  }, {
+    name: 'United Kingdom',
+    value: 62066.35
+  }, {
+    name: 'Georgia',
+    value: 4388.674
+  }, {
+    name: 'Ghana',
+    value: 24262.901
+  }, {
+    name: 'Eq. Guinea',
+    value: 10876.033
+  }, {
+    name: 'Guinea',
+    value: 10876.033
+  }, {
+    name: 'Gambia',
+    value: 1680.64
+  }, {
+    name: 'Guinea Bissau',
+    value: 10876.033
+  }, {
+    name: 'Equatorial Guinea',
+    value: 696.167
+  }, {
+    name: 'Greece',
+    value: 11109.999
+  }, {
+    name: 'Greenland',
+    value: 56.546
+  }, {
+    name: 'Guatemala',
+    value: 14341.576
+  }, {
+    name: 'French Guiana',
+    value: 231.169
+  }, {
+    name: 'Guyana',
+    value: 786.126
+  }, {
+    name: 'Honduras',
+    value: 7621.204
+  }, {
+    name: 'Croatia',
+    value: 4338.027
+  }, {
+    name: 'Haiti',
+    value: 9896.4
+  }, {
+    name: 'Hungary',
+    value: 10014.633
+  }, {
+    name: 'Indonesia',
+    value: 240676.485
+  }, {
+    name: 'India',
+    value: 1205624.648
+  }, {
+    name: 'Ireland',
+    value: 4467.561
+  }, {
+    name: 'Iran',
+    value: 240676.485
+  }, {
+    name: 'Iraq',
+    value: 30962.38
+  }, {
+    name: 'Iceland',
+    value: 318.042
+  }, {
+    name: 'Israel',
+    value: 7420.368
+  }, {
+    name: 'Italy',
+    value: 60508.978
+  }, {
+    name: 'Jamaica',
+    value: 2741.485
+  }, {
+    name: 'Jordan',
+    value: 6454.554
+  }, {
+    name: 'Japan',
+    value: 127352.833
+  }, {
+    name: 'Kazakhstan',
+    value: 15921.127
+  }, {
+    name: 'Kenya',
+    value: 40909.194
+  }, {
+    name: 'Kyrgyzstan',
+    value: 5334.223
+  }, {
+    name: 'Cambodia',
+    value: 14364.931
+  }, {
+    name: 'South Korea',
+    value: 51452.352
+  }, {
+    name: 'Kosovo',
+    value: 97.743
+  }, {
+    name: 'Kuwait',
+    value: 2991.58
+  }, {
+    name: 'Laos',
+    value: 6395.713
+  }, {
+    name: 'Lebanon',
+    value: 4341.092
+  }, {
+    name: 'Liberia',
+    value: 3957.99
+  }, {
+    name: 'Libya',
+    value: 6040.612
+  }, {
+    name: 'Sri Lanka',
+    value: 20758.779
+  }, {
+    name: 'Lesotho',
+    value: 2008.921
+  }, {
+    name: 'Lithuania',
+    value: 3068.457
+  }, {
+    name: 'Luxembourg',
+    value: 507.885
+  }, {
+    name: 'Latvia',
+    value: 2090.519
+  }, {
+    name: 'Morocco',
+    value: 31642.36
+  }, {
+    name: 'Moldova',
+    value: 103.619
+  }, {
+    name: 'Madagascar',
+    value: 21079.532
+  }, {
+    name: 'Mexico',
+    value: 117886.404
+  }, {
+    name: 'Macedonia',
+    value: 507.885
+  }, {
+    name: 'Mali',
+    value: 13985.961
+  }, {
+    name: 'Myanmar',
+    value: 51931.231
+  }, {
+    name: 'Montenegro',
+    value: 620.078
+  }, {
+    name: 'Mongolia',
+    value: 2712.738
+  }, {
+    name: 'Mozambique',
+    value: 23967.265
+  }, {
+    name: 'Mauritania',
+    value: 3609.42
+  }, {
+    name: 'Malawi',
+    value: 15013.694
+  }, {
+    name: 'Malaysia',
+    value: 28275.835
+  }, {
+    name: 'Namibia',
+    value: 2178.967
+  }, {
+    name: 'New Caledonia',
+    value: 246.379
+  }, {
+    name: 'Niger',
+    value: 15893.746
+  }, {
+    name: 'Nigeria',
+    value: 159707.78
+  }, {
+    name: 'Nicaragua',
+    value: 5822.209
+  }, {
+    name: 'Netherlands',
+    value: 16615.243
+  }, {
+    name: 'Norway',
+    value: 4891.251
+  }, {
+    name: 'Nepal',
+    value: 26846.016
+  }, {
+    name: 'New Zealand',
+    value: 4368.136
+  }, {
+    name: 'Oman',
+    value: 2802.768
+  }, {
+    name: 'Pakistan',
+    value: 173149.306
+  }, {
+    name: 'Panama',
+    value: 3678.128
+  }, {
+    name: 'Peru',
+    value: 29262.83
+  }, {
+    name: 'Philippines',
+    value: 93444.322
+  }, {
+    name: 'Papua New Guinea',
+    value: 6858.945
+  }, {
+    name: 'Poland',
+    value: 38198.754
+  }, {
+    name: 'Puerto Rico',
+    value: 3709.671
+  }, {
+    name: 'North Korea',
+    value: 1.468
+  }, {
+    name: 'Portugal',
+    value: 10589.792
+  }, {
+    name: 'Paraguay',
+    value: 6459.721
+  }, {
+    name: 'Qatar',
+    value: 1749.713
+  }, {
+    name: 'Romania',
+    value: 21861.476
+  }, {
+    name: 'Russia',
+    value: 21861.476
+  }, {
+    name: 'Rwanda',
+    value: 10836.732
+  }, {
+    name: 'Western Sahara',
+    value: 514.648
+  }, {
+    name: 'Saudi Arabia',
+    value: 27258.387
+  }, {
+    name: 'Sudan',
+    value: 35652.002
+  }, {
+    name: 'S. Sudan',
+    value: 9940.929
+  }, {
+    name: 'Senegal',
+    value: 12950.564
+  }, {
+    name: 'Solomon Islands',
+    value: 526.447
+  }, {
+    name: 'Sierra Leone',
+    value: 5751.976
+  }, {
+    name: 'El Salvador',
+    value: 6218.195
+  }, {
+    name: 'Somaliland',
+    value: 9636.173
+  }, {
+    name: 'Somalia',
+    value: 9636.173
+  }, {
+    name: 'Republic of Serbia',
+    value: 3573.024
+  }, {
+    name: 'Suriname',
+    value: 524.96
+  }, {
+    name: 'Slovakia',
+    value: 5433.437
+  }, {
+    name: 'Slovenia',
+    value: 2054.232
+  }, {
+    name: 'Sweden',
+    value: 9382.297
+  }, {
+    name: 'Swaziland',
+    value: 1193.148
+  }, {
+    name: 'Syria',
+    value: 7830.534
+  }, {
+    name: 'Chad',
+    value: 11720.781
+  }, {
+    name: 'Togo',
+    value: 6306.014
+  }, {
+    name: 'Thailand',
+    value: 66402.316
+  }, {
+    name: 'Tajikistan',
+    value: 7627.326
+  }, {
+    name: 'Turkmenistan',
+    value: 5041.995
+  }, {
+    name: 'East Timor',
+    value: 10016.797
+  }, {
+    name: 'Trinidad and Tobago',
+    value: 1328.095
+  }, {
+    name: 'Tunisia',
+    value: 10631.83
+  }, {
+    name: 'Turkey',
+    value: 72137.546
+  }, {
+    name: 'Tanzania',
+    value: 44973.33
+  }, {
+    name: 'Uganda',
+    value: 33987.213
+  }, {
+    name: 'Ukraine',
+    value: 46050.22
+  }, {
+    name: 'Uruguay',
+    value: 3371.982
+  }, {
+    name: 'United States',
+    value: 312247.116
+  }, {
+    name: 'Uzbekistan',
+    value: 27769.27
+  }, {
+    name: 'Venezuela',
+    value: 236.299
+  }, {
+    name: 'Vietnam',
+    value: 89047.397
+  }, {
+    name: 'Vanuatu',
+    value: 236.299
+  }, {
+    name: 'West Bank',
+    value: 13.565
+  }, {
+    name: 'Yemen',
+    value: 22763.008
+  }, {
+    name: 'South Africa',
+    value: 51452.352
+  }, {
+    name: 'Zambia',
+    value: 13216.985
+  }, {
+    name: 'Zimbabwe',
+    value: 13076.978
+  }];
+  var total = 6961500;
+  var maxZoomLevel = 5;
+  var minZoomLevel = 1;
+
+  if ($locationBySessionMap) {
+    var _document$querySelect2, _document$querySelect3, _document$querySelect4;
+
+    var userOptions = utils.getData($locationBySessionMap, 'options');
+    var chart = window.echarts.init($locationBySessionMap);
+
+    var getDefaultOptions = function getDefaultOptions() {
+      return {
+        tooltip: {
+          trigger: 'item',
+          padding: [7, 10],
+          backgroundColor: utils.getGrays()['100'],
+          borderColor: utils.getGrays()['300'],
+          textStyle: {
+            color: utils.getColors().dark
+          },
+          borderWidth: 1,
+          transitionDuration: 0,
+          formatter: function formatter(params) {
+            var _params$data, _params$data2;
+
+            return "<strong>".concat((_params$data = params.data) === null || _params$data === void 0 ? void 0 : _params$data.name, " :</strong> ").concat((((_params$data2 = params.data) === null || _params$data2 === void 0 ? void 0 : _params$data2.value) / total * 100).toFixed(2), "%");
+          }
+        },
+        visualMap: {
+          show: false,
+          min: 800,
+          max: 50000,
+          inRange: {
+            color: [utils.getColors().primary, utils.rgbaColor(utils.getColors().primary, 0.8), utils.rgbaColor(utils.getColors().primary, 0.6), utils.rgbaColor(utils.getColors().primary, 0.4), utils.rgbaColor(utils.getColors().primary, 0.2)].reverse()
+          }
+        },
+        series: [{
+          type: 'map',
+          map: 'world',
+          data: data,
+          roam: 'move',
+          scaleLimit: {
+            min: minZoomLevel,
+            max: maxZoomLevel
+          },
+          left: 0,
+          right: 0,
+          label: {
+            show: false
+          },
+          itemStyle: {
+            borderColor: utils.getGrays()['300']
+          },
+          emphasis: {
+            label: {
+              show: false
+            },
+            itemStyle: {
+              areaColor: utils.getColor('warning')
+            }
+          }
+        }]
+      };
+    };
+
+    echartSetOption(chart, userOptions, getDefaultOptions);
+    var zoomLevel = 1;
+    (_document$querySelect2 = document.querySelector('.location-by-session-map-reset')) === null || _document$querySelect2 === void 0 ? void 0 : _document$querySelect2.addEventListener('click', function () {
+      zoomLevel = 1;
+      chart.dispatchAction({
+        type: 'restore'
+      });
+      chart.setOption({
+        series: {
+          zoom: 1
+        }
+      });
+    });
+    (_document$querySelect3 = document.querySelector('.location-by-session-map-zoom')) === null || _document$querySelect3 === void 0 ? void 0 : _document$querySelect3.addEventListener('click', function () {
+      if (zoomLevel < maxZoomLevel) {
+        zoomLevel += 1;
+      }
+
+      chart.setOption({
+        series: {
+          zoom: zoomLevel
+        }
+      });
+    });
+    (_document$querySelect4 = document.querySelector('.location-by-session-map-zoomOut')) === null || _document$querySelect4 === void 0 ? void 0 : _document$querySelect4.addEventListener('click', function () {
+      if (zoomLevel > minZoomLevel) {
+        zoomLevel -= 1;
+      }
+
+      chart.setOption({
+        series: {
+          zoom: zoomLevel
+        }
+      });
+    });
+  }
+};
+/* -------------------------------------------------------------------------- */
+
+/*                                Product Share                               */
+
+/* -------------------------------------------------------------------------- */
+
+
+var marketShareEcommerceInit = function marketShareEcommerceInit() {
+  var ECHART_PRODUCT_SHARE = '.echart-product-share';
+  var $echartProductShare = document.querySelector(ECHART_PRODUCT_SHARE);
+
+  if ($echartProductShare) {
+    var userOptions = utils.getData($echartProductShare, 'options');
+    var chart = window.echarts.init($echartProductShare);
+
+    var getDefaultOptions = function getDefaultOptions() {
+      return {
+        color: [utils.getColors().primary, utils.getColors().info, utils.getColors().warning],
+        tooltip: {
+          trigger: 'item',
+          padding: [7, 10],
+          backgroundColor: utils.getGrays()['100'],
+          borderColor: utils.getGrays()['300'],
+          textStyle: {
+            color: utils.getColors().dark
+          },
+          borderWidth: 1,
+          transitionDuration: 0,
+          formatter: function formatter(params) {
+            return "<strong>".concat(params.data.name, ":</strong> ").concat(params.percent, "%");
+          }
+        },
+        position: function position(pos, params, dom, rect, size) {
+          return getPosition(pos, params, dom, rect, size);
+        },
+        legend: {
+          show: false
+        },
+        series: [{
+          type: 'pie',
+          radius: ['100%', '80%'],
+          avoidLabelOverlap: false,
+          hoverAnimation: false,
+          itemStyle: {
+            borderWidth: 2,
+            borderColor: utils.getColor('card-bg')
+          },
+          label: {
+            normal: {
+              show: false,
+              position: 'center',
+              textStyle: {
+                fontSize: '20',
+                fontWeight: '500',
+                color: utils.getGrays()['700']
+              }
+            },
+            emphasis: {
+              show: false
+            }
+          },
+          labelLine: {
+            normal: {
+              show: false
+            }
+          },
+          data: [{
+            value: 5300000,
+            name: 'Falcon'
+          }, {
+            value: 1900000,
+            name: 'Sparrow'
+          }, {
+            value: 2000000,
+            name: 'Phoenix'
+          }]
+        }]
+      };
+    };
+
+    echartSetOption(chart, userOptions, getDefaultOptions);
+  }
+};
+/* -------------------------------------------------------------------------- */
+
+/*                                Market Share                                */
+
+/* -------------------------------------------------------------------------- */
+
+
+var marketShareInit = function marketShareInit() {
+  var ECHART_MARKET_SHARE = '.echart-market-share';
+  var $echartMarketShare = document.querySelector(ECHART_MARKET_SHARE);
+
+  if ($echartMarketShare) {
+    var userOptions = utils.getData($echartMarketShare, 'options');
+    var chart = window.echarts.init($echartMarketShare);
+
+    var getDefaultOptions = function getDefaultOptions() {
+      return {
+        color: [utils.getColors().primary, utils.getColors().info, utils.getGrays()[300]],
+        tooltip: {
+          trigger: 'item',
+          padding: [7, 10],
+          backgroundColor: utils.getGrays()['100'],
+          borderColor: utils.getGrays()['300'],
+          textStyle: {
+            color: utils.getColors().dark
+          },
+          borderWidth: 1,
+          transitionDuration: 0,
+          formatter: function formatter(params) {
+            return "<strong>".concat(params.data.name, ":</strong> ").concat(params.percent, "%");
+          }
+        },
+        position: function position(pos, params, dom, rect, size) {
+          return getPosition(pos, params, dom, rect, size);
+        },
+        legend: {
+          show: false
+        },
+        series: [{
+          type: 'pie',
+          radius: ['100%', '87%'],
+          avoidLabelOverlap: false,
+          hoverAnimation: false,
+          itemStyle: {
+            borderWidth: 2,
+            borderColor: utils.getColor('card-bg')
+          },
+          label: {
+            normal: {
+              show: false,
+              position: 'center',
+              textStyle: {
+                fontSize: '20',
+                fontWeight: '500',
+                color: utils.getGrays()['700']
+              }
+            },
+            emphasis: {
+              show: false
+            }
+          },
+          labelLine: {
+            normal: {
+              show: false
+            }
+          },
+          data: [{
+            value: 5300000,
+            name: 'Samsung'
+          }, {
+            value: 1900000,
+            name: 'Huawei'
+          }, {
+            value: 2000000,
+            name: 'Apple'
+          }]
+        }]
+      };
+    };
+
+    echartSetOption(chart, userOptions, getDefaultOptions);
+  }
+};
+/* -------------------------------------------------------------------------- */
+
+/*                                Market Share                                */
+
+/* -------------------------------------------------------------------------- */
+
+
+var mostLeadsInit = function mostLeadsInit() {
+  var ECHART_MOST_LEADS = '.echart-most-leads';
+  var $echartMostLeads = document.querySelector(ECHART_MOST_LEADS);
+
+  if ($echartMostLeads) {
+    var userOptions = utils.getData($echartMostLeads, 'options');
+    var chart = window.echarts.init($echartMostLeads);
+
+    var getDefaultOptions = function getDefaultOptions() {
+      return {
+        color: [utils.getColors().primary, utils.getColors().info, utils.getColors().warning, utils.getColors().info // utils.getGrays()[300],
+        ],
+        tooltip: {
+          trigger: 'item',
+          padding: [7, 10],
+          backgroundColor: utils.getGrays()['100'],
+          borderColor: utils.getGrays()['300'],
+          textStyle: {
+            color: utils.getColors().dark
+          },
+          borderWidth: 1,
+          transitionDuration: 0,
+          formatter: function formatter(params) {
+            return "<strong>".concat(params.data.name, ":</strong> ").concat(params.percent, "%");
+          }
+        },
+        position: function position(pos, params, dom, rect, size) {
+          return getPosition(pos, params, dom, rect, size);
+        },
+        legend: {
+          show: false
+        },
+        series: [{
+          type: 'pie',
+          radius: ['100%', '67%'],
+          avoidLabelOverlap: false,
+          hoverAnimation: false,
+          itemStyle: {
+            borderWidth: 2,
+            borderColor: utils.getColor('card-bg')
+          },
+          label: {
+            normal: {
+              show: false,
+              position: 'center',
+              textStyle: {
+                fontSize: '20',
+                fontWeight: '500',
+                color: utils.getGrays()['700']
+              }
+            },
+            emphasis: {
+              show: false
+            }
+          },
+          labelLine: {
+            normal: {
+              show: false
+            }
+          },
+          data: [{
+            value: 60,
+            name: 'Email'
+          }, {
+            value: 30,
+            name: 'Social'
+          }, {
+            value: 10,
+            name: 'Call'
+          }, {
+            value: 120,
+            name: 'Other'
+          }]
+        }]
+      };
+    };
+
+    echartSetOption(chart, userOptions, getDefaultOptions);
+  }
+};
+/* -------------------------------------------------------------------------- */
+
+/*                             Echarts Real Time Users                        */
+
+/* -------------------------------------------------------------------------- */
+
+
+var realTimeUsersChartInit = function realTimeUsersChartInit() {
+  var $echartsRealTimeUsers = document.querySelector('.echart-real-time-users');
+
+  if ($echartsRealTimeUsers) {
+    var userOptions = utils.getData($echartsRealTimeUsers, 'options');
+    var chart = window.echarts.init($echartsRealTimeUsers);
+    var data = [921, 950, 916, 913, 909, 962, 926, 936, 977, 976, 999, 981, 998, 1000, 900, 906, 973, 911, 994, 982, 917, 972, 952, 963, 991];
+    var axisData = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25];
+
+    var _tooltipFormatter3 = function _tooltipFormatter3(params) {
+      return "\n      <div>\n          <h6 class=\"fs--1 text-700 mb-0\"><span class=\"fas fa-circle me-1 text-info\"></span>\n            Users : ".concat(params[0].value, "\n          </h6>\n      </div>\n      ");
+    };
+
+    var getDefaultOptions = function getDefaultOptions() {
+      return {
+        tooltip: {
+          trigger: 'axis',
+          padding: [7, 10],
+          axisPointer: {
+            type: 'none'
+          },
+          backgroundColor: utils.getGrays()['100'],
+          borderColor: utils.getGrays()['300'],
+          textStyle: {
+            color: utils.getColors().dark
+          },
+          borderWidth: 1,
+          transitionDuration: 0,
+          position: function position(pos, params, dom, rect, size) {
+            return getPosition(pos, params, dom, rect, size);
+          },
+          formatter: _tooltipFormatter3
+        },
+        xAxis: {
+          type: 'category',
+          axisLabel: {
+            show: false
+          },
+          axisTick: {
+            show: false
+          },
+          axisLine: {
+            show: false
+          },
+          boundaryGap: [0.2, 0.2],
+          data: axisData
+        },
+        yAxis: {
+          type: 'value',
+          scale: true,
+          boundaryGap: false,
+          axisLabel: {
+            show: false
+          },
+          splitLine: {
+            show: false
+          },
+          min: 500,
+          max: 1100
+        },
+        series: [{
+          type: 'bar',
+          barCategoryGap: '12%',
+          data: data,
+          itemStyle: {
+            color: utils.rgbaColor('#fff', 0.3)
+          }
+        }],
+        grid: {
+          right: '0px',
+          left: '0px',
+          bottom: 0,
+          top: 0
+        }
+      };
+    };
+
+    echartSetOption(chart, userOptions, getDefaultOptions);
+    var userCounterDom = document.querySelector('.real-time-user');
+    setInterval(function () {
+      var rndData = utils.getRandomNumber(900, 1000);
+      data.shift();
+      data.push(rndData);
+      axisData.shift();
+      axisData.push(utils.getRandomNumber(100, 500));
+      userCounterDom.innerHTML = rndData;
+      chart.setOption({
+        xAxis: {
+          data: axisData
+        },
+        series: [{
+          data: data
+        }]
+      });
+    }, 2000);
+  }
+};
+/* -------------------------------------------------------------------------- */
+
+/*                     Echart Bar Report For This Week                        */
+
+/* -------------------------------------------------------------------------- */
+
+
+var reportForThisWeekInit = function reportForThisWeekInit() {
+  var ECHART_BAR_REPORT_FOR_THIS_WEEK = '.echart-bar-report-for-this-week';
+  var $echartBarReportForThisWeek = document.querySelector(ECHART_BAR_REPORT_FOR_THIS_WEEK);
+
+  if ($echartBarReportForThisWeek) {
+    var selectChart = utils.getData($echartBarReportForThisWeek, 'chart');
+    var legendLastWeek = document.getElementById(selectChart === null || selectChart === void 0 ? void 0 : selectChart.option1);
+    var legendThisWeek = document.getElementById(selectChart === null || selectChart === void 0 ? void 0 : selectChart.option2);
+    var data = [['product', 'This Week', 'Last Week'], ['Sun', 43, 85], ['Mon', 83, 73], ['Tue', 86, 62], ['Wed', 72, 53], ['Thu', 80, 50], ['Fri', 50, 70], ['Sat', 80, 90]];
+    var userOptions = utils.getData($echartBarReportForThisWeek, 'options');
+    var chart = window.echarts.init($echartBarReportForThisWeek);
+
+    var getDefaultOptions = function getDefaultOptions() {
+      return {
+        color: [utils.getColors().primary, utils.getGrays()['300']],
+        dataset: {
+          source: data
+        },
+        tooltip: {
+          trigger: 'item',
+          padding: [7, 10],
+          backgroundColor: utils.getGrays()['100'],
+          borderColor: utils.getGrays()['300'],
+          textStyle: {
+            color: utils.getColors().dark
+          },
+          borderWidth: 1,
+          transitionDuration: 0,
+          position: function position(pos, params, dom, rect, size) {
+            return getPosition(pos, params, dom, rect, size);
+          },
+          formatter: function formatter(params) {
+            return "<div class=\"font-weight-semi-bold\">".concat(params.seriesName, "</div><div class=\"fs--1 text-600\"><strong>").concat(params.name, ":</strong> ").concat(params.value[params.componentIndex + 1], "</div>");
+          }
+        },
+        legend: {
+          show: false
+        },
+        xAxis: {
+          type: 'category',
+          axisLabel: {
+            color: utils.getGrays()['400']
+          },
+          axisLine: {
+            lineStyle: {
+              color: utils.getGrays()['300'],
+              type: 'dashed'
+            }
+          },
+          axisTick: false,
+          boundaryGap: true
+        },
+        yAxis: {
+          axisPointer: {
+            type: 'none'
+          },
+          axisTick: 'none',
+          splitLine: {
+            lineStyle: {
+              color: utils.getGrays()['300'],
+              type: 'dashed'
+            }
+          },
+          axisLine: {
+            show: false
+          },
+          axisLabel: {
+            color: utils.getGrays()['400'],
+            formatter: function formatter(value) {
+              return "".concat(value, " hr");
+            }
+          }
+        },
+        series: [{
+          type: 'bar',
+          name: '',
+          barWidth: '12%',
+          barGap: '30%',
+          label: {
+            normal: {
+              show: false
+            }
+          },
+          z: 10,
+          itemStyle: {
+            normal: {
+              barBorderRadius: [10, 10, 0, 0],
+              color: utils.getColors().primary
+            }
+          }
+        }, {
+          type: 'bar',
+          barWidth: '12%',
+          barGap: '30%',
+          label: {
+            normal: {
+              show: false
+            }
+          },
+          itemStyle: {
+            normal: {
+              barBorderRadius: [4, 4, 0, 0],
+              color: utils.getGrays()[300]
+            }
+          }
+        }],
+        grid: {
+          right: '0',
+          left: '40px',
+          bottom: '10%',
+          top: '15%'
+        }
+      };
+    };
+
+    legendLastWeek && legendLastWeek.addEventListener('click', function () {
+      legendLastWeek.classList.toggle('opacity-50');
+      chart.dispatchAction({
+        type: 'legendToggleSelect',
+        name: 'Last Week'
+      });
+    });
+    legendThisWeek && legendThisWeek.addEventListener('click', function () {
+      legendThisWeek.classList.toggle('opacity-50');
+      chart.dispatchAction({
+        type: 'legendToggleSelect',
+        name: 'This Week'
+      });
+    });
+    echartSetOption(chart, userOptions, getDefaultOptions);
+  }
+};
+/* -------------------------------------------------------------------------- */
+
+/*                     Echarts Line Returing Customer Rate                    */
+
+/* -------------------------------------------------------------------------- */
+
+
+var returningCustomerRateInit = function returningCustomerRateInit() {
+  var ECHART_LINE_RETURNING_CUSTOMER_RATE = '.echart-line-returning-customer-rate';
+  var $echartsLineReturningCustomerRate = document.querySelector(ECHART_LINE_RETURNING_CUSTOMER_RATE);
+  var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+  if ($echartsLineReturningCustomerRate) {
+    // Get options from data attribute
+    var userOptions = utils.getData($echartsLineReturningCustomerRate, 'options');
+    var LEGEND_MONTH_TARGET = userOptions.target;
+    var SELECT_MONTH = "#".concat(userOptions.monthSelect);
+    var LEGEND_NEW_MONTH = "#".concat(userOptions.optionOne);
+    var LEGEND_RETURNING_MONTH = "#".concat(userOptions.optionTwo);
+    var $legendNewMonth = document.getElementById(LEGEND_MONTH_TARGET).querySelector(LEGEND_NEW_MONTH);
+    var $legendReturningMonth = document.getElementById(LEGEND_MONTH_TARGET).querySelector(LEGEND_RETURNING_MONTH);
+    var chart = window.echarts.init($echartsLineReturningCustomerRate);
+    var monthNumbers = [[20, 40, 20, 80, 50, 80, 120, 80, 50, 120, 110, 110], [60, 80, 60, 80, 65, 130, 120, 100, 30, 40, 30, 70], [100, 70, 80, 50, 120, 100, 130, 140, 90, 100, 40, 50], [80, 50, 60, 40, 60, 120, 100, 130, 60, 80, 50, 60], [70, 80, 100, 70, 90, 60, 80, 130, 40, 60, 50, 80], [90, 40, 80, 80, 100, 140, 100, 130, 90, 60, 70, 50], [80, 60, 80, 60, 40, 100, 120, 100, 30, 40, 30, 70], [20, 40, 20, 50, 70, 60, 110, 80, 90, 30, 50, 50], [60, 70, 30, 40, 80, 140, 80, 140, 120, 130, 100, 110], [90, 90, 40, 60, 40, 110, 90, 110, 60, 80, 60, 70], [50, 80, 50, 80, 50, 80, 120, 80, 50, 120, 110, 110], [60, 90, 60, 70, 40, 70, 100, 140, 30, 40, 30, 70], [20, 40, 20, 50, 30, 80, 120, 100, 30, 40, 30, 70]];
+
+    var dates = function dates(month) {
+      return utils.getDates(window.dayjs().month(month).date(1), window.dayjs().month(Number(month) + 1).date(0), 1000 * 60 * 60 * 24 * 3);
+    };
+
+    var getDefaultOptions = function getDefaultOptions() {
+      return {
+        title: {
+          text: 'Customers',
+          textStyle: {
+            fontWeight: 500,
+            fontSize: 13,
+            fontFamily: 'poppins',
+            color: utils.getColor('900')
+          }
+        },
+        legend: {
+          show: false,
+          data: ['newMonth', 'returningMonth']
+        },
+        tooltip: {
+          trigger: 'axis',
+          padding: [7, 10],
+          backgroundColor: utils.getGrays()['100'],
+          borderColor: utils.getGrays()['300'],
+          textStyle: {
+            color: utils.getColors().dark
+          },
+          borderWidth: 1,
+          transitionDuration: 0,
+          position: function position(pos, params, dom, rect, size) {
+            return getPosition(pos, params, dom, rect, size);
+          },
+          formatter: tooltipFormatter
+        },
+        xAxis: {
+          type: 'category',
+          data: dates(0),
+          boundaryGap: false,
+          axisPointer: {
+            lineStyle: {
+              color: utils.getColor('300'),
+              type: 'dashed'
+            }
+          },
+          axisLine: {
+            lineStyle: {
+              color: utils.getColor('300'),
+              type: 'solid'
+            }
+          },
+          axisTick: {
+            show: false
+          },
+          axisLabel: {
+            color: utils.getColor('400'),
+            formatter: function formatter(value) {
+              var date = new Date(value);
+
+              if (date.getDate() === 1) {
+                return "".concat(months[date.getMonth()].substring(0, 3), " ").concat(date.getDate());
+              }
+
+              return "".concat(date.getDate());
+            },
+            margin: 15
+          },
+          splitLine: {
+            show: true,
+            lineStyle: {
+              color: utils.getGrays()['300'],
+              type: 'dashed'
+            }
+          }
+        },
+        yAxis: {
+          type: 'value',
+          axisPointer: {
+            show: false
+          },
+          splitLine: {
+            lineStyle: {
+              color: utils.getGrays()['300']
+            }
+          },
+          boundaryGap: false,
+          axisLabel: {
+            show: true,
+            color: utils.getGrays()['400'],
+            margin: 15
+          },
+          axisTick: {
+            show: false
+          },
+          axisLine: {
+            show: false
+          }
+        },
+        series: [{
+          name: 'New',
+          type: 'line',
+          data: monthNumbers[1],
+          lineStyle: {
+            color: utils.getColors().primary
+          },
+          itemStyle: {
+            borderColor: utils.getColors().primary,
+            borderWidth: 2
+          },
+          areaStyle: {
+            color: {
+              type: 'linear',
+              x: 0,
+              y: 0,
+              x2: 0,
+              y2: 1,
+              colorStops: [{
+                offset: 0,
+                color: utils.rgbaColor(utils.getColor('primary'), 0.2)
+              }, {
+                offset: 1,
+                color: utils.rgbaColor(utils.getColor('primary'), 0.01)
+              }]
+            }
+          },
+          symbol: 'none',
+          smooth: false,
+          hoverAnimation: true
+        }, {
+          name: 'Returning',
+          type: 'line',
+          data: monthNumbers[0],
+          lineStyle: {
+            color: utils.getColor('warning')
+          },
+          itemStyle: {
+            borderColor: utils.getColor('warning'),
+            borderWidth: 2
+          },
+          areaStyle: {
+            color: {
+              type: 'linear',
+              x: 0,
+              y: 0,
+              x2: 0,
+              y2: 1,
+              colorStops: [{
+                offset: 0,
+                color: utils.rgbaColor(utils.getColor('warning'), 0.2)
+              }, {
+                offset: 1,
+                color: utils.rgbaColor(utils.getColor('warning'), 0.01)
+              }]
+            }
+          },
+          symbol: 'none',
+          smooth: false,
+          hoverAnimation: true
+        }],
+        grid: {
+          right: '7px',
+          left: '35px',
+          bottom: '8%',
+          top: '15%'
+        }
+      };
+    };
+
+    echartSetOption(chart, userOptions, getDefaultOptions); // Change chart options accordiong to the selected month
+
+    var monthSelect = document.querySelector(SELECT_MONTH);
+    monthSelect.addEventListener('change', function (e) {
+      var month = e.currentTarget.value;
+      var dataNewMonth = monthNumbers[Number(month) + 1];
+      var dataReturningMonth = monthNumbers[month];
+      chart.setOption({
+        xAxis: {
+          data: dates(month)
+        },
+        series: [{
+          data: dataNewMonth
+        }, {
+          data: dataReturningMonth
+        }]
+      });
+    });
+    $legendNewMonth.addEventListener('click', function () {
+      $legendNewMonth.classList.toggle('opacity-50');
+      chart.dispatchAction({
+        type: 'legendToggleSelect',
+        name: 'newMonth'
+      });
+    });
+    $legendReturningMonth.addEventListener('click', function () {
+      $legendReturningMonth.classList.toggle('opacity-50');
+      chart.dispatchAction({
+        type: 'legendToggleSelect',
+        name: 'returningMonth'
+      });
+    });
+  }
+};
+/* -------------------------------------------------------------------------- */
+
+/*                          Echarts Sales Pos Location                        */
+
+/* -------------------------------------------------------------------------- */
+
+
+var salesByPosLocationInit = function salesByPosLocationInit() {
+  var ECHART_RADAR_SALES_BY_POS_LOCATION = '.echart-radar-sales-by-pos-location';
+  var $echartsRadarSalesByPosLocation = document.querySelector(ECHART_RADAR_SALES_BY_POS_LOCATION);
+
+  function getformatter(params) {
+    //const indicators = ['Marketing','Sales', 'Dev', 'Support', 'Tech', 'Admin']
+    return "<strong > ".concat(params.name, " </strong>\n    <div class=\"fs--1 text-600\">\n      <strong >Marketing</strong>: ").concat(params.value[0], "  <br>\n      <strong>Sales</strong>: ").concat(params.value[1], "  <br>\n      <strong>Dev</strong>: ").concat(params.value[2], "  <br>\n      <strong>Support</strong>: ").concat(params.value[3], "  <br>\n      <strong>Tech</strong>: ").concat(params.value[4], "  <br>\n      <strong>Admin</strong>: ").concat(params.value[5], "  <br>\n    </div>");
+  }
+
+  if ($echartsRadarSalesByPosLocation) {
+    // Get options from data attribute
+    var userOptions = utils.getData($echartsRadarSalesByPosLocation, 'options');
+    var chart = window.echarts.init($echartsRadarSalesByPosLocation);
+
+    var getDefaultOptions = function getDefaultOptions() {
+      return {
+        tooltip: {
+          trigger: 'item',
+          padding: [7, 10],
+          backgroundColor: utils.getColor('100'),
+          borderColor: utils.getColor('300'),
+          textStyle: {
+            color: utils.getColors().dark
+          },
+          borderWidth: 1,
+          transitionDuration: 0,
+          formatter: getformatter
+        },
+        radar: {
+          splitNumber: 7,
+          radius: '75%',
+          axisLine: {
+            show: true,
+            symbol: 'circle',
+            symbolSize: [13, 13],
+            lineStyle: {
+              color: {
+                type: 'radial',
+                x: 0.5,
+                y: 0.5,
+                r: 0.5,
+                colorStops: [{
+                  offset: 0.7,
+                  color: utils.getColor('100')
+                }, {
+                  offset: 1,
+                  color: utils.getColor('400')
+                }]
+              }
+            }
+          },
+          splitArea: {
+            show: false
+          },
+          splitLine: {
+            lineStyle: {
+              color: utils.getColor('300')
+            }
+          },
+          name: {
+            textStyle: {
+              color: utils.getColor('600'),
+              fontWeight: 500
+            }
+          },
+          indicator: [{
+            name: 'Marketing',
+            max: 70
+          }, {
+            name: 'Admin',
+            max: 70
+          }, {
+            name: 'Tech',
+            max: 70
+          }, {
+            name: 'Support',
+            max: 70
+          }, {
+            name: 'Dev',
+            max: 70
+          }, {
+            name: 'Sales',
+            max: 70
+          }]
+        },
+        series: [{
+          name: 'Budget vs spending',
+          type: 'radar',
+          symbol: 'pin',
+          data: [{
+            value: [20, 50, 60, 50, 60, 60],
+            name: 'Budget',
+            itemStyle: {
+              color: utils.rgbaColor(utils.getColors().warning, 0.5)
+            },
+            areaStyle: {
+              color: [utils.rgbaColor(utils.getColors().warning, 0.24)]
+            },
+            symbol: 'circle',
+            symbolSize: 8
+          }, {
+            value: [40, 60, 30, 15, 60, 35],
+            name: 'Spending',
+            areaStyle: {
+              color: [utils.rgbaColor(utils.getColors().primary, 0.24)]
+            },
+            symbol: 'circle',
+            symbolSize: 8,
+            itemStyle: {
+              color: utils.rgbaColor(utils.getColors().primary)
+            }
+          }]
+        }],
+        grid: {
+          top: 0,
+          bottom: '100px'
+        }
+      };
+    };
+
+    echartSetOption(chart, userOptions, getDefaultOptions);
+  }
+};
+/* -------------------------------------------------------------------------- */
+
+/*                                Session By Device                           */
+
+/* -------------------------------------------------------------------------- */
+
+
+var sessionByBrowserChartInit = function sessionByBrowserChartInit() {
+  var $sessionByBroswser = document.querySelector('.echart-session-by-browser');
+
+  if ($sessionByBroswser) {
+    var userOptions = utils.getData($sessionByBroswser, 'options');
+    var chart = window.echarts.init($sessionByBroswser);
+    var dataset = {
+      week: [{
+        value: 50.3,
+        name: 'Chrome'
+      }, {
+        value: 20.6,
+        name: 'Safari'
+      }, {
+        value: 30.1,
+        name: 'Mozilla'
+      }],
+      month: [{
+        value: 35.1,
+        name: 'Chrome'
+      }, {
+        value: 25.6,
+        name: 'Safari'
+      }, {
+        value: 40.3,
+        name: 'Mozilla'
+      }],
+      year: [{
+        value: 26.1,
+        name: 'Chrome'
+      }, {
+        value: 10.6,
+        name: 'Safari'
+      }, {
+        value: 64.3,
+        name: 'Mozilla'
+      }]
+    };
+
+    var getDefaultOptions = function getDefaultOptions() {
+      return {
+        color: [utils.getColors().primary, utils.getColors().success, utils.getColors().info],
+        tooltip: {
+          trigger: 'item',
+          padding: [7, 10],
+          backgroundColor: utils.getGrays()['100'],
+          borderColor: utils.getGrays()['300'],
+          textStyle: {
+            color: utils.getColors().dark
+          },
+          borderWidth: 1,
+          transitionDuration: 0,
+          formatter: function formatter(params) {
+            return "<strong>".concat(params.data.name, ":</strong> ").concat(params.data.value, "%");
+          },
+          position: function position(pos, params, dom, rect, size) {
+            return getPosition(pos, params, dom, rect, size);
+          }
+        },
+        legend: {
+          show: false
+        },
+        series: [{
+          type: 'pie',
+          radius: ['100%', '65%'],
+          avoidLabelOverlap: false,
+          hoverAnimation: false,
+          itemStyle: {
+            borderWidth: 2,
+            borderColor: utils.getColor('card-bg')
+          },
+          label: {
+            normal: {
+              show: false
+            },
+            emphasis: {
+              show: false
+            }
+          },
+          labelLine: {
+            normal: {
+              show: false
+            }
+          },
+          data: dataset.week
+        }]
+      };
+    };
+
+    echartSetOption(chart, userOptions, getDefaultOptions);
+    var selectMenu = document.querySelector("[data-target='.echart-session-by-browser']");
+
+    if (selectMenu) {
+      selectMenu.addEventListener('change', function (e) {
+        var value = e.currentTarget.value;
+        chart.setOption({
+          series: [{
+            data: dataset[value]
+          }]
+        });
+      });
+    }
+  }
+};
+/* -------------------------------------------------------------------------- */
+
+/*                                Session By Country Map                      */
+
+/* -------------------------------------------------------------------------- */
+
+
+var sessionByCountryMapInit = function sessionByCountryMapInit() {
+  var $sessionByCountryMap = document.querySelector('.echart-session-by-country-map');
+  var data = [{
+    name: 'Afghanistan',
+    value: 28397.812
+  }, {
+    name: 'Angola',
+    value: 19549.124
+  }, {
+    name: 'Albania',
+    value: 3150.143
+  }, {
+    name: 'United Arab Emirates',
+    value: 8441.537
+  }, {
+    name: 'Argentina',
+    value: 40374.224
+  }, {
+    name: 'Armenia',
+    value: 2963.496
+  }, {
+    name: 'French Southern and Antarctic Lands',
+    value: 268.065
+  }, {
+    name: 'Australia',
+    value: 22404.488
+  }, {
+    name: 'Austria',
+    value: 8401.924
+  }, {
+    name: 'Azerbaijan',
+    value: 9094.718
+  }, {
+    name: 'Burundi',
+    value: 9232.753
+  }, {
+    name: 'Belgium',
+    value: 10941.288
+  }, {
+    name: 'Benin',
+    value: 9509.798
+  }, {
+    name: 'Burkina Faso',
+    value: 15540.284
+  }, {
+    name: 'Bangladesh',
+    value: 151125.475
+  }, {
+    name: 'Bulgaria',
+    value: 7389.175
+  }, {
+    name: 'The Bahamas',
+    value: 66402.316
+  }, {
+    name: 'Bosnia and Herzegovina',
+    value: 3845.929
+  }, {
+    name: 'Belarus',
+    value: 9491.07
+  }, {
+    name: 'Belize',
+    value: 308.595
+  }, {
+    name: 'Bermuda',
+    value: 64.951
+  }, {
+    name: 'Bolivia',
+    value: 716.939
+  }, {
+    name: 'Brazil',
+    value: 195210.154
+  }, {
+    name: 'Brunei',
+    value: 27.223
+  }, {
+    name: 'Bhutan',
+    value: 716.939
+  }, {
+    name: 'Botswana',
+    value: 1969.341
+  }, {
+    name: 'Central African Rep.',
+    value: 4349.921
+  }, {
+    name: 'Canada',
+    value: 34126.24
+  }, {
+    name: 'Switzerland',
+    value: 7830.534
+  }, {
+    name: 'Chile',
+    value: 17150.76
+  }, {
+    name: 'China',
+    value: 1359821.465
+  }, {
+    name: "Côte d'Ivoire",
+    value: 60508.978
+  }, {
+    name: 'Cameroon',
+    value: 20624.343
+  }, {
+    name: 'Dem. Rep. Congo',
+    value: 62191.161
+  }, {
+    name: 'Congo',
+    value: 3573.024
+  }, {
+    name: 'Colombia',
+    value: 46444.798
+  }, {
+    name: 'Costa Rica',
+    value: 4669.685
+  }, {
+    name: 'Cuba',
+    value: 11281.768
+  }, {
+    name: 'Northern Cyprus',
+    value: 1.468
+  }, {
+    name: 'Cyprus',
+    value: 1103.685
+  }, {
+    name: 'Czech Republic',
+    value: 10553.701
+  }, {
+    name: 'Germany',
+    value: 83017.404
+  }, {
+    name: 'Djibouti',
+    value: 834.036
+  }, {
+    name: 'Denmark',
+    value: 5550.959
+  }, {
+    name: 'Dominican Republic',
+    value: 10016.797
+  }, {
+    name: 'Algeria',
+    value: 37062.82
+  }, {
+    name: 'Ecuador',
+    value: 15001.072
+  }, {
+    name: 'Egypt',
+    value: 78075.705
+  }, {
+    name: 'Eritrea',
+    value: 5741.159
+  }, {
+    name: 'Spain',
+    value: 46182.038
+  }, {
+    name: 'Estonia',
+    value: 1298.533
+  }, {
+    name: 'Ethiopia',
+    value: 87095.281
+  }, {
+    name: 'Finland',
+    value: 5367.693
+  }, {
+    name: 'Fiji',
+    value: 860.559
+  }, {
+    name: 'Falkland Islands',
+    value: 49.581
+  }, {
+    name: 'France',
+    value: 63230.866
+  }, {
+    name: 'Gabon',
+    value: 1556.222
+  }, {
+    name: 'United Kingdom',
+    value: 62066.35
+  }, {
+    name: 'Georgia',
+    value: 4388.674
+  }, {
+    name: 'Ghana',
+    value: 24262.901
+  }, {
+    name: 'Eq. Guinea',
+    value: 10876.033
+  }, {
+    name: 'Guinea',
+    value: 10876.033
+  }, {
+    name: 'Gambia',
+    value: 1680.64
+  }, {
+    name: 'Guinea Bissau',
+    value: 10876.033
+  }, {
+    name: 'Equatorial Guinea',
+    value: 696.167
+  }, {
+    name: 'Greece',
+    value: 11109.999
+  }, {
+    name: 'Greenland',
+    value: 56.546
+  }, {
+    name: 'Guatemala',
+    value: 14341.576
+  }, {
+    name: 'French Guiana',
+    value: 231.169
+  }, {
+    name: 'Guyana',
+    value: 786.126
+  }, {
+    name: 'Honduras',
+    value: 7621.204
+  }, {
+    name: 'Croatia',
+    value: 4338.027
+  }, {
+    name: 'Haiti',
+    value: 9896.4
+  }, {
+    name: 'Hungary',
+    value: 10014.633
+  }, {
+    name: 'Indonesia',
+    value: 240676.485
+  }, {
+    name: 'India',
+    value: 1205624.648
+  }, {
+    name: 'Ireland',
+    value: 4467.561
+  }, {
+    name: 'Iran',
+    value: 240676.485
+  }, {
+    name: 'Iraq',
+    value: 30962.38
+  }, {
+    name: 'Iceland',
+    value: 318.042
+  }, {
+    name: 'Israel',
+    value: 7420.368
+  }, {
+    name: 'Italy',
+    value: 60508.978
+  }, {
+    name: 'Jamaica',
+    value: 2741.485
+  }, {
+    name: 'Jordan',
+    value: 6454.554
+  }, {
+    name: 'Japan',
+    value: 127352.833
+  }, {
+    name: 'Kazakhstan',
+    value: 15921.127
+  }, {
+    name: 'Kenya',
+    value: 40909.194
+  }, {
+    name: 'Kyrgyzstan',
+    value: 5334.223
+  }, {
+    name: 'Cambodia',
+    value: 14364.931
+  }, {
+    name: 'South Korea',
+    value: 51452.352
+  }, {
+    name: 'Kosovo',
+    value: 97.743
+  }, {
+    name: 'Kuwait',
+    value: 2991.58
+  }, {
+    name: 'Laos',
+    value: 6395.713
+  }, {
+    name: 'Lebanon',
+    value: 4341.092
+  }, {
+    name: 'Liberia',
+    value: 3957.99
+  }, {
+    name: 'Libya',
+    value: 6040.612
+  }, {
+    name: 'Sri Lanka',
+    value: 20758.779
+  }, {
+    name: 'Lesotho',
+    value: 2008.921
+  }, {
+    name: 'Lithuania',
+    value: 3068.457
+  }, {
+    name: 'Luxembourg',
+    value: 507.885
+  }, {
+    name: 'Latvia',
+    value: 2090.519
+  }, {
+    name: 'Morocco',
+    value: 31642.36
+  }, {
+    name: 'Moldova',
+    value: 103.619
+  }, {
+    name: 'Madagascar',
+    value: 21079.532
+  }, {
+    name: 'Mexico',
+    value: 117886.404
+  }, {
+    name: 'Macedonia',
+    value: 507.885
+  }, {
+    name: 'Mali',
+    value: 13985.961
+  }, {
+    name: 'Myanmar',
+    value: 51931.231
+  }, {
+    name: 'Montenegro',
+    value: 620.078
+  }, {
+    name: 'Mongolia',
+    value: 2712.738
+  }, {
+    name: 'Mozambique',
+    value: 23967.265
+  }, {
+    name: 'Mauritania',
+    value: 3609.42
+  }, {
+    name: 'Malawi',
+    value: 15013.694
+  }, {
+    name: 'Malaysia',
+    value: 28275.835
+  }, {
+    name: 'Namibia',
+    value: 2178.967
+  }, {
+    name: 'New Caledonia',
+    value: 246.379
+  }, {
+    name: 'Niger',
+    value: 15893.746
+  }, {
+    name: 'Nigeria',
+    value: 159707.78
+  }, {
+    name: 'Nicaragua',
+    value: 5822.209
+  }, {
+    name: 'Netherlands',
+    value: 16615.243
+  }, {
+    name: 'Norway',
+    value: 4891.251
+  }, {
+    name: 'Nepal',
+    value: 26846.016
+  }, {
+    name: 'New Zealand',
+    value: 4368.136
+  }, {
+    name: 'Oman',
+    value: 2802.768
+  }, {
+    name: 'Pakistan',
+    value: 173149.306
+  }, {
+    name: 'Panama',
+    value: 3678.128
+  }, {
+    name: 'Peru',
+    value: 29262.83
+  }, {
+    name: 'Philippines',
+    value: 93444.322
+  }, {
+    name: 'Papua New Guinea',
+    value: 6858.945
+  }, {
+    name: 'Poland',
+    value: 38198.754
+  }, {
+    name: 'Puerto Rico',
+    value: 3709.671
+  }, {
+    name: 'North Korea',
+    value: 1.468
+  }, {
+    name: 'Portugal',
+    value: 10589.792
+  }, {
+    name: 'Paraguay',
+    value: 6459.721
+  }, {
+    name: 'Qatar',
+    value: 1749.713
+  }, {
+    name: 'Romania',
+    value: 21861.476
+  }, {
+    name: 'Russia',
+    value: 21861.476
+  }, {
+    name: 'Rwanda',
+    value: 10836.732
+  }, {
+    name: 'Western Sahara',
+    value: 514.648
+  }, {
+    name: 'Saudi Arabia',
+    value: 27258.387
+  }, {
+    name: 'Sudan',
+    value: 35652.002
+  }, {
+    name: 'S. Sudan',
+    value: 9940.929
+  }, {
+    name: 'Senegal',
+    value: 12950.564
+  }, {
+    name: 'Solomon Islands',
+    value: 526.447
+  }, {
+    name: 'Sierra Leone',
+    value: 5751.976
+  }, {
+    name: 'El Salvador',
+    value: 6218.195
+  }, {
+    name: 'Somaliland',
+    value: 9636.173
+  }, {
+    name: 'Somalia',
+    value: 9636.173
+  }, {
+    name: 'Republic of Serbia',
+    value: 3573.024
+  }, {
+    name: 'Suriname',
+    value: 524.96
+  }, {
+    name: 'Slovakia',
+    value: 5433.437
+  }, {
+    name: 'Slovenia',
+    value: 2054.232
+  }, {
+    name: 'Sweden',
+    value: 9382.297
+  }, {
+    name: 'Swaziland',
+    value: 1193.148
+  }, {
+    name: 'Syria',
+    value: 7830.534
+  }, {
+    name: 'Chad',
+    value: 11720.781
+  }, {
+    name: 'Togo',
+    value: 6306.014
+  }, {
+    name: 'Thailand',
+    value: 66402.316
+  }, {
+    name: 'Tajikistan',
+    value: 7627.326
+  }, {
+    name: 'Turkmenistan',
+    value: 5041.995
+  }, {
+    name: 'East Timor',
+    value: 10016.797
+  }, {
+    name: 'Trinidad and Tobago',
+    value: 1328.095
+  }, {
+    name: 'Tunisia',
+    value: 10631.83
+  }, {
+    name: 'Turkey',
+    value: 72137.546
+  }, {
+    name: 'Tanzania',
+    value: 44973.33
+  }, {
+    name: 'Uganda',
+    value: 33987.213
+  }, {
+    name: 'Ukraine',
+    value: 46050.22
+  }, {
+    name: 'Uruguay',
+    value: 3371.982
+  }, {
+    name: 'United States',
+    value: 312247.116
+  }, {
+    name: 'Uzbekistan',
+    value: 27769.27
+  }, {
+    name: 'Venezuela',
+    value: 236.299
+  }, {
+    name: 'Vietnam',
+    value: 89047.397
+  }, {
+    name: 'Vanuatu',
+    value: 236.299
+  }, {
+    name: 'West Bank',
+    value: 13.565
+  }, {
+    name: 'Yemen',
+    value: 22763.008
+  }, {
+    name: 'South Africa',
+    value: 51452.352
+  }, {
+    name: 'Zambia',
+    value: 13216.985
+  }, {
+    name: 'Zimbabwe',
+    value: 13076.978
+  }];
+  var total = 6961500;
+
+  if ($sessionByCountryMap) {
+    var _document$querySelect5;
+
+    var userOptions = utils.getData($sessionByCountryMap, 'options');
+    var chart = window.echarts.init($sessionByCountryMap);
+
+    var getDefaultOptions = function getDefaultOptions() {
+      return {
+        tooltip: {
+          trigger: 'item',
+          padding: [7, 10],
+          backgroundColor: utils.getGrays()['100'],
+          borderColor: utils.getGrays()['300'],
+          textStyle: {
+            color: utils.getColors().dark
+          },
+          borderWidth: 1,
+          transitionDuration: 0,
+          formatter: function formatter(params) {
+            var _params$data3, _params$data4;
+
+            return "<strong>".concat((_params$data3 = params.data) === null || _params$data3 === void 0 ? void 0 : _params$data3.name, " :</strong> ").concat((((_params$data4 = params.data) === null || _params$data4 === void 0 ? void 0 : _params$data4.value) / total * 100).toFixed(2), "%");
+          }
+        },
+        toolbox: {
+          show: false,
+          feature: {
+            restore: {}
+          }
+        },
+        visualMap: {
+          show: false,
+          min: 800,
+          max: 50000,
+          inRange: {
+            color: [utils.getColors().primary, utils.rgbaColor(utils.getColors().primary, 0.8), utils.rgbaColor(utils.getColors().primary, 0.6), utils.rgbaColor(utils.getColors().primary, 0.4), utils.rgbaColor(utils.getColors().primary, 0.2)].reverse()
+          }
+        },
+        series: [{
+          type: 'map',
+          map: 'world',
+          data: data,
+          roam: true,
+          scaleLimit: {
+            min: 1,
+            max: 5
+          },
+          left: 0,
+          right: 0,
+          label: {
+            show: false
+          },
+          itemStyle: {
+            borderColor: utils.getGrays()['300']
+          },
+          emphasis: {
+            label: {
+              show: false
+            },
+            itemStyle: {
+              areaColor: utils.getColor('warning')
+            }
+          }
+        }]
+      };
+    };
+
+    echartSetOption(chart, userOptions, getDefaultOptions);
+    (_document$querySelect5 = document.querySelector('.session-by-country-map-reset')) === null || _document$querySelect5 === void 0 ? void 0 : _document$querySelect5.addEventListener('click', function () {
+      chart.dispatchAction({
+        type: 'restore'
+      });
+    });
+  }
+};
+/* -------------------------------------------------------------------------- */
+
+/*                                Session By Country                          */
+
+/* -------------------------------------------------------------------------- */
+
+
+var sessionByCountryChartInit = function sessionByCountryChartInit() {
+  var $sessionByCountry = document.querySelector('.echart-session-by-country');
+  var data = [['CHINA', 'INDIA', 'USA', 'IRAN', 'BRAZIL', 'PAKISTAN'], [19.53, 17.32, 4.49, 3.46, 2.8, 1.7]];
+
+  if ($sessionByCountry) {
+    var userOptions = utils.getData($sessionByCountry, 'options');
+    var chart = window.echarts.init($sessionByCountry);
+
+    var getDefaultOptions = function getDefaultOptions() {
+      return {
+        tooltip: {
+          trigger: 'axis',
+          padding: [7, 10],
+          axisPointer: {
+            type: 'none'
+          },
+          backgroundColor: utils.getGrays()['100'],
+          borderColor: utils.getGrays()['300'],
+          textStyle: {
+            color: utils.getColors().dark
+          },
+          borderWidth: 1,
+          transitionDuration: 0,
+          position: function position(pos, params, dom, rect, size) {
+            return getPosition(pos, params, dom, rect, size);
+          } // formatter: tooltipFormatter
+
+        },
+        xAxis: {
+          type: 'category',
+          data: data[0],
+          axisLabel: {
+            color: utils.getGrays()['600'],
+            formatter: function formatter(value) {
+              return value.substring(0, 3);
+            }
+          },
+          axisLine: {
+            lineStyle: {
+              color: utils.getGrays()['400']
+            }
+          },
+          axisTick: {
+            show: true,
+            // length: 8,
+            alignWithLabel: true,
+            lineStyle: {
+              color: utils.getGrays()['200']
+            }
+          }
+        },
+        yAxis: {
+          type: 'value',
+          // inverse: true,
+          axisTick: {
+            show: false
+          },
+          splitLine: {
+            lineStyle: {
+              color: utils.getGrays()['300'],
+              type: 'dashed'
+            }
+          },
+          axisLabel: {
+            color: utils.getGrays()['600'],
+            formatter: function formatter(value) {
+              return "".concat(value, "%");
+            },
+            fontWeight: 500,
+            padding: [3, 0, 0, 0],
+            margin: 12
+          },
+          axisLine: {
+            show: false
+          }
+        },
+        series: [{
+          type: 'bar',
+          data: data[1],
+          itemStyle: {
+            barBorderRadius: [3, 3, 0, 0],
+            color: utils.getColors().primary
+          },
+          barWidth: 15
+        }],
+        grid: {
+          right: '12px',
+          left: '40px',
+          bottom: '10%',
+          top: '16px'
+        }
+      };
+    };
+
+    echartSetOption(chart, userOptions, getDefaultOptions);
+  }
+};
+/* -------------------------------------------------------------------------- */
+
+/*                                Top Products                                */
+
+/* -------------------------------------------------------------------------- */
+
+
+var topProductsInit = function topProductsInit() {
+  var ECHART_BAR_TOP_PRODUCTS = '.echart-bar-top-products';
+  var $echartBarTopProducts = document.querySelector(ECHART_BAR_TOP_PRODUCTS);
+
+  if ($echartBarTopProducts) {
+    var data = [['product', '2019', '2018'], ['Boots4', 43, 85], ['Reign Pro', 83, 73], ['Slick', 86, 62], ['Falcon', 72, 53], ['Sparrow', 80, 50], ['Hideway', 50, 70], ['Freya', 80, 90]];
+    var userOptions = utils.getData($echartBarTopProducts, 'options');
+    var chart = window.echarts.init($echartBarTopProducts);
+
+    var getDefaultOptions = function getDefaultOptions() {
+      return {
+        color: [utils.getColors().primary, utils.getGrays()['300']],
+        dataset: {
+          source: data
+        },
+        tooltip: {
+          trigger: 'item',
+          padding: [7, 10],
+          backgroundColor: utils.getGrays()['100'],
+          borderColor: utils.getGrays()['300'],
+          textStyle: {
+            color: utils.getColors().dark
+          },
+          borderWidth: 1,
+          transitionDuration: 0,
+          position: function position(pos, params, dom, rect, size) {
+            return getPosition(pos, params, dom, rect, size);
+          },
+          formatter: function formatter(params) {
+            return "<div class=\"font-weight-semi-bold\">".concat(params.seriesName, "</div><div class=\"fs--1 text-600\"><strong>").concat(params.name, ":</strong> ").concat(params.value[params.componentIndex + 1], "</div>");
+          }
+        },
+        legend: {
+          data: ['2019', '2018'],
+          left: 'left',
+          itemWidth: 10,
+          itemHeight: 10,
+          borderRadius: 0,
+          icon: 'circle',
+          inactiveColor: utils.getGrays()['400'],
+          textStyle: {
+            color: utils.getGrays()['700']
+          }
+        },
+        xAxis: {
+          type: 'category',
+          axisLabel: {
+            color: utils.getGrays()['400']
+          },
+          axisLine: {
+            lineStyle: {
+              color: utils.getGrays()['300'],
+              type: 'dashed'
+            }
+          },
+          axisTick: false,
+          boundaryGap: true
+        },
+        yAxis: {
+          axisPointer: {
+            type: 'none'
+          },
+          axisTick: 'none',
+          splitLine: {
+            lineStyle: {
+              color: utils.getGrays()['300'],
+              type: 'dashed'
+            }
+          },
+          axisLine: {
+            show: false
+          },
+          axisLabel: {
+            color: utils.getGrays()['400']
+          }
+        },
+        series: [{
+          type: 'bar',
+          barWidth: '10px',
+          barGap: '30%',
+          label: {
+            normal: {
+              show: false
+            }
+          },
+          z: 10,
+          itemStyle: {
+            normal: {
+              barBorderRadius: [10, 10, 0, 0],
+              color: utils.getColors().primary
+            }
+          }
+        }, {
+          type: 'bar',
+          barWidth: '10px',
+          barGap: '30%',
+          label: {
+            normal: {
+              show: false
+            }
+          },
+          itemStyle: {
+            normal: {
+              barBorderRadius: [4, 4, 0, 0],
+              color: utils.getGrays()[300]
+            }
+          }
+        }],
+        grid: {
+          right: '0',
+          left: '30px',
+          bottom: '10%',
+          top: '20%'
+        }
+      };
+    };
+
+    echartSetOption(chart, userOptions, getDefaultOptions);
+  }
+};
+/* -------------------------------------------------------------------------- */
+
+/*                                Total Order                                 */
+
+/* -------------------------------------------------------------------------- */
+
+
+var totalOrderInit = function totalOrderInit() {
+  var ECHART_LINE_TOTAL_ORDER = '.echart-line-total-order'; //
+  // ─── TOTAL ORDER CHART ──────────────────────────────────────────────────────────
+  //
+
+  var $echartLineTotalOrder = document.querySelector(ECHART_LINE_TOTAL_ORDER);
+
+  if ($echartLineTotalOrder) {
+    // Get options from data attribute
+    var userOptions = utils.getData($echartLineTotalOrder, 'options');
+    var chart = window.echarts.init($echartLineTotalOrder); // Default options
+
+    var getDefaultOptions = function getDefaultOptions() {
+      return {
+        tooltip: {
+          triggerOn: 'mousemove',
+          trigger: 'axis',
+          padding: [7, 10],
+          formatter: '{b0}: {c0}',
+          backgroundColor: utils.getGrays()['100'],
+          borderColor: utils.getGrays()['300'],
+          textStyle: {
+            color: utils.getColors().dark
+          },
+          borderWidth: 1,
+          transitionDuration: 0,
+          position: function position(pos, params, dom, rect, size) {
+            return getPosition(pos, params, dom, rect, size);
+          }
+        },
+        xAxis: {
+          type: 'category',
+          data: ['Week 4', 'Week 5', 'week 6', 'week 7'],
+          boundaryGap: false,
+          splitLine: {
+            show: false
+          },
+          axisLine: {
+            show: false,
+            lineStyle: {
+              color: utils.getGrays()['300'],
+              type: 'dashed'
+            }
+          },
+          axisLabel: {
+            show: false
+          },
+          axisTick: {
+            show: false
+          },
+          axisPointer: {
+            type: 'none'
+          }
+        },
+        yAxis: {
+          type: 'value',
+          splitLine: {
+            show: false
+          },
+          axisLine: {
+            show: false
+          },
+          axisLabel: {
+            show: false
+          },
+          axisTick: {
+            show: false
+          },
+          axisPointer: {
+            show: false
+          }
+        },
+        series: [{
+          type: 'line',
+          lineStyle: {
+            color: utils.getColors().primary,
+            width: 3
+          },
+          itemStyle: {
+            color: utils.getGrays().white,
+            borderColor: utils.getColors().primary,
+            borderWidth: 2
+          },
+          hoverAnimation: true,
+          data: [20, 40, 100, 120],
+          // connectNulls: true,
+          smooth: 0.6,
+          smoothMonotone: 'x',
+          showSymbol: false,
+          symbol: 'circle',
+          symbolSize: 8,
+          areaStyle: {
+            color: {
+              type: 'linear',
+              x: 0,
+              y: 0,
+              x2: 0,
+              y2: 1,
+              colorStops: [{
+                offset: 0,
+                color: utils.rgbaColor(utils.getColors().primary, 0.25)
+              }, {
+                offset: 1,
+                color: utils.rgbaColor(utils.getColors().primary, 0)
+              }]
+            }
+          }
+        }],
+        grid: {
+          bottom: '2%',
+          top: '0%',
+          right: '10px',
+          left: '10px'
+        }
+      };
+    };
+
+    echartSetOption(chart, userOptions, getDefaultOptions);
+  }
+};
+/* -------------------------------------------------------------------------- */
+
+/*                      Echarts Total Sales E-commerce                        */
+
+/* -------------------------------------------------------------------------- */
+
+
+var totalSalesEcommerce = function totalSalesEcommerce() {
+  var ECHART_LINE_TOTAL_SALES_ECOMM = '.echart-line-total-sales-ecommerce';
+  var $echartsLineTotalSalesEcomm = document.querySelector(ECHART_LINE_TOTAL_SALES_ECOMM);
+  var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+  function getFormatter(params) {
+    return params.map(function (_ref17, index) {
+      var value = _ref17.value,
+          borderColor = _ref17.borderColor;
+      return "<span class= \"fas fa-circle\" style=\"color: ".concat(borderColor, "\"></span>\n    <span class='text-600'>").concat(index === 0 ? 'Last Month' : 'Previous Year', ": ").concat(value, "</span>");
+    }).join('<br/>');
+  }
+
+  if ($echartsLineTotalSalesEcomm) {
+    // Get options from data attribute
+    var userOptions = utils.getData($echartsLineTotalSalesEcomm, 'options');
+    var TOTAL_SALES_LAST_MONTH = "#".concat(userOptions.optionOne);
+    var TOTAL_SALES_PREVIOUS_YEAR = "#".concat(userOptions.optionTwo);
+    var totalSalesLastMonth = document.querySelector(TOTAL_SALES_LAST_MONTH);
+    var totalSalesPreviousYear = document.querySelector(TOTAL_SALES_PREVIOUS_YEAR);
+    var chart = window.echarts.init($echartsLineTotalSalesEcomm);
+
+    var getDefaultOptions = function getDefaultOptions() {
+      return {
+        color: utils.getGrays()['100'],
+        tooltip: {
+          trigger: 'axis',
+          padding: [7, 10],
+          backgroundColor: utils.getGrays()['100'],
+          borderColor: utils.getGrays()['300'],
+          textStyle: {
+            color: utils.getColors().dark
+          },
+          borderWidth: 1,
+          formatter: function formatter(params) {
+            return getFormatter(params);
+          },
+          transitionDuration: 0,
+          position: function position(pos, params, dom, rect, size) {
+            return getPosition(pos, params, dom, rect, size);
+          }
+        },
+        legend: {
+          data: ['lastMonth', 'previousYear'],
+          show: false
+        },
+        xAxis: {
+          type: 'category',
+          data: ['2019-01-05', '2019-01-06', '2019-01-07', '2019-01-08', '2019-01-09', '2019-01-10', '2019-01-11', '2019-01-12', '2019-01-13', '2019-01-14', '2019-01-15', '2019-01-16'],
+          boundaryGap: false,
+          axisPointer: {
+            lineStyle: {
+              color: utils.getColor('300'),
+              type: 'dashed'
+            }
+          },
+          splitLine: {
+            show: false
+          },
+          axisLine: {
+            lineStyle: {
+              // color: utils.getGrays()['300'],
+              color: utils.rgbaColor('#000', 0.01),
+              type: 'dashed'
+            }
+          },
+          axisTick: {
+            show: false
+          },
+          axisLabel: {
+            color: utils.getColor('400'),
+            formatter: function formatter(value) {
+              var date = new Date(value);
+              return "".concat(months[date.getMonth()], " ").concat(date.getDate());
+            },
+            margin: 15 // showMaxLabel: false
+
+          }
+        },
+        yAxis: {
+          type: 'value',
+          axisPointer: {
+            show: false
+          },
+          splitLine: {
+            lineStyle: {
+              color: utils.getColor('300'),
+              type: 'dashed'
+            }
+          },
+          boundaryGap: false,
+          axisLabel: {
+            show: true,
+            color: utils.getColor('400'),
+            margin: 15
+          },
+          axisTick: {
+            show: false
+          },
+          axisLine: {
+            show: false
+          }
+        },
+        series: [{
+          name: 'lastMonth',
+          type: 'line',
+          data: [50, 80, 60, 80, 65, 90, 130, 90, 30, 40, 30, 70],
+          lineStyle: {
+            color: utils.getColor('primary')
+          },
+          itemStyle: {
+            borderColor: utils.getColor('primary'),
+            borderWidth: 2
+          },
+          symbol: 'circle',
+          symbolSize: 10,
+          hoverAnimation: true,
+          areaStyle: {
+            color: {
+              type: 'linear',
+              x: 0,
+              y: 0,
+              x2: 0,
+              y2: 1,
+              colorStops: [{
+                offset: 0,
+                color: utils.rgbaColor(utils.getColor('primary'), 0.2)
+              }, {
+                offset: 1,
+                color: utils.rgbaColor(utils.getColor('primary'), 0)
+              }]
+            }
+          }
+        }, {
+          name: 'previousYear',
+          type: 'line',
+          data: [110, 30, 40, 50, 80, 70, 50, 40, 110, 90, 60, 60],
+          lineStyle: {
+            color: utils.rgbaColor(utils.getColor('warning'), 0.3)
+          },
+          itemStyle: {
+            borderColor: utils.rgbaColor(utils.getColor('warning'), 0.6),
+            borderWidth: 2
+          },
+          symbol: 'circle',
+          symbolSize: 10,
+          hoverAnimation: true
+        }],
+        grid: {
+          right: '18px',
+          left: '40px',
+          bottom: '15%',
+          top: '5%'
+        }
+      };
+    };
+
+    echartSetOption(chart, userOptions, getDefaultOptions);
+    totalSalesLastMonth.addEventListener('click', function () {
+      chart.dispatchAction({
+        type: 'legendToggleSelect',
+        name: 'lastMonth'
+      });
+    });
+    totalSalesPreviousYear.addEventListener('click', function () {
+      chart.dispatchAction({
+        type: 'legendToggleSelect',
+        name: 'previousYear'
+      });
+    });
+  }
+};
+/* -------------------------------------------------------------------------- */
+
+/*                             Echarts Total Sales                            */
+
+/* -------------------------------------------------------------------------- */
+
+
+var totalSalesInit = function totalSalesInit() {
+  var ECHART_LINE_TOTAL_SALES = '.echart-line-total-sales';
+  var SELECT_MONTH = '.select-month';
+  var $echartsLineTotalSales = document.querySelector(ECHART_LINE_TOTAL_SALES);
+  var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+  function getFormatter(params) {
+    var _params$ = params[0],
+        name = _params$.name,
+        value = _params$.value;
+    var date = new Date(name);
+    return "".concat(months[0], " ").concat(date.getDate(), ", ").concat(value);
+  }
+
+  if ($echartsLineTotalSales) {
+    // Get options from data attribute
+    var userOptions = utils.getData($echartsLineTotalSales, 'options');
+    var chart = window.echarts.init($echartsLineTotalSales);
+    var monthsnumber = [[60, 80, 60, 80, 65, 130, 120, 100, 30, 40, 30, 70], [100, 70, 80, 50, 120, 100, 130, 140, 90, 100, 40, 50], [80, 50, 60, 40, 60, 120, 100, 130, 60, 80, 50, 60], [70, 80, 100, 70, 90, 60, 80, 130, 40, 60, 50, 80], [90, 40, 80, 80, 100, 140, 100, 130, 90, 60, 70, 50], [80, 60, 80, 60, 40, 100, 120, 100, 30, 40, 30, 70], [20, 40, 20, 50, 70, 60, 110, 80, 90, 30, 50, 50], [60, 70, 30, 40, 80, 140, 80, 140, 120, 130, 100, 110], [90, 90, 40, 60, 40, 110, 90, 110, 60, 80, 60, 70], [50, 80, 50, 80, 50, 80, 120, 80, 50, 120, 110, 110], [60, 90, 60, 70, 40, 70, 100, 140, 30, 40, 30, 70], [20, 40, 20, 50, 30, 80, 120, 100, 30, 40, 30, 70]];
+
+    var getDefaultOptions = function getDefaultOptions() {
+      return {
+        color: utils.getGrays()['100'],
+        tooltip: {
+          trigger: 'axis',
+          padding: [7, 10],
+          backgroundColor: utils.getGrays()['100'],
+          borderColor: utils.getGrays()['300'],
+          textStyle: {
+            color: utils.getColors().dark
+          },
+          borderWidth: 1,
+          formatter: function formatter(params) {
+            return getFormatter(params);
+          },
+          transitionDuration: 0,
+          position: function position(pos, params, dom, rect, size) {
+            return getPosition(pos, params, dom, rect, size);
+          }
+        },
+        xAxis: {
+          type: 'category',
+          data: ['2019-01-05', '2019-01-06', '2019-01-07', '2019-01-08', '2019-01-09', '2019-01-10', '2019-01-11', '2019-01-12', '2019-01-13', '2019-01-14', '2019-01-15', '2019-01-16'],
+          boundaryGap: false,
+          axisPointer: {
+            lineStyle: {
+              color: utils.getGrays()['300'],
+              type: 'dashed'
+            }
+          },
+          splitLine: {
+            show: false
+          },
+          axisLine: {
+            lineStyle: {
+              // color: utils.getGrays()['300'],
+              color: utils.rgbaColor('#000', 0.01),
+              type: 'dashed'
+            }
+          },
+          axisTick: {
+            show: false
+          },
+          axisLabel: {
+            color: utils.getGrays()['400'],
+            formatter: function formatter(value) {
+              var date = new Date(value);
+              return "".concat(months[date.getMonth()], " ").concat(date.getDate());
+            },
+            margin: 15
+          }
+        },
+        yAxis: {
+          type: 'value',
+          axisPointer: {
+            show: false
+          },
+          splitLine: {
+            lineStyle: {
+              color: utils.getGrays()['300'],
+              type: 'dashed'
+            }
+          },
+          boundaryGap: false,
+          axisLabel: {
+            show: true,
+            color: utils.getGrays()['400'],
+            margin: 15
+          },
+          axisTick: {
+            show: false
+          },
+          axisLine: {
+            show: false
+          }
+        },
+        series: [{
+          type: 'line',
+          data: monthsnumber[0],
+          lineStyle: {
+            color: utils.getColors().primary
+          },
+          itemStyle: {
+            borderColor: utils.getColors().primary,
+            borderWidth: 2
+          },
+          symbol: 'circle',
+          symbolSize: 10,
+          smooth: false,
+          hoverAnimation: true,
+          areaStyle: {
+            color: {
+              type: 'linear',
+              x: 0,
+              y: 0,
+              x2: 0,
+              y2: 1,
+              colorStops: [{
+                offset: 0,
+                color: utils.rgbaColor(utils.getColors().primary, 0.2)
+              }, {
+                offset: 1,
+                color: utils.rgbaColor(utils.getColors().primary, 0)
+              }]
+            }
+          }
+        }],
+        grid: {
+          right: '28px',
+          left: '40px',
+          bottom: '15%',
+          top: '5%'
+        }
+      };
+    };
+
+    echartSetOption(chart, userOptions, getDefaultOptions); // Change chart options accordiong to the selected month
+
+    var monthSelect = document.querySelector(SELECT_MONTH);
+
+    if (monthSelect) {
+      monthSelect.addEventListener('change', function (e) {
+        var month = e.currentTarget.value;
+        var data = monthsnumber[month];
+        chart.setOption({
+          tooltip: {
+            formatter: function formatter(params) {
+              var _params$2 = params[0],
+                  name = _params$2.name,
+                  value = _params$2.value;
+              var date = new Date(name);
+              return "".concat(months[month], " ").concat(date.getDate(), ", ").concat(value);
+            }
+          },
+          xAxis: {
+            axisLabel: {
+              formatter: function formatter(value) {
+                var date = new Date(value);
+                return "".concat(months[month], " ").concat(date.getDate());
+              },
+              margin: 15
+            }
+          },
+          series: [{
+            data: data
+          }]
+        });
+      });
+    }
+  }
+};
+/* -------------------------------------------------------------------------- */
+
+/*                                Traffic Channels                           */
+
+/* -------------------------------------------------------------------------- */
+
+
+var trafficChannelChartInit = function trafficChannelChartInit() {
+  var $trafficChannels = document.querySelector('.echart-traffic-channels');
+
+  if ($trafficChannels) {
+    var userOptions = utils.getData($trafficChannels, 'options');
+    var chart = window.echarts.init($trafficChannels); // const tooltipFormatter = params => {
+    //   let tooltipItem = ``
+    //   params.forEach(el => {
+    //     tooltipItem = tooltipItem +`<div class='ms-1'>
+    //       <h6 class="fs--1 text-700"><span class="fas fa-circle me-2" style="color:${
+    //         el.color}"></span>
+    //         ${el.seriesName} : ${el.value}
+    //       </h6>
+    //     </div>`
+    //   });
+    //   return `<div>
+    //             <p class='mb-2 text-600'>${window
+    //               .dayjs(params[0].axisValue)
+    //               .format('MMM DD, YYYY')}</p>
+    //             ${tooltipItem}
+    //           </div>`;
+    // };
+
+    var getDefaultOptions = function getDefaultOptions() {
+      return {
+        color: [utils.getColors().primary, utils.rgbaColor(utils.getColors().primary, 0.8), utils.rgbaColor(utils.getColors().primary, 0.6), utils.rgbaColor(utils.getColors().primary, 0.4), utils.rgbaColor(utils.getColors().primary, 0.2)],
+        legend: {
+          data: ['Display', 'Direct', 'Organic Search', 'Paid Search', 'Other'],
+          left: 5,
+          // bottom: 10,
+          itemWidth: 10,
+          itemHeight: 10,
+          borderRadius: 0,
+          icon: 'circle',
+          inactiveColor: utils.getGrays()['400'],
+          textStyle: {
+            color: utils.getGrays()['700']
+          },
+          itemGap: 20
+        },
+        xAxis: {
+          type: 'category',
+          data: utils.getPastDates(7).map(function (date) {
+            return window.dayjs(date).format('DD MMM, YYYY');
+          }),
+          axisLine: {
+            show: false
+          },
+          splitLine: {
+            lineStyle: {
+              color: utils.getGrays()['200']
+            }
+          },
+          axisTick: {
+            show: false
+          },
+          axisLabel: {
+            color: utils.getGrays()['600'],
+            formatter: function formatter(value) {
+              return window.dayjs(value).format('ddd');
+            }
+          }
+        },
+        yAxis: {
+          type: 'value',
+          position: 'right',
+          splitLine: {
+            lineStyle: {
+              color: utils.getGrays()['200']
+            }
+          },
+          axisLine: {
+            show: false
+          },
+          axisTick: {
+            show: false
+          },
+          axisLabel: {
+            show: true,
+            color: utils.getGrays()['600'],
+            margin: 15
+          }
+        },
+        tooltip: {
+          trigger: 'axis',
+          padding: [7, 10],
+          axisPointer: {
+            type: 'none'
+          },
+          backgroundColor: utils.getGrays()['100'],
+          borderColor: utils.getGrays()['300'],
+          textStyle: {
+            color: utils.getColors().dark
+          },
+          borderWidth: 1,
+          transitionDuration: 0,
+          position: function position(pos, params, dom, rect, size) {
+            return getPosition(pos, params, dom, rect, size);
+          },
+          formatter: tooltipFormatter
+        },
+        series: [{
+          name: 'Display',
+          type: 'bar',
+          stack: 'total',
+          data: [320, 302, 301, 334, 390, 330, 320]
+        }, {
+          name: 'Direct',
+          type: 'bar',
+          stack: 'total',
+          data: [120, 132, 101, 134, 90, 230, 210]
+        }, {
+          name: 'Organic Search',
+          type: 'bar',
+          stack: 'total',
+          data: [220, 182, 191, 234, 290, 330, 310]
+        }, {
+          name: 'Paid Search',
+          type: 'bar',
+          stack: 'total',
+          data: [150, 212, 201, 154, 190, 330, 410]
+        }, {
+          name: 'Other',
+          type: 'bar',
+          stack: 'total',
+          data: [820, 832, 901, 934, 1290, 1330, 1320],
+          itemStyle: {
+            barBorderRadius: [5, 5, 0, 0]
+          }
+        }],
+        grid: {
+          right: '50px',
+          left: '0px',
+          bottom: '10%',
+          top: '15%'
+        }
+      };
+    };
+
+    echartSetOption(chart, userOptions, getDefaultOptions);
+  }
+};
+/* -------------------------------------------------------------------------- */
+
+/*                             Echarts Users By Time                          */
+
+/* -------------------------------------------------------------------------- */
+
+
+var usersByTimeChartInit = function usersByTimeChartInit() {
+  var $echartUsersByTimeChart = document.querySelector('.echart-users-by-time');
+  var hours = ['12 AM', '1 AM', '2 AM', '3 AM', '4 AM', '5 AM', '6 AM', '7 AM', '8 AM', '9 AM', '10 AM', '11 AM', '12 PM', '1 PM', '2 PM', '3 PM', '4 PM', '5 PM', '6 PM', '7 PM', '8 PM', '9 PM', '10 PM', '11 PM'];
+  var data = [];
+
+  for (var i = 0; i < 24; i += 1) {
+    for (var j = 0; j < 7; j += 1) {
+      data.push([j, i, utils.getRandomNumber(20, 300)]);
+    }
+  }
+
+  var tooltipFormatter = function tooltipFormatter(params) {
+    return "<div>\n          <p class='mb-0 text-600'>".concat(window.dayjs(params.name).format('MMM DD, YYYY'), "</p>\n          <div class=\"d-flex align-items-center\">\n            <p class=\"mb-0 text-600\">\n              ").concat(window.dayjs().hour(params.data[1]).format('hA'), " : <span class='text-800 fw-semi-bold'>").concat(params.data[2], "</span>\n            </p>\n          </div>\n        </div>");
+  };
+
+  if ($echartUsersByTimeChart) {
+    var userOptions = utils.getData($echartUsersByTimeChart, 'options');
+    var chart = window.echarts.init($echartUsersByTimeChart);
+
+    var getDefaultOptions = function getDefaultOptions() {
+      return {
+        gradientColor: [utils.getColor('info'), utils.getColor('primary')],
+        tooltip: {
+          position: 'top',
+          padding: [7, 10],
+          backgroundColor: utils.getGrays()['100'],
+          borderColor: utils.getGrays()['300'],
+          textStyle: {
+            color: utils.getColors().dark
+          },
+          borderWidth: 1,
+          formatter: tooltipFormatter
+        },
+        xAxis: {
+          type: 'category',
+          data: utils.getPastDates(7),
+          splitArea: {
+            show: true
+          },
+          axisTick: {
+            show: false
+          },
+          axisLabel: {
+            color: utils.getGrays()['600'],
+            formatter: function formatter(value) {
+              return window.dayjs(value).format('ddd');
+            }
+          },
+          axisLine: {
+            lineStyle: {
+              color: utils.getGrays()['400']
+            }
+          }
+        },
+        yAxis: {
+          position: 'right',
+          type: 'category',
+          inverse: true,
+          data: hours,
+          splitArea: {
+            show: true
+          },
+          axisTick: {
+            show: false
+          },
+          axisLabel: {
+            color: utils.getGrays()['600'],
+            margin: 20,
+            padding: [10, 0, 0, 0]
+          },
+          axisLine: {
+            lineStyle: {
+              color: utils.getGrays()['400']
+            }
+          }
+        },
+        visualMap: {
+          type: 'piecewise',
+          orient: 'horizontal',
+          left: 'left',
+          bottom: '3%',
+          itemSymbol: 'diamond',
+          itemWidth: '10px',
+          itemHeight: '10px',
+          min: 20,
+          max: 300,
+          splitNumber: 4,
+          textGap: 5,
+          textStyle: {
+            color: utils.getGrays()['600'],
+            fontWeight: 500
+          }
+        },
+        series: [{
+          name: 'Users By Time',
+          type: 'heatmap',
+          data: data,
+          label: {
+            show: false
+          },
+          itemStyle: {
+            borderColor: utils.getColor('white'),
+            borderWidth: 3
+          },
+          emphasis: {
+            itemStyle: {
+              shadowBlur: 3,
+              shadowColor: utils.rgbaColor(utils.getGrays().black, 0.5)
+            }
+          }
+        }],
+        grid: {
+          right: '60px',
+          left: '0px',
+          bottom: '20%',
+          top: '0%'
+        }
+      };
+    };
+
+    echartSetOption(chart, userOptions, getDefaultOptions);
+  }
+};
+/* eslint-disable */
+
+/* -------------------------------------------------------------------------- */
+
+/*                                Weekly Sales                                */
+
+/* -------------------------------------------------------------------------- */
+
+
+var weeklySalesInit = function weeklySalesInit() {
+  var ECHART_BAR_WEEKLY_SALES = '.echart-bar-weekly-sales';
+  var $echartBarWeeklySales = document.querySelector(ECHART_BAR_WEEKLY_SALES);
+
+  if ($echartBarWeeklySales) {
+    // Get options from data attribute
+    var userOptions = utils.getData($echartBarWeeklySales, 'options');
+    var data = [120, 200, 150, 80, 70, 110, 120]; // Max value of data
+
+    var yMax = Math.max.apply(Math, data);
+    var dataBackground = data.map(function () {
+      return yMax;
+    });
+    var chart = window.echarts.init($echartBarWeeklySales); // Default options
+
+    var getDefaultOptions = function getDefaultOptions() {
+      return {
+        tooltip: {
+          trigger: 'axis',
+          padding: [7, 10],
+          formatter: '{b0} : {c0}',
+          transitionDuration: 0,
+          backgroundColor: utils.getGrays()['100'],
+          borderColor: utils.getGrays()['300'],
+          textStyle: {
+            color: utils.getColors().dark
+          },
+          borderWidth: 1,
+          position: function position(pos, params, dom, rect, size) {
+            return getPosition(pos, params, dom, rect, size);
+          }
+        },
+        xAxis: {
+          type: 'category',
+          data: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+          boundaryGap: false,
+          axisLine: {
+            show: false
+          },
+          axisLabel: {
+            show: false
+          },
+          axisTick: {
+            show: false
+          },
+          axisPointer: {
+            type: 'none'
+          }
+        },
+        yAxis: {
+          type: 'value',
+          splitLine: {
+            show: false
+          },
+          axisLine: {
+            show: false
+          },
+          axisLabel: {
+            show: false
+          },
+          axisTick: {
+            show: false
+          },
+          axisPointer: {
+            type: 'none'
+          }
+        },
+        series: [{
+          type: 'bar',
+          showBackground: true,
+          backgroundStyle: {
+            borderRadius: 10
+          },
+          barWidth: '5px',
+          itemStyle: {
+            barBorderRadius: 10,
+            color: utils.getColors().primary
+          },
+          data: data,
+          z: 10,
+          emphasis: {
+            itemStyle: {
+              color: utils.getColors().primary
+            }
+          }
+        }],
+        grid: {
+          right: 5,
+          left: 10,
+          top: 0,
+          bottom: 0
+        }
+      };
+    };
+
+    echartSetOption(chart, userOptions, getDefaultOptions);
+  }
+};
+/* -------------------------------------------------------------------------- */
+
+/*                            Theme Initialization                            */
+
+/* -------------------------------------------------------------------------- */
+
+
+docReady(detectorInit);
+docReady(handleNavbarVerticalCollapsed);
+docReady(totalOrderInit);
+docReady(weeklySalesInit);
+docReady(marketShareInit);
+docReady(totalSalesInit);
+docReady(topProductsInit);
+docReady(progressBar);
+docReady(navbarTopDropShadow);
+docReady(tooltipInit);
+docReady(popoverInit);
+docReady(toastInit);
+docReady(progressAnimationToggle);
+docReady(glightboxInit);
+docReady(plyrInit);
+docReady(initMap);
+docReady(dropzoneInit);
+docReady(choicesInit);
+docReady(formValidationInit);
+docReady(barChartInit);
+docReady(leafletActiveUserInit);
+docReady(countupInit);
+docReady(copyLink);
+docReady(navbarDarkenOnScroll);
+docReady(typedTextInit);
+docReady(scrollToTop);
+docReady(tinymceInit);
+docReady(bulkSelectInit);
+docReady(chatInit);
+docReady(quantityInit);
+docReady(navbarComboInit);
+docReady(listInit);
+docReady(swiperInit);
+docReady(ratingInit);
+docReady(draggableInit);
+docReady(kanbanInit);
+docReady(fullCalendarInit);
+docReady(appCalendarInit);
+docReady(managementCalendarInit);
+docReady(lottieInit);
+docReady(wizardInit);
+docReady(searchInit);
+docReady(cookieNoticeInit);
+docReady(themeControl);
+docReady(dropdownOnHover);
+docReady(marketShareEcommerceInit);
+docReady(productShareDoughnutInit);
+docReady(totalSalesEcommerce);
+docReady(salesByPosLocationInit);
+docReady(returningCustomerRateInit);
+docReady(candleChartInit);
+docReady(grossRevenueChartInit);
+docReady(scrollbarInit);
+docReady(iconCopiedInit);
+docReady(reportForThisWeekInit);
+docReady(basicEchartsInit);
+docReady(chartScatter);
+docReady(chartDoughnut);
+docReady(chartPie);
+docReady(chartPolar);
+docReady(chartRadar);
+docReady(chartCombo);
+docReady(dropdownMenuInit);
+docReady(audienceChartInit);
+docReady(sessionByBrowserChartInit);
+docReady(sessionByCountryChartInit);
+docReady(activeUsersChartReportInit);
+docReady(trafficChannelChartInit);
+docReady(bounceRateChartInit);
+docReady(usersByTimeChartInit);
+docReady(sessionByCountryMapInit);
+docReady(mostLeadsInit);
+docReady(closedVsGoalInit);
+docReady(leadConversionInit);
+docReady(dealStorageFunnelInit);
+docReady(revenueChartInit);
+docReady(locationBySessionInit);
+docReady(realTimeUsersChartInit);
+docReady(linePaymentChartInit);
+docReady(chartBubble);
+docReady(chartLine);
+//# sourceMappingURL=theme.js.map

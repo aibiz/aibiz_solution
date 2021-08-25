@@ -9,6 +9,9 @@ class profile(models.Model):
     phone_no = models.CharField(db_column='phone_no', null=True, max_length=100, default='')
     usage_flag = models.CharField(max_length=10, default='1')
 
+    class Meta:
+        db_table = "monitoring_profile"
+
 
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):

@@ -19,3 +19,9 @@ class LogoutPageView(View):
         context = {}
 
         return render(request, 'user/logout.html', context)
+
+class RegisterView(View):
+    def get(self, request: HttpRequest, *args, **kwargs):
+        context = {}
+
+        return render(request, 'user/register.html', context)

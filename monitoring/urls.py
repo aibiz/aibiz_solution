@@ -7,8 +7,10 @@ urlpatterns = [
     # 모델 학습
     path('', monitoring_views.MoniterView.as_view(), name='index'),
 
-    # 로그인
+    # 회원정보
     path('login', user_views.LoginView.as_view(), name='login'),
     path('logout-page', user_views.LogoutPageView.as_view(), name='logout-page'),
-    path("logout", LogoutView.as_view(next_page='/logout-page'), name="logout"),
+    path('logout', LogoutView.as_view(next_page='/logout-page'), name='logout'),
+    path('register', user_views.RegisterView.as_view(), name='register'),
+    
 ]

@@ -1,7 +1,7 @@
 {% load static %}
 <nav class="navbar navbar-light navbar-glass navbar-top navbar-expand">
 <button class="btn navbar-toggler-humburger-icon navbar-toggler me-1 me-sm-3" type="button" data-bs-toggle="collapse" data-bs-target="#navbarVerticalCollapse" aria-controls="navbarVerticalCollapse" aria-expanded="false" aria-label="Toggle Navigation"><span class="navbar-toggle-icon"><span class="toggle-line"></span></span></button>
-<a class="navbar-brand me-1 me-sm-3" href="index.html">
+<a class="navbar-brand me-1 me-sm-3" href="#">
   <div class="d-flex align-items-center"><img class="me-2" src="{% static 'assets/img/icons/spot-illustrations/falcon.png' %}" alt="" width="40" /><span class="font-sans-serif">aibiz</span>
   </div>
 </a>
@@ -16,14 +16,14 @@
       <button class="btn-close position-absolute end-0 top-50 translate-middle shadow-none p-1 me-1 fs--2" type="button" data-bs-dismiss="search"></button>
       <div class="dropdown-menu border font-base start-0 mt-2 py-0 overflow-hidden w-100">
         <div class="scrollbar list py-3" style="max-height: 24rem;">
-          <h6 class="dropdown-header fw-medium text-uppercase px-card fs--2 pt-0 pb-2">Recently Browsed</h6><a class="dropdown-item fs--1 px-card py-1 hover-primary" href="app/events/event-detail.html">
+          <h6 class="dropdown-header fw-medium text-uppercase px-card fs--2 pt-0 pb-2">Recently Browsed</h6><a class="dropdown-item fs--1 px-card py-1 hover-primary" href="#">
             <div class="d-flex align-items-center">
               <span class="fas fa-circle me-2 text-300 fs--2"></span>
 
               <div class="fw-normal title">Pages <span class="fas fa-chevron-right mx-1 text-500 fs--2" data-fa-transform="shrink-2"></span> Events</div>
             </div>
           </a>
-          <a class="dropdown-item fs--1 px-card py-1 hover-primary" href="app/e-commerce/customers.html">
+          <a class="dropdown-item fs--1 px-card py-1 hover-primary" href="#">
             <div class="d-flex align-items-center">
               <span class="fas fa-circle me-2 text-300 fs--2"></span>
 
@@ -32,17 +32,17 @@
           </a>
 
           <hr class="bg-200" />
-          <h6 class="dropdown-header fw-medium text-uppercase px-card fs--2 pt-0 pb-2">Suggested Filter</h6><a class="dropdown-item px-card py-1 fs-0" href="app/e-commerce/customers.html">
+          <h6 class="dropdown-header fw-medium text-uppercase px-card fs--2 pt-0 pb-2">Suggested Filter</h6><a class="dropdown-item px-card py-1 fs-0" href="#">
             <div class="d-flex align-items-center"><span class="badge fw-medium text-decoration-none me-2 badge-soft-warning">customers:</span>
               <div class="flex-1 fs--1 title">All customers list</div>
             </div>
           </a>
-          <a class="dropdown-item px-card py-1 fs-0" href="app/events/event-detail.html">
+          <a class="dropdown-item px-card py-1 fs-0" href="#">
             <div class="d-flex align-items-center"><span class="badge fw-medium text-decoration-none me-2 badge-soft-success">events:</span>
               <div class="flex-1 fs--1 title">Latest events in current month</div>
             </div>
           </a>
-          <a class="dropdown-item px-card py-1 fs-0" href="app/e-commerce/product/product-grid.html">
+          <a class="dropdown-item px-card py-1 fs-0" href="#">
             <div class="d-flex align-items-center"><span class="badge fw-medium text-decoration-none me-2 badge-soft-info">products:</span>
               <div class="flex-1 fs--1 title">Most popular products</div>
             </div>
@@ -69,7 +69,7 @@
           </a>
 
           <hr class="bg-200" />
-          <h6 class="dropdown-header fw-medium text-uppercase px-card fs--2 pt-0 pb-2">Members</h6><a class="dropdown-item px-card py-2" href="pages/user/profile.html">
+          <h6 class="dropdown-header fw-medium text-uppercase px-card fs--2 pt-0 pb-2">Members</h6><a class="dropdown-item px-card py-2" href="#">
             <div class="d-flex align-items-center">
               <div class="avatar avatar-l status-online me-2">
                 <img class="rounded-circle" src="{% static 'assets/img/team/1.jpg' %}" alt="" />
@@ -81,7 +81,7 @@
               </div>
             </div>
           </a>
-          <a class="dropdown-item px-card py-2" href="pages/user/profile.html">
+          <a class="dropdown-item px-card py-2" href="#">
             <div class="d-flex align-items-center">
               <div class="avatar avatar-l me-2">
                 <img class="rounded-circle" src="{% static 'assets/img/team/2.jpg' %}" alt="" />
@@ -93,7 +93,7 @@
               </div>
             </div>
           </a>
-          <a class="dropdown-item px-card py-2" href="pages/user/profile.html">
+          <a class="dropdown-item px-card py-2" href="#">
             <div class="d-flex align-items-center">
               <div class="avatar avatar-l me-2">
                 <img class="rounded-circle" src="{% static 'assets/img/team/3.jpg' %}" alt="" />
@@ -123,7 +123,7 @@
     </div>
   </li>
   <li class="nav-item">
-    <a class="nav-link px-0 notification-indicator notification-indicator-warning notification-indicator-fill fa-icon-wait" href="app/e-commerce/shopping-cart.html"><span class="fas fa-shopping-cart" data-fa-transform="shrink-7" style="font-size: 33px;"></span><span class="notification-indicator-number">1</span></a>
+    <a class="nav-link px-0 notification-indicator notification-indicator-warning notification-indicator-fill fa-icon-wait" href="#"><span class="fas fa-shopping-cart" data-fa-transform="shrink-7" style="font-size: 33px;"></span><span class="notification-indicator-number">1</span></a>
 
   </li>
   <li class="nav-item dropdown">
@@ -223,7 +223,7 @@
             </div>
           </div>
         </div>
-        <div class="card-footer text-center border-top"><a class="card-link d-block" href="app/social/notifications.html">View all</a></div>
+        <div class="card-footer text-center border-top"><a class="card-link d-block" href="#">View all</a></div>
       </div>
     </div>
 
@@ -240,12 +240,12 @@
 
         <div class="dropdown-divider"></div>
         <a class="dropdown-item" href="#!">Set status</a>
-        <a class="dropdown-item" href="pages/user/profile.html">Profile &amp; account</a>
+        <a class="dropdown-item" href="#">Profile &amp; account</a>
         <a class="dropdown-item" href="#!">Feedback</a>
 
         <div class="dropdown-divider"></div>
-        <a class="dropdown-item" href="pages/user/settings.html">Settings</a>
-        <a class="dropdown-item" href="pages/authentication/card/logout.html">Logout</a>
+        <a class="dropdown-item" href="#">Settings</a>
+        <a class="dropdown-item" href="#">Logout</a>
       </div>
     </div>
   </li>

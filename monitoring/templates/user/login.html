@@ -35,23 +35,23 @@
                             <h3>Account Login</h3>
                           </div>
                         </div>
-                        <form>
+                        <form action='/login' method='post' id='LoginForm'>
                           <div class="mb-3">
                             <label class="form-label" for="card-id">ID</label>
-                            <input class="form-control" id="card-id" type="text" />
+                            <input class="form-control" id="card-id" name="card-id" type="text" onkeyup="enterkey()"/>
                           </div>
                           <div class="mb-3">
                             <div class="d-flex justify-content-between">
                               <label class="form-label" for="card-password">Password</label><a class="fs--1" href="#">Forgot Password?</a>
                             </div>
-                            <input class="form-control" id="card-password" type="password" />
+                            <input class="form-control" id="card-password" name="card-password" type="password" onkeyup="enterkey()"/>
                           </div>
                           <div class="form-check mb-0">
                             <input class="form-check-input" type="checkbox" id="card-checkbox" checked="checked" />
                             <label class="form-check-label" for="card-checkbox">Remember me</label>
                           </div>
                           <div class="mb-3">
-                            <button class="btn btn-primary d-block w-100 mt-3" type="submit" name="submit">Log in</button>
+                            <button class="btn btn-primary d-block w-100 mt-3" type="button" name="submit" onclick="login()">Log in</button>
                           </div>
                         </form>
                     </div>
@@ -67,5 +67,5 @@
 
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
-
+<script src="{% static 'jsmeta/monitoring/script_user_login.js' %}"></script> 
 {% endblock javascripts %}

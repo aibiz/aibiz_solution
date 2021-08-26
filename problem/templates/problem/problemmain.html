@@ -1,0 +1,40 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+{% block title %}Problem{% endblock %}
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+    <div>
+        <h1>Problem</h1>
+        <a href="{% url 'problem:problemadd' %}" style="btn btn-primary d-block w-10 mt-3">Add Problem</a>
+    </div>
+
+    <div class="mb-3" width="70%" heigth="100%" align="left">
+        {% for content in problemContent %}
+            <label class="form-label" for="problem_name_{{ content.id }}"
+                onmouseover="rollup_Problem(this.htmlFor);" onmouseout="clear_Label();">{{ content.problem_name }}</label>
+            <label class="form-label" for="problem_name_{{ content.id }}">{{ content.working_time }}</label>
+            <input type="hidden" id="problem_name_{{ content.id }}" value="{{ content.problem_note }}" >
+            </br>
+        {% endfor %}
+    </div>
+    <div class="mb-3" width="30%" heigth="100%" align="right">
+        <label class="form-label" id="output_label"></label>
+    </div>
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+<script>
+    function rollup_Problem(id)
+    {
+        document.getElementById('output_label').innerText = document.getElementById(id).value;
+    }
+
+    function clear_Label()
+    {
+        document.getElementById('output_label').innerText = "";
+    }
+</script>
+{% endblock javascripts %}

@@ -1,0 +1,77 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+{% block title %}Problem Add{% endblock %}
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+    <div>
+        <h1>Add Problem</h1>
+    </div>
+
+    <main class="main" id="top">
+        <form id="inputForm" method="post" action="{% url 'problem:insertproblem' %}">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label class="form-label" for="problem_name">Problem Name</label>
+                <input type="text" class="form-control" id="problem_name" name="problem_name">
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="problem_note">Problem Note</label>
+                <textarea class="form-control" id="problem_note" name="problem_note"
+                    rows="20" maxlength="4096"></textarea>
+            </div>
+            <div class="mb-3">
+                <button class="btn btn-primary d-block w-8 mt-3" type="button" onclick="input()">Add</button>
+                <button class="btn btn-primary d-block w-8 mt-3" type="button" onclick="back()">Back</button>
+            </div>
+        </form>
+    </main>
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+<script language="JavaScript">
+    function input(){
+        var name = document.getElementById('problem_name').value;
+
+        if(name === "")
+        {
+            alert("Problem Name을 입력해주세요!");
+            return false;
+        }
+
+        var url = $("#inputForm").attr("action");
+        //console.log(url);
+        var form = $('#inputForm')[0];
+        var formData = new FormData(form);
+        $.ajax({
+            type : 'POST',
+            url : url,
+            headers: { "X-CSRFToken": getCookie("csrftoken") },
+            data : formData,
+            cache: false,
+            contentType: false,
+            processData: false,
+            error: function(request,status,error){
+                 //alert("code:"+request.status+"\n"+"error:"+error);
+            },
+            success : function(result){
+                if (result.success == false) {
+                        alert(result.message);
+                }
+                else {
+                    alert(result.message);
+                    location.href='/problem'
+                }
+            }
+        });
+    }
+
+    function back()
+    {
+        location.href='/problem'
+    }
+</script>
+{% endblock javascripts %}

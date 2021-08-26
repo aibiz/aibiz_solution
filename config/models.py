@@ -1,0 +1,40 @@
+from django.db import models
+from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
+
+class profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
+    phone_no = models.CharField(db_column='phone_no', null=True, max_length=100, default='')
+    usage_flag = models.CharField(max_length=10, default='1')
+
+    class Meta:
+        db_table = "monitoring_profile"
+
+
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        profile.objects.create(user=instance)
+
+
+@receiver(post_save, sender=User)
+def save_user_profile(sender, instance, **kwargs):
+    instance.profile.save()
+
+class mmProblem(models.Model):
+    id = models.AutoField(primary_key=True)
+    problem_name = models.CharField(db_column='problem_name', max_length=255, default='')
+    model_func = models.CharField(db_column='model_func', max_length=255, default='')
+    problem_note = models.CharField(db_column='problem_note', max_length=4096, default='')
+    working_time = models.TimeField(db_column='working_time')
+    created_at = models.DateTimeField(db_column='created_at', auto_now=True)
+    delete_flag = models.CharField(db_column='delete_flag', max_length=10, default='0')
+
+    class Meta:
+        db_table = 'mm_problem'
+
+class mmDataset(models.Model):
+    id = models.AutoField(primary_key=True)
+    problem_id= models.ForeignKey(mmProblem, on_delete=models.CASCADE)

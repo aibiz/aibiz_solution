@@ -39,7 +39,7 @@ class mmProblem(models.Model):
 
 class mmDataset(models.Model):
     id = models.AutoField(primary_key=True)
-    problem_id= models.ForeignKey('mmproblem', on_delete=models.cascade, db_column='id')
+    problem_id= models.ForeignKey('mmproblem', on_delete=models.DO_NOTHING)
     data_static_path = models.CharField(db_column='data_static_path', max_length=255, default='')
     purpose = models.CharField(db_column='purpose', max_length=3, default='')
     data_name = models.CharField(db_column='data_name', max_length=255, default='')
@@ -55,7 +55,7 @@ class mmDataset(models.Model):
 
 class mmModel(models.Model):
     id = models.AutoField(primary_key=True)
-    dataset_id = models.ForeignKey('mmDataset', on_delete=models.cascade, db_column='id')
+    dataset_id = models.ForeignKey('mmDataset', on_delete=models.DO_NOTHING)
     sensor_no = models.CharField(db_column='sensor_no', max_length=255, default='')
     threshold_std = models.FloatField(db_column='threshold_std', default='0')
     threshold_output = models.FloatField(db_column='threshold_output', default='0')
@@ -72,7 +72,7 @@ class mmModel(models.Model):
 
 class mmMonitoring(models.Model):
     id = models.AutoField(primary_key=True)
-    model_id = models.ForeignKey('mmModel', on_delete=models.cascade, db_column='id')
+    model_id = models.ForeignKey('mmModel', on_delete=models.DO_NOTHING)
     created_at = models.DateTimeField(db_column='created_at', auto_now=True)
     warnlist_path = models.CharField(db_column='warnlist_path', max_length=255, default='')
     user_id = models.IntegerField(db_column='user_id')

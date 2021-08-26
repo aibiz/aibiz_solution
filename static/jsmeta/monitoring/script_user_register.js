@@ -61,7 +61,6 @@ function register(){
     }
 
     var url = $("#RegisterForm").attr("action");
-    console.log(url);
     var form = $('#RegisterForm')[0]; 
     var formData = new FormData(form);
     $.ajax({

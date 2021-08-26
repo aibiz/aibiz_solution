@@ -1,6 +1,6 @@
 {% extends 'layouts/base.html' %}
 {% load static %}
-{% block title %}logout{% endblock %}
+{% block title %}register{% endblock %}
 <!-- Specific Page CSS goes HERE  -->
 {% block stylesheets %}{% endblock stylesheets %}
 
@@ -29,35 +29,38 @@
                 <div class="col-md-7 d-flex flex-center">
                   <div class="p-4 p-md-5 flex-grow-1">
                     <h3>Register</h3>
-                    <form>
-                      <div class="mb-3">
-                        <label class="form-label" for="card-name">Name</label>
-                        <input class="form-control" type="text" autocomplete="on" id="card-name" />
-                      </div>
+                    <form action='/register' method='post' id='RegisterForm'>
                       <div class="mb-3">
                         <label class="form-label" for="card-id">ID</label>
-                        <input class="form-control" type="text" autocomplete="on" id="card-id" />
+                        <input class="form-control" type="text" autocomplete="on" id="card-id" name="card-id" onchange="CheckID(this.value)"/>
+                        <span id="idError" class="text-danger"></span>
                       </div>
                       <div class="row gx-2">
                         <div class="mb-3 col-sm-6">
                           <label class="form-label" for="card-password">Password</label>
-                          <input class="form-control" type="password" autocomplete="on" id="card-password" />
+                          <input class="form-control" type="password" autocomplete="on" id="card-password" name='card-password' onchange="CheckPassword(this.value); SamePassword();"/>
                         </div>
                         <div class="mb-3 col-sm-6">
                           <label class="form-label" for="card-confirm-password">Confirm Password</label>
-                          <input class="form-control" type="password" autocomplete="on" id="card-confirm-password" />
+                          <input class="form-control" type="password" autocomplete="on" id="card-confirm-password" name='card-confirm-password' onchange="SamePassword()"/>
                         </div>
+                      </div>
+                      <span id="passwordError" class="text-danger"></span>
+                      <div class="mb-3">
+                        <label class="form-label" for="card-name">Name</label>
+                        <input class="form-control" type="text" autocomplete="on" id="card-name" name='card-name' />
                       </div>
                       <div class="mb-3">
                         <label class="form-label" for="card-email">EMAIL</label>
-                        <input class="form-control" type="email" autocomplete="on" id="card-email" />
+                        <input class="form-control" type="email" autocomplete="on" id="card-email" name='card-email' onchange="CheckEmail(this.value)"/>
+                        <span id="emailError" class="text-danger"></span>
                       </div>
                       <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="card-register-checkbox" />
+                        <input class="form-check-input" type="checkbox" id="card-register-checkbox"/>
                         <label class="form-label" for="card-register-checkbox">I accept the <a href="#!">terms </a>and <a href="#!">privacy policy</a></label>
                       </div>
                       <div class="mb-3">
-                        <button class="btn btn-primary d-block w-100 mt-3" type="submit" name="submit">Register</button>
+                        <button class="btn btn-primary d-block w-100 mt-3" type="button" onclick="register()">Register</button>
                       </div>
                     </form>
                   </div>
@@ -73,5 +76,6 @@
 
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
+<script src="{% static 'jsmeta/monitoring/script_user.js' %}"></script> 
 
 {% endblock javascripts %}

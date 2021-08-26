@@ -37,7 +37,7 @@ class mmProblem(models.Model):
         db_table = 'mm_problem'
 
 
-class mmDataset(models.model):
+class mmDataset(models.Model):
     id = models.AutoField(primary_key=True)
     problem_id= models.ForeignKey('mmproblem', on_delete=models.cascade, db_column='id')
     data_static_path = models.CharField(db_column='data_static_path', max_length=255, default='')
@@ -53,7 +53,7 @@ class mmDataset(models.model):
         db_table = 'mm_dataset'
 
 
-class mmModel(models.model):
+class mmModel(models.Model):
     id = models.AutoField(primary_key=True)
     dataset_id = models.ForeignKey('mmDataset', on_delete=models.cascade, db_column='id')
     sensor_no = models.CharField(db_column='sensor_no', max_length=255, default='')
@@ -70,7 +70,7 @@ class mmModel(models.model):
         db_table = 'mm_model'
 
 
-class mmMonitoring(models.model):
+class mmMonitoring(models.Model):
     id = models.AutoField(primary_key=True)
     model_id = models.ForeignKey('mmModel', on_delete=models.cascade, db_column='id')
     created_at = models.DateTimeField(db_column='created_at', auto_now=True)

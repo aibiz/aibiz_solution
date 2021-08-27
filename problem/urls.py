@@ -1,5 +1,4 @@
 from django.urls import path
-<<<<<<< HEAD
 from .views import problemmain, problemadd, insertproblem
 
 app_name = "problem"

@@ -33,3 +33,12 @@ def insertproblem(request: HttpRequest) :
     context['message'] = '등록 되었습니다.'
     return JsonResponse(context, content_type='application/json')
 
+def problemsend(request) :
+    context = {
+        'problem_Id' : request.GET['problem_Id'],
+        'problem_Name' : request.GET['problem_Name'],
+    }
+
+    return render(request, 'problem/problemsend.html', context)
+
+

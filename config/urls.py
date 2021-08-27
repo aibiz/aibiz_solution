@@ -19,10 +19,6 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('monitoring.urls')),
-<<<<<<< HEAD
+    path('', include('uploaddata.urls')),
     path('problem/', include('problem.urls'))
-    ]
-=======
-    path('', include('uploaddata.urls'))
 ]
->>>>>>> d234ce0ba142031c912d644fdc86fa4ac413b66b

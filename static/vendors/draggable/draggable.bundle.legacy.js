@@ -2042,7 +2042,7 @@ if (!setTask || !clearTask) {
     defer = function (id) {
       process.nextTick(ctx(run, id, 1));
     };
-  // Sphere (JS game engine) Dispatch API
+  // Sphere (JS game aiengine) Dispatch API
   } else if (Dispatch && Dispatch.now) {
     defer = function (id) {
       Dispatch.now(ctx(run, id, 1));

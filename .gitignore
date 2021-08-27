@@ -1,8 +1,8 @@
 ## datafile, for testfiles
-#engine/monitoring/
-#engine/monitoring_anomalies/
-#engine/test_data/
-#engine/train_data/
+#aiengine/monitoring/
+#aiengine/monitoring_anomalies/
+#aiengine/test_data/
+#aiengine/train_data/
 
 
 # Byte-compiled / optimized / DLL files

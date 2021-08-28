@@ -4,9 +4,16 @@ from config.models import mmProblem
 import time
 
 def problemmain(request) :
+ 
+    query = '''
+    SELECT *, SUBSTR(problem_name, 1, 1) first
+    FROM mm_problem
+    '''
+
     context = {
-        'problemContent' : mmProblem.objects.all()
+        'problemContent' : mmProblem.objects.raw(query)
     }
+
 
     return render(request, 'problem/problemmain.html', context)
 

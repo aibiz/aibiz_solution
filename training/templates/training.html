@@ -5,21 +5,147 @@
 {% block stylesheets %}{% endblock stylesheets %}
 
 {% block content %}
-<main class="main" id="top">
-    <div class="container-fluid">
-<!--        좌측 상단 데이터 업로드 card -->
-        <div class="card-body" id="data_select" style="background-color: #0d2545;">
-            <div class="row-cols-md-1">Data select</div>
-            <div class="row-cols-md-1">ddd</div>
+    <main class="main" id="top">
+        <div class="container-fluid">
+            <!--        좌측 상단 데이터 업로드 card -->
+            <div class="card-body" id="data_select" style="background-color: #0d2545;">
+                <div class="row-cols-md-1">Data select</div>
+                <div class="row-cols-md-1" id="name_traindata">NULL</div>
+                <div class="row-cols-md-1" id="num_traindata">NULL</div>
+
+
+
+                <!-- Button trigger modal -->
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                    Select data
+                </button>
+                <!-- Modal -->
+                <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+{#                            Table in modal                               #}
+                                <div id="tableExample2" data-list='{"valueNames":["check","data_name","data_cnt","data_size"],"page":5,"pagination":true}'>
+                                    <div class="table-responsive scrollbar">
+                                        <table class="table table-bordered table-striped fs--1 mb-0">
+                                            <thead class="bg-200 text-900">
+                                            <tr>
+                                                <th class="sort" data-sort="data_name">Name</th>
+                                                <th class="sort" data-sort="data_cnt">sample수</th>
+                                                <th class="sort" data-sort="data_size">size</th>
+                                                <th data-sort="check"></th>
+                                            </tr>
+                                            </thead>
+                                            <tbody class="list">
+                                            {% if dataList %}
+                                                {% for i in dataList %}
+                                                    <td class="data_name">{{ i.data_name }}</td>
+                                                    <td class="data_cnt">{{ i.data_cnt }}</td>
+                                                    <td class="data_size">{{ i.data_size }}</td>
+                                                    <td>
+                                                        <div style="display: none;">
+                                                            <button type="hidden" id="{{ i }}"
+                                                                    onclick="selectedId('{{ i.id }}','{{ i.data_name }}','{{ i.data_cnt }}','{{ i.data_size }}')">
+                                                            </button>
+                                                        </div>
+                                                            <label class="btn-falcon-info" id="is_select"  for="{{i}}">Select</label>
+                                                    </td>
+                                                    </tr>
+                                                {% endfor %}
+                                            {% endif %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="d-flex justify-content-center mt-3">
+                                        <button class="btn btn-sm btn-falcon-default me-1" type="button" title="Previous" data-list-pagination="prev">
+                                            <span class="fas fa-chevron-left"></span>
+                                        </button>
+                                        <ul class="pagination mb-0"></ul>
+                                        <button class="btn btn-sm btn-falcon-default ms-1" type="button" title="Next" data-list-pagination="next">
+                                            <span class="fas fa-chevron-right"> </span>
+                                        </button>
+                                    </div>
+                                </div>
+                            <div class="row">
+{#                                모달 하단 card                #}
+                                <div class="card border h-50 border-primary" >
+                                    <div class="card-body">
+                                        <div class="card-title">Selected data</div>
+                                        <p class="card-text" id="selectedDisp">Null</p>
+                                        <input type="hidden" id="selectedHidden" value="">
+                                    </div>
+                                </div>
+                            </div>
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">확인</button>
+{#                                <button type="button" class="btn btn-primary" ">Save changes</button>#}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+{#            end modal             #}
+
+                <div class="row-cols-md-1">ddd</div>
+            <div>
+                <button class="btn-primary" id="train-btn">Start</button>
+            </div>
+
+            </div>
+
         </div>
-        <div class="row min-vh-100 flex-center g-0">
-        </div>
-    </div>
-</main>
+    </main>
 {% endblock %}
 
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
-<script src="{% static 'jsmeta/monitoring/script_user_register.js' %}"></script> 
+    <script src="static/vendors/list.js/list.min.js"></script>
+    <script>
+        {#    모달관련js #}
+        var myModal = document.getElementById('myModal')
+        var myInput = document.getElementById('myInput')
+
+        myModal.addEventListener('shown.bs.modal', function () {
+            myInput.focus()
+        })
+    </script>
+
+{#    modal내 하단 selectedDisp 내용변경   #}
+    <script>
+        function selectedId(id, name, cnt, size){
+            $('#selectedDisp').text(name)
+            $('#selectedHidden').val(id)
+            $('#name_traindata').text(name)
+            $('#num_traindata').text(cnt)
+        }
+    </script>
+    <script>
+{#     train 시작        #}
+    const button = document.getElementById('train-btn');
+
+    button.addEventListener('click', async _ => {
+        try {
+            var trainDataId = document.getElementById('selectedHidden').value;
+
+            console.log(trainDataId);
+            const response = await fetch('/training/', {
+                method: 'post',
+                body: {
+                    'trainDataId' : trainDataId
+
+                }
+            });
+
+            console.log('Completed!', response);
+        } catch(err) {
+            console.error(`Error: ${err}`);
+        }
+    });
+    </script>
 
 {% endblock javascripts %}

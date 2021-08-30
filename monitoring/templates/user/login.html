@@ -36,6 +36,7 @@
                           </div>
                         </div>
                         <form action='/login' method='post' id='LoginForm'>
+                          {% csrf_token %}
                           <div class="mb-3">
                             <label class="form-label" for="card-id">ID</label>
                             <input class="form-control" id="card-id" name="card-id" type="text" onkeyup="enterkey()"/>

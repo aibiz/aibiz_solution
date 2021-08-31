@@ -1,0 +1,49 @@
+#select-btn {
+  font-weight: 400;
+  margin-right: 0.5em;
+  padding: 0;
+}
+#name_traindata,
+#name_testdata {
+  font-weight: bold;
+  margin-left: -5em;
+}
+#num_traindata,
+#num_testdata {
+  font-weight: bold;
+  margin-left: -3.8em;
+}
+.data_name,
+.data_cnt,
+.data_size,
+#is_select {
+  display: table-cell;
+  vertical-align: middle;
+  text-align: center;
+}
+#is_select {
+  font-size: 13px;
+  font-weight: 300;
+  border: none;
+  border-radius: 5%;
+  box-shadow: none;
+  color: #fff;
+  background: #5e6e82;
+  padding: 7px;
+  width: 100%;
+}
+#selected {
+  margin: 0;
+  box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.3);
+}
+.modal-footer {
+  padding: 0;
+}
+#footer-btn {
+  border: none;
+  background-color: #2c7be5;
+  color: #fff;
+  font-weight: 600;
+  margin: 20px 10px;
+  box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.3);
+}

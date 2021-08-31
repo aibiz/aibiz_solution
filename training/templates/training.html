@@ -2,23 +2,71 @@
 {% load static %}
 {% block title %}training{% endblock %}
 <!-- Specific Page CSS goes HERE  -->
-{% block stylesheets %}{% endblock stylesheets %}
+{% block stylesheets %}
+<link href="/static/assets/css/training.css" rel="stylesheet">
+{% endblock stylesheets %}
 
 {% block content %}
     <main class="main" id="top">
         <div class="container-fluid">
             <!--        좌측 상단 데이터 업로드 card -->
-            <div class="card-body" id="data_select" style="background-color: #0d2545;">
-                <div class="row-cols-md-1">Train data select</div>
-                <div class="row-cols-md-1" id="name_traindata">NULL</div>
-                <div class="row-cols-md-1" id="num_traindata">NULL</div>
-
-
-                <!-- Button trigger modal-1 -->
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#trainDataModal">
-                    Select data
-                </button>
-                <!-- Modal-1 -->
+            <div class="row g-0">
+                <div class="col-md-6 col-xxl-3 mb-3 pe-md-2">
+                    <div class="card">
+                        <div class="card-header row pb-0">
+                            <h6 class="col-6"">Train data select</h6>
+                              <!-- Button trigger modal-1 -->
+                              <button type="button" class="btn col btn-falcon-default btn-sm" id="select-btn" data-bs-toggle="modal" data-bs-target="#trainDataModal">
+                                Select data
+                            </button>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-4">
+                                        name: 
+                                    </div>
+                                    <div class="col" id="name_traindata"></div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-3">
+                                        size: 
+                                    </div>
+                                    <div class="col" id="num_traindata" ></div>
+                                </div>
+                            </div>
+                    </div>
+    
+                </div>
+                <div class="col-md-6 col-xxl-3 mb-3 pe-md-2 pe-xxl-2">
+                    <div class="card">
+                        <div class="card-header row pb-0">
+                            <h6 class="col-6"">Test data select</h6>
+                              <!-- Button trigger modal-1 -->
+                              <button type="button" class="btn col btn-falcon-default btn-sm" id="select-btn" data-bs-toggle="modal" data-bs-target="#testDataModal">
+                                Select data
+                            </button>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-4">
+                                        name: 
+                                    </div>
+                                    <div class="col" id="name_testdata" ></div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-3">
+                                        size: 
+                                    </div>
+                                    <div class="col" id="num_testdata" ></div>
+                                </div>
+                            </div>
+                    </div>
+                
+                </div>
+            </div>
+                
+                
+                <!------------------ Modal-1 ---------------------->
                 <div class="modal fade" id="trainDataModal" tabindex="-1" aria-labelledby="trainDataModalLabel" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
@@ -33,9 +81,9 @@
                                         <table class="table table-bordered table-striped fs--1 mb-0">
                                             <thead class="bg-200 text-900">
                                             <tr>
-                                                <th class="sort" data-sort="data_name">Name</th>
-                                                <th class="sort" data-sort="data_cnt">sample수</th>
-                                                <th class="sort" data-sort="data_size">size</th>
+                                                <th class="sort data_name" data-sort="data_name">Name</th>
+                                                <th class="sort data_cnt" data-sort="data_cnt" >sample num</th>
+                                                <th class="sort data_size" data-sort="data_size">size</th>
                                                 <th data-sort="check"></th>
                                             </tr>
                                             </thead>
@@ -59,7 +107,7 @@
                                             </tbody>
                                         </table>
                                     </div>
-                                    <div class="d-flex justify-content-center mt-3">
+                                    <div class="d-flex justify-content-center mt-3 mb-3">
                                         <button class="btn btn-sm btn-falcon-default me-1" type="button" title="Previous" data-list-pagination="prev">
                                             <span class="fas fa-chevron-left"></span>
                                         </button>
@@ -69,38 +117,26 @@
                                         </button>
                                     </div>
                                 </div>
-                                <div class="row">
+                                
                                     {#                                모달 하단 card                #}
-                                    <div class="card border h-50 border-primary" >
-                                        <div class="card-body">
-                                            <div class="card-title">Selected data</div>
-                                            <p class="card-text" id="selectedTrainDisp">Null</p>
+                                    <div class="card h-30 p-0" id="selected">
+                                        <div class="card-body" >
+                                            <div class="card-text">Selected data</div>
+                                            <div class="card-text" id="selectedTrainDisp" style="font-weight: bold;"></div>
                                             <input type="hidden" id="selectedTrainHidden" value="Null">
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">확인</button>
-                                {#                                <button type="button" class="btn btn-primary" ">Save changes</button>#}
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="footer-btn">확인</button>
+                                {# <button type="button" class="btn btn-primary" ">Save changes</button>#}
                             </div>
                         </div>
                     </div>
                 </div>
                 {#            end modal-1             #}
 
-
-
-
-                <div class="row-cols-md-1">Test data select</div>
-                <div class="row-cols-md-1" id="name_testdata">NULL</div>
-                <div class="row-cols-md-1" id="num_testdata">NULL</div>
-                <!-- Button trigger modal-2 -->
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#testDataModal">
-                    Select data
-                </button>
-                <!-- Modal-2 -->
+                <!----------------------------------- Modal-2 -------------------------------->
                 <div class="modal fade" id="testDataModal" tabindex="-1" aria-labelledby="testDataModalLabel" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
@@ -115,9 +151,9 @@
                                         <table class="table table-bordered table-striped fs--1 mb-0">
                                             <thead class="bg-200 text-900">
                                             <tr>
-                                                <th class="sort" data-sort="data_name">Name</th>
-                                                <th class="sort" data-sort="data_cnt">sample수</th>
-                                                <th class="sort" data-sort="data_size">size</th>
+                                                <th class="sort data_name" data-sort="data_name">Name</th>
+                                                <th class="sort data_cnt" data-sort="data_cnt">sample수</th>
+                                                <th class="sort data_size" data-sort="data_size">size</th>
                                                 <th data-sort="check"></th>
                                             </tr>
                                             </thead>
@@ -141,7 +177,7 @@
                                             </tbody>
                                         </table>
                                     </div>
-                                    <div class="d-flex justify-content-center mt-3">
+                                    <div class="d-flex justify-content-center mt-3 mb-3">
                                         <button class="btn btn-sm btn-falcon-default me-1" type="button" title="Previous" data-list-pagination="prev">
                                             <span class="fas fa-chevron-left"></span>
                                         </button>
@@ -151,26 +187,47 @@
                                         </button>
                                     </div>
                                 </div>
-                                <div class="row">
+                            
                                     {#                                모달 하단 card                #}
-                                    <div class="card border h-50 border-primary" >
+                                    <div class="card h-30 p-0" id="selected" >
                                         <div class="card-body">
-                                            <div class="card-title">Selected data</div>
-                                            <p class="card-text" id="selectedTestDisp">Null</p>
+                                            <div class="card-text">Selected data</div>
+                                            <div class="card-text" id="selectedTestDisp" style="font-weight: bold;"></div>
                                             <input type="hidden" id="selectedTestHidden" value="Null">
                                     </div>
                                 </div>
-                            </div>
+                            
 
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">확인</button>
-                                {#                                <button type="button" class="btn btn-primary" ">Save changes</button>#}
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="footer-btn">확인</button>
+                                {# <button type="button" class="btn btn-primary" >Save changes</button>#}
                             </div>
                         </div>
                     </div>
                 </div>
                 </div>
                 {#            end modal-2             #}
+
+            <div class="container-fluid">
+                <div class="card-body" id="data_select" style="background-color: #0d2545;">
+                    <div class="row-cols-md-1">Train data select</div>
+                    <div class="form-group mb-2">
+                        Sensor No.
+                        <input id="sensorNo" type="text" class="text-center" value="2">
+                    </div>
+                    <div class="form-group mb-2">
+                        기준 Threshold
+                        <input id="thresholdStd" type="text" class="text-center" value="10">
+    
+                    </div>
+                </div>
+            </div>
+           
+
+
+
+                
+                
                 <div class="row-cols-md-1">ddd</div>
                 <div>
                     <button class="btn-primary" id="traintart-btn">Start</button>
@@ -178,20 +235,7 @@
             </div>
         </div>
         <!--        우측 상단 데이터 입력 card -->
-        <div class="container-fluid">
-            <div class="card-body" id="data_select" style="background-color: #0d2545;">
-                <div class="row-cols-md-1">Train data select</div>
-                <div class="form-group mb-2">
-                    Sensor No.
-                    <input id="sensorNo" type="text" class="text-center" value="2">
-                </div>
-                <div class="form-group mb-2">
-                    기준 Threshold
-                    <input id="thresholdStd" type="text" class="text-center" value="10">
-
-                </div>
-            </div>
-        </div>
+    </div>
     </main>
 {% endblock %}
 

@@ -1,13 +1,14 @@
 from django.views.generic import View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpRequest, JsonResponse
+from config.models import mmModel
 
 from django.shortcuts import render, redirect, get_object_or_404
 
-class MoniterView(LoginRequiredMixin, View):
-    login_url = '/login'
+class monitoringmain(View):
     def get(self, request: HttpRequest, *args, **kwargs):
         context = {}
-        context['username'] = request.user.username
-        
-        return render(request, 'index.html', context)
+
+        list = mmModel.objects.all().order_by('id')
+        context['list'] = list
+        return render(request, 'monitoring/monitoringmain.html', context)

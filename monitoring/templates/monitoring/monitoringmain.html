@@ -1,0 +1,135 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+{% block title %}Monitoring{% endblock %}
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+    <main class="main" id="top">
+        <div class="container-fluid">
+            <div class="mb-3">
+                <label class="form-label">Sensor Number</label>
+                <label class="form-label" id="select_sensor">null</label>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                    Select Sensor
+                </button>
+            </div>
+
+            <!-- Modal -->
+            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+{#                            Table in modal                               #}
+                            <div id="tableExample2" data-list='{"valueNames":["check","data_name","data_cnt","data_size"],"page":5,"pagination":true}'>
+                                <div class="table-responsive scrollbar">
+                                    <table class="table table-bordered table-striped fs--1 mb-0">
+                                        <thead class="bg-200 text-900">
+                                        <tr>
+                                            <th class="sort" data-sort="data_name">Sensor_No</th>
+                                            <th data-sort="check"></th>
+                                        </tr>
+                                        </thead>
+                                        <tbody class="list">
+                                        {% if list %}
+                                            {% for i in list %}
+                                                <td class="data_name">{{ i.sensor_no }}</td>
+                                                <input type="hidden" value="{{ i.id }}">
+                                                <td>
+                                                    <div style="display: none;">
+                                                        <button type="hidden" id="{{ i }}"
+                                                                onclick="selectedId('{{ i.id }}','{{ i.sensor_no }}')">
+                                                        </button>
+                                                    </div>
+                                                        <label class="btn-falcon-info" id="is_select"  for="{{ i }}">Select</label>
+                                                </td>
+                                                </tr>
+                                            {% endfor %}
+                                        {% endif %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="d-flex justify-content-center mt-3">
+                                    <button class="btn btn-sm btn-falcon-default me-1" type="button" title="Previous" data-list-pagination="prev">
+                                        <span class="fas fa-chevron-left"></span>
+                                    </button>
+                                    <ul class="pagination mb-0"></ul>
+                                    <button class="btn btn-sm btn-falcon-default ms-1" type="button" title="Next" data-list-pagination="next">
+                                        <span class="fas fa-chevron-right"> </span>
+                                    </button>
+                                </div>
+                            </div>
+                        <div class="row">
+{#                                모달 하단 card                #}
+                            <div class="card border h-50 border-primary" >
+                                <div class="card-body">
+                                    <div class="card-title">Selected data</div>
+                                    <p class="card-text" id="selectedDisp">Null</p>
+                                    <input type="hidden" id="selectedHidden" value="">
+                                </div>
+                            </div>
+                        </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">확인</button>
+{#                                <button type="button" class="btn btn-primary">Save changes</button>#}
+                        </div>
+                    </div>
+                </div>
+            </div>
+{#            end modal             #}
+        </div>
+    </main>
+{% endblock %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+    <script src="static/vendors/list.js/list.min.js"></script>
+    <script>
+        {#    모달관련js #}
+        var myModal = document.getElementById('myModal')
+        var myInput = document.getElementById('myInput')
+
+        myModal.addEventListener('shown.bs.modal', function () {
+            myInput.focus()
+        })
+    </script>
+
+{#    modal내 하단 selectedDisp 내용변경   #}
+    <script>
+        function selectedId(id, name){
+            $('#selectedDisp').text(name)
+            $('#select_sensor').text(name)
+            $('#selectedHidden').val(id)
+        }
+    </script>
+    <script>
+{#     train 시작        #}
+    const button = document.getElementById('train-btn');
+
+    button.addEventListener('click', async _ => {
+        try {
+            var trainDataId = document.getElementById('selectedHidden').value;
+
+            console.log(trainDataId);
+            const response = await fetch('/training/', {
+                method: 'post',
+                body: {
+                    'trainDataId' : trainDataId
+
+                }
+            });
+
+            console.log('Completed!', response);
+        } catch(err) {
+            console.error(`Error: ${err}`);
+        }
+    });
+    </script>
+
+{% endblock javascripts %}

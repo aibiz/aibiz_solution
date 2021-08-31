@@ -169,6 +169,7 @@
                         </div>
                     </div>
                 </div>
+                </div>
                 {#            end modal-2             #}
                 <div class="row-cols-md-1">ddd</div>
                 <div>
@@ -208,6 +209,7 @@
     </script>
 
     {#    modal내 하단 selectedDisp 내용변경   #}
+
     <script>
 
         function selectId(id, name, cnt, size) {
@@ -218,7 +220,7 @@
             $('#num_traindata').text(cnt)
         }
     </script>
-        <script>
+    <script>
         function selectTestId(id, name, cnt, size) {
             console.log("dfdfdddfd")
             $('#selectedTestDisp').text(name)
@@ -227,6 +229,7 @@
             $('#num_testdata').text(cnt)
         }
     </script>
+
     <script>
         {#     train 시작        #}
         const button = document.getElementById('trainstart-btn');

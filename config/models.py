@@ -57,7 +57,7 @@ class mmDataset(models.Model):
 
 class mmModel(models.Model):
     id = models.AutoField(primary_key=True)
-    problem_id = models.ForeignKey('mmProblem', on_delete=models.DO_NOTHING)
+    problem_id = models.IntegerField(db_column='problem_id')
     equipment_id = models.IntegerField(db_column='equipment_id')
     chamber_id = models.IntegerField(db_column='chamber_id')
     recipe_no = models.CharField(db_column='recipe_no', max_length=45, default='')

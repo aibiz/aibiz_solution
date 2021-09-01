@@ -19,7 +19,7 @@ def gen_tensor(input_path):
         length = len(raw_list)
         total = 0
         for file in raw_list:
-            csv_data = pd.read_csv(input_path + '\' + file, header=None)
+            csv_data = pd.read_csv(input_path + '\\' + file, header=None)
             data_temp2 = []
             for j in csv_data.columns:
                 data_temp2.append(csv_data[j].tolist())
@@ -29,7 +29,7 @@ def gen_tensor(input_path):
 
         w_list = []
         for file in raw_list:
-            csv_data = pd.read_csv(input_path + '\' + file, header=None)
+            csv_data = pd.read_csv(input_path + '\\' + file, header=None)
             data_temp2 = []
 
             for j in csv_data.columns:
@@ -51,8 +51,8 @@ def gen_tensor(input_path):
                 if X_prime[k, r - j - 1, 0] != 99999:
                     X_prime[k, r - j - 1, 0] = abs(X_prime[k, r - j - 1, 0] - X_prime[k, 0, 0])
 
-        np.save(f"{input_path}"+ "\" +  "output.npy", X_prime)
-        with open(f"{input_path}"+"\"+  "wafer_list.pickle", 'wb') as f:
+        np.save(f"{input_path}"+ "\\" +  "output.npy", X_prime)
+        with open(f"{input_path}"+"\\"+  "wafer_list.pickle", 'wb') as f:
             pickle.dump(w_list, f)
 
 
@@ -77,7 +77,7 @@ def gen_tensor_for_test(input_data_path, input_file_path):
         length = len(raw_list)
         total = 0
         for file in raw_list:
-            csv_data = pd.read_csv(input_data_path + '\' + file, header=None)
+            csv_data = pd.read_csv(input_data_path + '\\' + file, header=None)
             data_temp2 = []
             for j in csv_data.columns:
                 data_temp2.append(csv_data[j].tolist())
@@ -87,7 +87,7 @@ def gen_tensor_for_test(input_data_path, input_file_path):
 
         w_list = []
         for file in raw_list:
-            csv_data = pd.read_csv(input_data_path + '\' + file, header=None)
+            csv_data = pd.read_csv(input_data_path + '\\' + file, header=None)
             data_temp2 = []
 
             for j in csv_data.columns:
@@ -109,8 +109,8 @@ def gen_tensor_for_test(input_data_path, input_file_path):
                 if X_prime[k, r - j - 1, 0] != 99999:
                     X_prime[k, r - j - 1, 0] = abs(X_prime[k, r - j - 1, 0] - X_prime[k, 0, 0])
 
-        np.save(f"{input_data_path}"+ "\" +  "output.npy", X_prime)
-        with open(f"{input_data_path}"+"\"+  "wafer_list.pickle", 'wb') as f:
+        np.save(f"{input_data_path}"+ "\\" +  "output.npy", X_prime)
+        with open(f"{input_data_path}"+"\\"+  "wafer_list.pickle", 'wb') as f:
             pickle.dump(w_list, f)
 
 

@@ -44,5 +44,5 @@ class Handler(FileSystemEventHandler):
 
 "******Excution method******"
 w = Target()
-w.get_path('monitoring',2 , "train_data\\recipe1", "monitoring_anomalies")
+w.get_path('monitoring',2 , "train_data/recipe1", "monitoring_anomalies")
 w.run()

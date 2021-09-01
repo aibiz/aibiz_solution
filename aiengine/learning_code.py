@@ -7,7 +7,7 @@ import gzip, pickle
 from keras.models import load_model
 from csv import reader
 import os
-from gen_tensor import gen_tensor
+from .gen_tensor import gen_tensor
 
 def learn_anomaly(sensor_num, tresh_num, input_path):
 

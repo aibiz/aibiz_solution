@@ -1,4 +1,4 @@
-import json
+
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import authenticate, login
@@ -9,6 +9,10 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View
 from django.contrib.auth.models import User
 from config.models import profile
+import json
+from django.contrib.auth.decorators import login_required
+
+
 
 class LoginView(View):
     def get(self, request: HttpRequest, *args, **kwargs):
@@ -16,7 +20,7 @@ class LoginView(View):
         if request.user.id:
             return redirect('/')
 
-        return render(request, './templates/login.html', context)
+        return render(request, 'login.html', context)
 
     def post(self, request: HttpRequest, *args, **kwargs):
         context = {}
@@ -36,16 +40,16 @@ class LoginView(View):
 class LogoutPageView(View):
     def get(self, request: HttpRequest, *args, **kwargs):
         context = {}
-        
-        return render(request, './templates/logout.html', context)
+
+        return render(request, 'logout.html', context)
 
 class RegisterView(View):
     def get(self, request: HttpRequest, *args, **kwargs):
         context = {}
         if request.user.id:
             return redirect('/')
-            
-        return render(request, './templates/register.html', context)
+
+        return render(request, 'register.html', context)
 
     def post(self, request: HttpRequest, *args, **kwargs):
         context = {}
@@ -80,3 +84,10 @@ class RegisterView(View):
         context['success'] = True
         context['message'] = '등록 되었습니다.'
         return JsonResponse(context, content_type='application/json')
+
+
+class index(LoginRequiredMixin,View):
+    login_url = '/login'
+    def get(self, request: HttpRequest, *args, **kwargs):
+        context = {}
+        return render(request, '../templates/index.html', context)

@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from config.models import mmDataset
 import json
-from aiengine.learning_code import learn_anomaly
+# from aiengine.learning_code import learn_anomaly
 
 def training_main(request):
     context = {}
@@ -24,7 +24,8 @@ def start_training(request):
     print(trainDataId, testDataId, sensorNo, thresholdStd)
 
     if (trainDataId != 'Null' & testDataId != 'Null'):
-       learn_anomaly(sensorNo, thresholdStd, trainDataId)
+       # learn_anomaly(sensorNo, thresholdStd, trainDataId)
+        print("ttt")
     else:
         print("testdata or traindata가 입력되지 않았습니다.")
 

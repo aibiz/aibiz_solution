@@ -20,34 +20,34 @@ def test_anomaly(sensor_num, input_data_path, input_file_path):
     '''
     gen_tensor_for_test(input_data_path, input_file_path)
 
-    if not os.path.isdir(f"{input_data_path}\\after_test"):
-        os.mkdir(f"{input_data_path}\\after_test")
-        os.mkdir(f"{input_data_path}\\after_test\\anomalies")
-        os.mkdir(f"{input_data_path}\\after_test\\plots")
+    if not os.path.isdir(f"{input_data_path}/after_test"):
+        os.mkdir(f"{input_data_path}/after_test")
+        os.mkdir(f"{input_data_path}/after_test/anomalies")
+        os.mkdir(f"{input_data_path}/after_test/plots")
 
-    f = open(f"{input_file_path}\\after_learning\\test_input\\threshold.txt", 'r')
+    f = open(f"{input_file_path}/after_learning/test_input/threshold.txt", 'r')
     threshold = float(f.readline())
     f.close()
     '''
     iput file 입력 및 확인
     '''
     t=[]
-    test_data = np.load(f"{input_data_path}\\output.npy")
+    test_data = np.load(f"{input_data_path}/output.npy")
     test_data = test_data[:,:,sensor_num]
     r, c = np.shape(test_data)
     test_data = np.reshape(test_data, (r,c,1))
 
 
-    with open(f'{input_data_path}\\wafer_list.pickle', 'rb') as f:
+    with open(f'{input_data_path}/wafer_list.pickle', 'rb') as f:
         w_info = pickle.load(f)
         w_info = list(w_info)
 
-    with open(f'{input_data_path}\\sensor_info.txt', 'r') as csv_file:
+    with open(f'{input_data_path}/sensor_info.txt', 'r') as csv_file:
         s_info = reader(csv_file)
         # Passing the cav_reader object to list() to get a list of lists
         s_info = list(s_info)
 
-    model = load_model(f"{input_file_path}\\after_learning\\test_input\\sensor_{sensor_num}.h5")
+    model = load_model(f"{input_file_path}/after_learning/test_input/sensor_{sensor_num}.h5")
     model.summary()
 
     '''
@@ -79,7 +79,7 @@ def test_anomaly(sensor_num, input_data_path, input_file_path):
     plt.xlabel("test MAE loss")
     plt.ylabel("No of samples")
     plt.show()
-    np.savetxt(f"{input_path}\\after_test\\plots\\test_anomaly_score.csv", test_mae_loss, delimiter=",", fmt="%s")
+    np.savetxt(f"{input_path}/after_test/plots/test_anomaly_score.csv", test_mae_loss, delimiter=",", fmt="%s")
 
     print("Threshhold 값: ", threshold)
 
@@ -100,15 +100,15 @@ def test_anomaly(sensor_num, input_data_path, input_file_path):
             temp1= x_test_unno[i]
             temp2= x_test_pred_unno[i]
             t_csv = np.stack((temp1[:,0], temp2[:,0]))
-            np.savetxt(f"{input_data_path}\\after_test\\anomalies\\{w_info[i]}", t_csv, delimiter=",", fmt="%s")
+            np.savetxt(f"{input_data_path}/after_test/anomalies/{w_info[i]}", t_csv, delimiter=",", fmt="%s")
             if k > 25:
                 plt.subplots_adjust(wspace=0.3, hspace=0.8)
                 plt.show()
                 k=1
     plt.subplots_adjust(wspace=0.3, hspace=0.8)
     plt.show()
-input_path = 'test_data\\recipe1'
-input_file_path = "train_data\\recipe1"
+input_path = 'test_data/recipe1'
+input_file_path = "train_data/recipe1"
 sensor_num = 2
 
 

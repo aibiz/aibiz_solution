@@ -19,7 +19,7 @@ def gen_tensor(input_path):
         length = len(raw_list)
         total = 0
         for file in raw_list:
-            csv_data = pd.read_csv(input_path + '\\' + file, header=None)
+            csv_data = pd.read_csv(input_path + '/' + file, header=None)
             data_temp2 = []
             for j in csv_data.columns:
                 data_temp2.append(csv_data[j].tolist())
@@ -29,7 +29,7 @@ def gen_tensor(input_path):
 
         w_list = []
         for file in raw_list:
-            csv_data = pd.read_csv(input_path + '\\' + file, header=None)
+            csv_data = pd.read_csv(input_path + '/' + file, header=None)
             data_temp2 = []
 
             for j in csv_data.columns:

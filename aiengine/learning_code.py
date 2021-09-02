@@ -223,6 +223,6 @@ def learn_anomaly(sensor_num, tresh_num, input_path):
 
 sensor_num = 2
 tresh_num = 10
-input_path = "train_data/recipe1"
+input_path = "./train_data/recipe1"
 
 learn_anomaly(sensor_num, tresh_num, input_path)

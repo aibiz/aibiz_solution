@@ -224,8 +224,8 @@ def learn_anomaly(sensor_num, tresh_num, input_path):
 sensor_num = 2
 tresh_num = 10
 
-abspath = os.getcwd()
-print(abspath)
-input_path = abspath + "/aiengine/train_data/recipe1"
-
-learn_anomaly(sensor_num, tresh_num, input_path)
+# abspath = os.getcwd()
+# print(abspath)
+# input_path = abspath + "/aiengine/train_data/recipe1"
+#
+# learn_anomaly(sensor_num, tresh_num, input_path)

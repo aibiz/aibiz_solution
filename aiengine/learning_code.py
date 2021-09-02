@@ -226,6 +226,6 @@ tresh_num = 10
 
 abspath = os.getcwd()
 print(abspath)
-input_path = abspath + "/train_data/recipe1"
+input_path = abspath + "/aiengine/train_data/recipe1"
 
 learn_anomaly(sensor_num, tresh_num, input_path)

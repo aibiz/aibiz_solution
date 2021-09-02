@@ -14,7 +14,6 @@ def problemmain(request) :
         'problemContent' : mmProblem.objects.raw(query)
     }
 
-
     return render(request, 'problem/problemmain.html', context)
 
 def problemadd(request) :

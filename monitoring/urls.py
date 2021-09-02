@@ -14,5 +14,6 @@ urlpatterns = [
     path('register', user_views.RegisterView.as_view(), name='register'),
 
     # Monitoring
-    path('monitoring/', monitoring_views.monitoringmain.as_view(), name='monitoringmain')
+    path('monitoring/', monitoring_views.monitoringmain.as_view(), name='monitoringmain'),
+    path('monitoring/execute', monitoring_views.execute_monitoring.as_view(), name='execute_monitoring')
 ]

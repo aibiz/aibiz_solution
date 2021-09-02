@@ -1,0 +1,228 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+{% block title %}Monitoring{% endblock %}
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" />
+{% endblock stylesheets %}
+
+{% block content %}
+    <main class="main" id="top">
+        <div style="width:20%; float:left;">
+            {% if equip_list %}
+                {% for i in equip_list %}
+                    <ul class="navbar-nav flex-column mb-3">
+                        <li">{% if i.eqip_cnt == 1 %}{{ i.equipment_id }}{% endif %}
+                            <ul>
+                                <li>{% if i.cham_cnt == 1 %}{{ i.chamber_id }}{% endif %}
+                                    <ul>
+                                        <li>{% if i.rec_cnt == 1 %}{{ i.recipe_no }}{% endif %}
+                                            <ul>
+                                                <li>
+                                                    <label class="btn-falcon-info" id="{{ i.id }}" onclick="execute_Monitoring();">{{ i.sensor_no }}</label>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                {% endfor %}
+            {% endif %}
+        </div>
+        <div style="width:80%; float:right;">
+            <div class="mb-3">
+                <label class="form-label">Sensor Number</label>
+                <label class="form-label" id="select_sensor">null</label>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                    Select Sensor
+                </button>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Warning List</label>
+                <table id="anomalies_list" style="width:100%">
+                    <tr>
+                        <td>Date</td>
+                        <td>Lot No</td>
+                    </tr>
+                </table>
+            </div>
+            <!-- Modal -->
+            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Sensor List</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+{#                            Table in modal                               #}
+                            <div id="tableExample2" data-list='{"valueNames":["check","data_name","data_cnt","data_size"],"page":5,"pagination":true}'>
+                                <div class="table-responsive scrollbar">
+                                    <table class="table table-bordered table-striped fs--1 mb-0">
+                                        <thead class="bg-200 text-900">
+                                        <tr>
+                                            <th class="sort" data-sort="Equip_ID">Equip_ID</th>
+                                            <th class="sort" data-sort="Chamber_ID">Chamber_ID</th>
+                                            <th class="sort" data-sort="Sensor_No">Sensor_No</th>
+                                            <th data-sort="check"></th>
+                                        </tr>
+                                        </thead>
+                                        <tbody class="list">
+                                        {% if list %}
+                                            {% for i in list %}
+                                                <td class="Equip_ID">{{ i.equipment_id }}</td>
+                                                <td class="Chamber_ID">{{ i.chamber_id }}</td>
+                                                <td class="Sensor_No">{{ i.sensor_no }}</td>
+                                                <input type="hidden" value="{{ i.id }}">
+                                                <input type="hidden" value="{{ i.data_static_path }}">
+                                                <td>
+                                                    <div style="display: none;">
+                                                        <button type="hidden" id="{{ i }}"
+                                                                onclick="selectedId('{{ i.id }}','{{ i.sensor_no }}')">
+                                                        </button>
+                                                    </div>
+                                                        <label class="btn-falcon-info" id="is_select"  for="{{ i }}">Select</label>
+                                                </td>
+                                                </tr>
+                                            {% endfor %}
+                                        {% endif %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="d-flex justify-content-center mt-3">
+                                    <button class="btn btn-sm btn-falcon-default me-1" type="button" title="Previous" data-list-pagination="prev">
+                                        <span class="fas fa-chevron-left"></span>
+                                    </button>
+                                    <ul class="pagination mb-0"></ul>
+                                    <button class="btn btn-sm btn-falcon-default ms-1" type="button" title="Next" data-list-pagination="next">
+                                        <span class="fas fa-chevron-right"> </span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">확인</button>
+{#                                <button type="button" class="btn btn-primary">Save changes</button>#}
+                        </div>
+                    </div>
+                </div>
+            </div>
+{#            end modal             #}
+        </div>
+    </main>
+{% endblock %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
+    <script src="static/vendors/list.js/list.min.js"></script>
+    <script>
+        {#    모달관련js #}
+        var myModal = document.getElementById('myModal')
+        var myInput = document.getElementById('myInput')
+
+        myModal.addEventListener('shown.bs.modal', function () {
+            myInput.focus()
+        })
+    </script>
+
+{#    modal내 하단 selectedDisp 내용변경   #}
+    <script>
+        function selectedId(id, name){
+            $('#selectedDisp').text(name)
+            $('#select_sensor').text(name)
+            $('#selectedHidden').val(id)
+        }
+    </script>
+    <script>
+{#     train 시작        #}
+    const button = document.getElementById('train-btn');
+
+    button.addEventListener('click', async _ => {
+        try {
+            var trainDataId = document.getElementById('selectedHidden').value;
+
+            console.log(trainDataId);
+            const response = await fetch('/training/', {
+                method: 'post',
+                body: {
+                    'trainDataId' : trainDataId
+
+                }
+            });
+
+            console.log('Completed!', response);
+        } catch(err) {
+            console.error(`Error: ${err}`);
+        }
+    });
+
+    </script>
+    <script>
+    $(function () {
+        // 6 create an instance when the DOM is ready
+        $('#jstree').jstree();
+        // 7 bind to events triggered on the tree
+        $('#jstree').on("changed.jstree", function (e, data) {
+            console.log(data.selected);
+        });
+
+        // 8 interact with the tree - either way is OK
+        $('button').on('click', function () {
+            $('#jstree').jstree(true).select_node('child_node_1');
+            $('#jstree').jstree('select_node', 'child_node_1');
+            $.jstree.reference('#jstree').select_node('child_node_1');
+        });
+    });
+    </script>
+    <script>
+        function execute_Monitoring(){
+
+            var url = '/monitoring/execute';
+
+            //var form = $('#inputForm')[0];
+            //var formData = new FormData(form);
+            $.ajax({
+                type : 'GET',
+                url : url,
+                headers: { "X-CSRFToken": getCookie("csrftoken") },
+                //data : formData,
+                cache: false,
+                contentType: false,
+                processData: false,
+                error: function(request,status,error){
+                     //alert("code:"+request.status+"\n"+"error:"+error);
+                },
+                success : function(result){
+                    var list = "";
+                    var list_First = "";
+
+                    var file_Name;
+                    var date = "";
+                    var lot_No = "";
+
+                    list_First = "<tr><td>Date</td><td>Lot No</td></tr>";
+
+                    $("#anomalies_list").empty();
+                    $("#anomalies_list").append(list_First);
+
+                    $.each(result.anomalies_list, function(i, item){
+                        //alert(item);
+                        file_Name = item.replace(".csv", "").split("_");
+                        date = file_Name[0] + "/" + file_Name[1] + "/" + file_Name[2];
+                        lot_No = file_Name[3] + "_" + file_Name[4];
+
+                        list += "<tr>";
+                        list += "<td>" + date + "</td>";
+                        list += "<td>" + lot_No + "</td>";
+                        list += "</tr>";
+                    });
+
+                    $("#anomalies_list").append(list);
+                }
+            });
+        }
+    </script>
+{% endblock javascripts %}

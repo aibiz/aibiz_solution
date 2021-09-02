@@ -16,7 +16,7 @@ class LoginView(View):
         if request.user.id:
             return redirect('/')
 
-        return render(request, 'user/login.html', context)
+        return render(request, './templates/login.html', context)
 
     def post(self, request: HttpRequest, *args, **kwargs):
         context = {}
@@ -37,7 +37,7 @@ class LogoutPageView(View):
     def get(self, request: HttpRequest, *args, **kwargs):
         context = {}
         
-        return render(request, 'user/logout.html', context)
+        return render(request, './templates/logout.html', context)
 
 class RegisterView(View):
     def get(self, request: HttpRequest, *args, **kwargs):
@@ -45,7 +45,7 @@ class RegisterView(View):
         if request.user.id:
             return redirect('/')
             
-        return render(request, 'user/register.html', context)
+        return render(request, './templates/register.html', context)
 
     def post(self, request: HttpRequest, *args, **kwargs):
         context = {}

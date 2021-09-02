@@ -16,21 +16,60 @@
           <h3>Data Upload</h3>
         </div>
       </div>
+      <form id="UploadForm" method="post" action="/uploaddata">
+        {% csrf_token %}
       <div class="row">
-        <div class='col-lg-10'>
-          <form id="UploadForm" method="post" action="/uploaddata">
-            {% csrf_token %}
+        <div class="col-lg-2">
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" id="inlineRadio1" type="radio" name="inlineRadioOptions" value="train_data" checked=""/>
+            <label class="form-check-label" for="inlineRadio1">Train</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" id="inlineRadio2" type="radio" name="inlineRadioOptions" value="test_data" />
+            <label class="form-check-label" for="inlineRadio2">Test</label>
+          </div>
+        </div>
+        <div class='col-lg-8'>
             <div class="fallback">
-              <input id="file" name="file" type="file" multiple="multiple"/>
+              <input class="form-control" id="file" name="file" type="file" multiple="multiple"/>
+            </div>
+        </div>
+        <div class='col-lg-2'>
+          <button class="btn btn-falcon-default btn-sm mt-2" type="button" onclick="showModal()">등록</button>
+        </div>
+      </div>
+    </form>
+    </div>
+</div>
+
+<div class="modal fade" id="directory-modal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document" style="max-width: 500px">
+    <div class="modal-content position-relative">
+      <div class="position-absolute top-0 end-0 mt-2 me-2 z-index-1">
+        <button class="btn-close btn btn-sm btn-circle d-flex flex-center transition-base" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body p-0">
+        <div class="rounded-top-lg py-3 ps-4 pe-6 bg-light">
+          <h4 class="mb-1" id="modalExampleDemoLabel">폴더</h4>
+        </div>
+        <div class="p-4 pb-0">
+          <form>
+            <div class="mb-3">
+              <label class="col-form-label" for="directory-name">폴더 명:</label>
+              <input class="form-control" id="directory-name" type="text" />
             </div>
           </form>
         </div>
-        <div class='col-lg-2'>
-          <button class="btn btn-falcon-default btn-sm mt-2" type="button" onclick="upload()">등록</button>
-        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Close</button>
+        <button class="btn btn-primary" type="button" onclick="upload()">OK </button>
       </div>
     </div>
+  </div>
 </div>
+
+
   <div class="card-body py-0">
     <div class="tab-content">
       <div class="tab-pane preview-tab-pane active" role="tabpanel" aria-labelledby="tab-dom-a9712f65-720e-4f64-8ced-b50bb29a7a97" id="dom-a9712f65-720e-4f64-8ced-b50bb29a7a97">

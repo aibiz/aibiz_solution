@@ -1,7 +1,10 @@
 from django.shortcuts import render
 from config.models import mmDataset
 import json
+import os
 from aiengine.learning_code import learn_anomaly
+
+
 
 def training_main(request):
     context = {}
@@ -17,12 +20,21 @@ def training_main(request):
 def start_training(request):
     rsData = json.loads(request.body.decode("utf-8"))
 
-    trainDataId = rsData['trainDataId']
+    # trainDataId = rsData['trainDataId']
+
+    rootpath = os.getcwd()
+    print("1:", rootpath)
+    rootpath = rootpath.split('/')
+    rootpath = rootpath[:-1]
+    print("2:", rootpath)
+    rootpath = '/'.join(rootpath)
+
+    trainDataId = rootpath + rsData['trainDataId']
+    print("tr", trainDataId)
     testDataId = rsData['testDataId']
     sensorNo = rsData['sensorNo']
     thresholdStd = rsData['thresholdStd']
     print(trainDataId, testDataId, sensorNo, thresholdStd)
-
     if ((trainDataId != 'Null') & (testDataId != 'Null')):
         learn_anomaly(sensorNo, thresholdStd, trainDataId)
         print("ttt")

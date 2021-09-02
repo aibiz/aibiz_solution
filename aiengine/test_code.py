@@ -112,5 +112,5 @@ input_file_path = "train_data/recipe1"
 sensor_num = 2
 
 
-test_anomaly(sensor_num, input_path, input_file_path)
+# test_anomaly(sensor_num, input_path, input_file_path)
 

@@ -95,11 +95,11 @@
                                                     <td class="data_size">{{ i.data_size }}</td>
                                                     <td>
                                                         <div style="display: none;">
-                                                            <button type="hidden" id="{{ i }}"
+                                                            <button type="hidden" id="m1_{{ i }}"
                                                                     onclick="selectId('{{ i.id }}','{{ i.data_name }}','{{ i.data_cnt }}','{{ i.data_size }}')">
                                                             </button>
                                                         </div>
-                                                        <label class="btn-falcon-info" id="is_select"  for="{{i}}">Select</label>
+                                                        <label class="btn-falcon-info" id="is_select"  for="m1_{{i}}">Select</label>
                                                     </td>
                                                     </tr>
                                                 {% endfor %}
@@ -165,11 +165,11 @@
                                                     <td class="data_size">{{ j.data_size }}</td>
                                                     <td>
                                                         <div style="display: none;">
-                                                            <button type="hidden" id="{{ j }}"
+                                                            <button type="hidden" id="m2_{{ j }}"
                                                                     onclick="selectTestId('{{ j.id }}','{{ j.data_name }}','{{ j.data_cnt }}','{{ j.data_size }}')">
                                                             </button>
                                                         </div>
-                                                        <label class="btn-falcon-info" id="is_select"  for="{{ j }}">Select</label>
+                                                        <label class="btn-falcon-info" id="is_select"  for="m2_{{ j }}">Select</label>
                                                     </td>
                                                     </tr>
                                                 {% endfor %}
@@ -234,7 +234,7 @@
                 
                 <div class="row-cols-md-1">ddd</div>
                 <div style="display: flex; float: right;">
-                    <button class="btn-primary" id="traintart-btn" style="border: none; border-radius: 4px; padding: 5px 35px">Start</button>
+                    <button class="btn-primary" id="trainstart-btn" style="border: none; border-radius: 4px; padding: 5px 35px">Start</button>
 
                 </div>
             </div>

@@ -19,7 +19,7 @@
                               <button type="button" class="btn col btn-falcon-default btn-sm" id="select-btn" data-bs-toggle="modal" data-bs-target="#trainDataModal">
                                 Select data
                             </button>
-                            </div>
+                        </div>
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-4">
@@ -152,7 +152,7 @@
                                             <thead class="bg-200 text-900">
                                             <tr>
                                                 <th class="sort data_name" data-sort="data_name">Name</th>
-                                                <th class="sort data_cnt" data-sort="data_cnt">sample수</th>
+                                                <th class="sort data_cnt" data-sort="data_cnt">sample num</th>
                                                 <th class="sort data_size" data-sort="data_size">size</th>
                                                 <th data-sort="check"></th>
                                             </tr>
@@ -205,23 +205,27 @@
                         </div>
                     </div>
                 </div>
-                </div>
+            </div>
                 {#            end modal-2             #}
 
-            <div class="container-fluid">
-                <div class="card-body" id="data_select" style="background-color: #0d2545;">
-                    <div class="row-cols-md-1">Train data select</div>
-                    <div class="form-group mb-2">
-                        Sensor No.
-                        <input id="sensorNo" type="text" class="text-center" value="2">
+                <div class="col-xxl-6 px-xxl-2 mb-3 pe-md-2">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <h6>Train data select</h6>
+                        </div>
+                        <div class="card-body row" id="data_select" style="--falcon-gutter-x:0">
+                            <div class="form-group mb-2 col">
+                                Sensor No.
+                                <input id="sensorNo" type="text" class="text-center sensor-no" value="2" style="margin-left: 0.5em; border-radius: 4px; border:solid 1px #5e6e82">
+                            </div>
+                            <div class="form-group mb-2 col">
+                                기준 Threshold
+                                <input id="thresholdStd" type="text" class="text-center threshold-std" value="10" style="margin-left: 0.5em; border-radius: 4px; border:solid 1px #5e6e82">
+                            </div>
+                        </div>
                     </div>
-                    <div class="form-group mb-2">
-                        기준 Threshold
-                        <input id="thresholdStd" type="text" class="text-center" value="10">
-    
-                    </div>
+
                 </div>
-            </div>
            
 
 
@@ -229,8 +233,8 @@
                 
                 
                 <div class="row-cols-md-1">ddd</div>
-                <div>
-                    <button class="btn-primary" id="traintart-btn">Start</button>
+                <div style="display: flex; float: right;">
+                    <button class="btn-primary" id="traintart-btn" style="border: none; border-radius: 4px; padding: 5px 35px">Start</button>
                 </div>
             </div>
         </div>

@@ -230,7 +230,7 @@
                 
                 <div class="row-cols-md-1">ddd</div>
                 <div>
-                    <button class="btn-primary" id="traintart-btn">Start</button>
+                    <button class="btn-primary" id="trainstart-btn">Start</button>
                 </div>
             </div>
         </div>
@@ -274,12 +274,18 @@
         }
     </script>
 
-    <script>
+<script>
         {#     train 시작        #}
         const button = document.getElementById('trainstart-btn');
 
         button.addEventListener('click', async _ => {
             try {
+                var headers = new Headers();
+var csrftoken = getCookie('csrftoken');
+headers.append('X-CSRFToken', csrftoken);
+headers.append('Accept', 'application/json');
+headers.append('Content-Type', 'application/json');
+
                 var trainDataId = document.getElementById('selectedTrainHidden').value;
                 var testDataId = document.getElementById('selectedTestHidden').value;
                 var sensorNo = document.getElementById('sensorNo').value;
@@ -287,13 +293,14 @@
 
                 console.log(trainDataId);
                 const response = await fetch('/training/start', {
-                    method: 'post',
-                    body: {
-                        'trainDataId' : trainDataId,
-                        'testDataId' : testDataId,
-                        'sensorNo' : sensorNo,
-                        'thresholdStd' : thresholdStd
-                    }
+                    method: 'POST',
+                    headers: headers,
+                    body: JSON.stringify({
+                        trainDataId : trainDataId,
+                        testDataId : testDataId,
+                        sensorNo : sensorNo,
+                        thresholdStd : thresholdStd
+                    })
                 });
                 console.log('Completed!', response);
             } catch(err) {

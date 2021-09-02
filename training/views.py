@@ -35,11 +35,11 @@ def start_training(request):
     sensorNo = rsData['sensorNo']
     thresholdStd = rsData['thresholdStd']
     print(trainDataId, testDataId, sensorNo, thresholdStd)
-    if ((trainDataId != 'Null') & (testDataId != 'Null')):
-        learn_anomaly(sensorNo, thresholdStd, trainDataId)
-        print("ttt")
-    else:
-        print("testdata or traindata가 입력되지 않았습니다.")
+    # if ((trainDataId != 'Null') & (testDataId != 'Null')):
+    learn_anomaly(sensorNo, thresholdStd, trainDataId)
+    print("ttt")
+    # else:
+    #     print("testdata or traindata가 입력되지 않았습니다.")
 
 
 

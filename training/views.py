@@ -44,7 +44,7 @@ def start_training(request):
     print(trainDataId, testDataId, sensorNo, thresholdStd)
     if ((trainDataId != 'Null') & (testDataId != 'Null')):
         learn_anomaly(sensorNo, thresholdStd, trainStaticPath)
-        test_anomaly(testStaticPath, trainStaticPath)
+        test_anomaly(sensorNo, testStaticPath, trainStaticPath)
     else:
         print("testdata, traindata모두 입력하세요.")
 

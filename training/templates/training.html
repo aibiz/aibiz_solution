@@ -418,15 +418,21 @@
 
         //파일 리스트 호출 함수
         function executeMonitoring() {
+            var trainStaticPath = document.getElementById('selectedTrainpathHidden').value;
             var testStaticPath = document.getElementById('selectedTestpathHidden').value;
             var url = 'training/graphing';
 
             $.ajax({
-                type : 'GET',
+                type : 'POST',
                 url : url,
                 headers: { "X-CSRFToken": getCookie("csrftoken") },
                 cache: false,
-                contentType: false,
+                dataType: 'json',
+                contentType: 'application/json; charset=utf-8',
+                data : JSON.stringify({
+                        trainStaticPath : trainStaticPath,
+                        testStaticPath : testStaticPath
+                    }),
                 processData: false,
                 error: function(request,status,error){
                     //alert("code:"+request.status+"\n"+"error:"+error);

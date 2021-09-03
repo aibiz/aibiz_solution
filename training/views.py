@@ -48,8 +48,6 @@ def start_training(request):
     else:
         print("testdata, traindata모두 입력하세요.")
 
-    result_train = Target()
-    result_train.get_path(trainStaticPath)
 
 def graphing_training(request):
     context = {}

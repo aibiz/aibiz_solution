@@ -74,7 +74,7 @@ class execute_monitoring(View):
         # rootpath = rootpath[:-1]
         rootpath = '/'.join(rootpath)
 
-        dir = rootpath + "\\static\\data\\monitoring_anomalies\\"
+        dir = rootpath + "/static/data/monitoring_anomalies/"
         file_list = os.listdir(dir)
         csv_list = []
 

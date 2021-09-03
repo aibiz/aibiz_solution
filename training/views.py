@@ -6,8 +6,8 @@ import os
 from django.http import HttpRequest, JsonResponse
 import datetime
 import pandas
-# from aiengine.learning_code import learn_anomaly
-# from aiengine.test_code import test_anomaly
+from aiengine.learning_code import learn_anomaly
+from aiengine.test_code import test_anomaly
 
 
 
@@ -45,11 +45,11 @@ def start_training(request):
     thresholdStd = int(rsData['thresholdStd'])
     print("path::", trainStaticPath, testStaticPath)
     print(trainDataId, testDataId, sensorNo, thresholdStd)
-    # if ((trainDataId != 'Null') & (testDataId != 'Null')):
-    #     learn_anomaly(sensorNo, thresholdStd, trainStaticPath)
-    #     test_anomaly(sensorNo, testStaticPath, trainStaticPath)
-    # else:
-    #     print("testdata, traindata모두 입력하세요.")
+    if ((trainDataId != 'Null') & (testDataId != 'Null')):
+        learn_anomaly(sensorNo, thresholdStd, trainStaticPath)
+        test_anomaly(sensorNo, testStaticPath, trainStaticPath)
+    else:
+        print("testdata, traindata모두 입력하세요.")
     return JsonResponse(context, content_type='application/json')
 
 def graphing_training(request):

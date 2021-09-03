@@ -25,7 +25,7 @@ def gen_tensor(input_path):
                 data_temp2.append(csv_data[j].tolist())
             n_sen, c = (np.shape(data_temp2))
             total += c
-        ave = int(total/length)
+        ave = int(total//length)
 
         w_list = []
         for file in raw_list:
@@ -83,7 +83,7 @@ def gen_tensor_for_test(input_data_path, input_file_path):
                 data_temp2.append(csv_data[j].tolist())
             n_sen, c = (np.shape(data_temp2))
             total += c
-        ave = int(total/length)
+        ave = int(total//length)
 
         w_list = []
         for file in raw_list:

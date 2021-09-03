@@ -66,20 +66,12 @@ def graphing_training(request):
 
     testStaticPath = rsData['testStaticPath']
     testStaticPath = rootpath + testStaticPath
-    # testStatusFile = testStaticPath + "/after_test/anomolies/training_status_loss.csv"
     testAnomalyFile = testStaticPath + "/after_test/plots/test_anomaly_score.csv"
 
-
-#     print("st_loss1:::", convert_data(trainingStatusFile, 0))
-#     print("trainAnomaly:::", convert_data(trainingAnomalyFile, 0))
-#     print("test_data:::", convert_data(testStatusFile, 0))
-#     print("testAnomaly:::", convert_data(testAnomalyFile, 0))
 
     print("st_loss1:::", convert_data(trainingStatusFile, 0)[0])
     print("st_loss2:::", convert_data(trainingStatusFile, 0)[1])
     print("trainAnomaly:::", convert_data(trainingAnomalyFile, 1))
-    # print("test_data:::", convert_data(testStatusFile, 0)[0])
-    # print("test_predict:::", convert_data(testStatusFile, 0)[1])
     print("testAnomaly:::", convert_data(testAnomalyFile, 1))
 
 
@@ -88,9 +80,12 @@ def graphing_training(request):
         context['status_val_loss'] = convert_data(trainingStatusFile, 0)[1]
         context['train_anomaly_score'] = convert_data(trainingAnomalyFile, 1)
         context['test_anomaly_score'] = convert_data(testAnomalyFile, 1)
-        return True
+
+        context['state'] = "True"
+        return JsonResponse(context, content_type='application/json')
     else :
-        return False
+        context['state'] = "False"
+        return JsonResponse(context, content_type='application/json')
 
 
 def convert_data(file, mthd):
@@ -102,37 +97,37 @@ def convert_data(file, mthd):
     if(mthd == 1):
         data = sum(data, [])
     return data
+# class test_anomalies(View):
+#     def get(self, request: HttpRequest, *args, **kwargs):
+#         context = {}
+#
+#         testStaticPath = request.GET['testStaticPath']
+#
+#         rootpath = os.getcwd()
+#         dir = rootpath + testStaticPath + '/'
+#         print(dir)
+#         file_list = os.listdir(dir)
+#         csv_list = []
+#
+#         #파일을 수정시간순으로 정렬
+#         for i in range(0, len(file_list)) :
+#             for j in range(0, len(file_list)) :
+#                 if datetime.datetime.fromtimestamp(os.stat(dir + file_list[i]).st_mtime) < datetime.datetime.fromtimestamp(os.stat(dir + file_list[j]).st_mtime) :
+#                     (file_list[i], file_list[j]) = (file_list[j], file_list[i])
+#
+#         #파일 리스트 전체의 csv파일 데이터를 읽어들여와 List 형식으로 변환(전체파일)
+#         for k in file_list :
+#             data = pandas.read_csv(dir + k, header = None)
+#             data = data.values.tolist()
+#             csv_list.append([k, data])
+#
+#         context = {
+#             "anomalies_list": file_list,
+#             "csv_list" : csv_list
+#         }
+#
+#         return JsonResponse(context, content_type='application/json')
 
-class test_anomalies(View):
-    def get(self, request: HttpRequest, *args, **kwargs):
-        context = {}
-
-        testStaticPath = request.GET['testStaticPath']
-
-        rootpath = os.getcwd()
-        dir = rootpath + testStaticPath + '/'
-        print(dir)
-        file_list = os.listdir(dir)
-        csv_list = []
-
-        #파일을 수정시간순으로 정렬
-        for i in range(0, len(file_list)) :
-            for j in range(0, len(file_list)) :
-                if datetime.datetime.fromtimestamp(os.stat(dir + file_list[i]).st_mtime) < datetime.datetime.fromtimestamp(os.stat(dir + file_list[j]).st_mtime) :
-                    (file_list[i], file_list[j]) = (file_list[j], file_list[i])
-
-        #파일 리스트 전체의 csv파일 데이터를 읽어들여와 List 형식으로 변환(전체파일)
-        for k in file_list :
-            data = pandas.read_csv(dir + k, header = None)
-            data = data.values.tolist()
-            csv_list.append([k, data])
-
-        context = {
-            "anomalies_list": file_list,
-            "csv_list" : csv_list
-        }
-
-        return JsonResponse(context, content_type='application/json')
 
 
 

@@ -7,7 +7,7 @@ import gzip, pickle
 from keras.models import load_model
 from csv import reader
 import os
-from gen_tensor import gen_tensor
+from .gen_tensor import gen_tensor
 
 def learn_anomaly(sensor_num, tresh_num, input_path):
 
@@ -27,29 +27,29 @@ def learn_anomaly(sensor_num, tresh_num, input_path):
     '''
     gen_tensor(input_path)
 
-    if not os.path.isdir(f"{input_path}\\after_learning"):
-        os.mkdir(f"{input_path}\\after_learning")
-        os.mkdir(f"{input_path}\\after_learning\\test_input")
-        os.mkdir(f"{input_path}\\after_learning\\anomalies")
-        os.mkdir(f"{input_path}\\after_learning\\plots")
+    if not os.path.isdir(f"{input_path}/after_learning"):
+        os.mkdir(f"{input_path}/after_learning")
+        os.mkdir(f"{input_path}/after_learning/test_input")
+        os.mkdir(f"{input_path}/after_learning/anomalies")
+        os.mkdir(f"{input_path}/after_learning/plots")
 
     '''
     iput file 입력 및 확인
     '''
-    train_data = np.load(f"{input_path}\\output.npy")
+    train_data = np.load(f"{input_path}/output.npy")
     train_data = train_data[:,:,sensor_num]
     r, c = np.shape(train_data)
     train_data = np.reshape(train_data, (r,c,1))
 
-    f = open(f"{input_path}\\after_learning\\test_input\\data_length.txt", 'w')
+    f = open(f"{input_path}/after_learning/test_input/data_length.txt", 'w')
     f.write(str(c))
     f.close()
 
-    with open(f'{input_path}'+'\\'+ 'wafer_list.pickle', 'rb') as f:
+    with open(f'{input_path}'+'/'+ 'wafer_list.pickle', 'rb') as f:
         w_info = pickle.load(f)
         w_info = list(w_info)
 
-    with open(f'{input_path}'+'\\'+'sensor_info.txt', 'r') as csv_file:
+    with open(f'{input_path}'+'/'+'sensor_info.txt', 'r') as csv_file:
         s_info = reader(csv_file)
         # Passing the cav_reader object to list() to get a list of lists
         s_info = list(s_info)
@@ -141,7 +141,7 @@ def learn_anomaly(sensor_num, tresh_num, input_path):
             keras.callbacks.EarlyStopping(monitor="val_loss", patience=5, mode="min")
         ],
     )
-    model.save(f'{input_path}\\after_learning\\test_input\\sensor_{sensor_num}.h5')
+    model.save(f'{input_path}/after_learning/test_input/sensor_{sensor_num}.h5')
 
     plt.plot(history.history["loss"], label="Training Loss")
     plt.plot(history.history["val_loss"], label="Validation Loss")
@@ -150,7 +150,7 @@ def learn_anomaly(sensor_num, tresh_num, input_path):
     temp1 = history.history["loss"]
     temp2 = history.history["val_loss"]
     t_csv = np.stack((temp1[:], temp2[:]))
-    np.savetxt(f"{input_path}\\after_learning\\plots\\Training_status_loss.csv", t_csv, delimiter=",", fmt="%s")
+    np.savetxt(f"{input_path}/after_learning/plots/Training_status_loss.csv", t_csv, delimiter=",", fmt="%s")
 
     x_train_pred = model.predict(xtrain)
     x_train_unno = (xtrain * training_std) + training_mean
@@ -177,7 +177,7 @@ def learn_anomaly(sensor_num, tresh_num, input_path):
     threshold = min(thresh2)
 
 
-    f = open(f"{input_path}\\after_learning\\test_input\\threshold.txt", 'w')
+    f = open(f"{input_path}/after_learning/test_input/threshold.txt", 'w')
     f.write(str(threshold))
     f.close()
 
@@ -190,7 +190,7 @@ def learn_anomaly(sensor_num, tresh_num, input_path):
     plt.xlabel("Train MAE loss")
     plt.ylabel("No of samples")
     plt.show()
-    np.savetxt(f"{input_path}\\after_learning\\plots\\train_anomaly_score.csv", train_mae_loss, delimiter=",", fmt="%s")
+    np.savetxt(f"{input_path}/after_learning/plots/train_anomaly_score.csv", train_mae_loss, delimiter=",", fmt="%s")
 
     print("Threshhold 값: ", threshold)
 
@@ -211,7 +211,7 @@ def learn_anomaly(sensor_num, tresh_num, input_path):
             temp1= x_train_unno[i]
             temp2= x_train_pred_unno[i]
             t_csv = np.stack((temp1[:,0], temp2[:,0]))
-            np.savetxt(f"{input_path}\\after_learning\\anomalies\\{w_info[i]}", t_csv, delimiter=",", fmt="%s")
+            np.savetxt(f"{input_path}/after_learning/anomalies/{w_info[i]}", t_csv, delimiter=",", fmt="%s")
             if k > 25:
                 plt.subplots_adjust(wspace=0.3, hspace=0.8)
                 plt.show()
@@ -223,6 +223,9 @@ def learn_anomaly(sensor_num, tresh_num, input_path):
 
 sensor_num = 2
 tresh_num = 10
-input_path = "train_data\\recipe1"
 
-learn_anomaly(sensor_num, tresh_num, input_path)
+# abspath = os.getcwd()
+# print(abspath)
+# input_path = abspath + "/aiengine/train_data/recipe1"
+#
+# learn_anomaly(sensor_num, tresh_num, input_path)

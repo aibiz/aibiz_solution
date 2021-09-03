@@ -56,6 +56,11 @@ class mmDataset(models.Model):
 
 class mmModel(models.Model):
     id = models.AutoField(primary_key=True)
+    problem_id = models.IntegerField(db_column='problem_id')
+    equipment_id = models.IntegerField(db_column='equipment_id')
+    chamber_id = models.IntegerField(db_column='chamber_id')
+    recipe_no = models.CharField(db_column='recipe_no', max_length=45, default='')
+    sensor_no = models.CharField(db_column='sensor_no', max_length=255, default='')
     dataset = models.ForeignKey('mmDataset', on_delete=models.DO_NOTHING)
     sensor_no = models.CharField(db_column='sensor_no', max_length=255, default='')
     threshold_std = models.FloatField(db_column='threshold_std', default='0')
@@ -71,7 +76,7 @@ class mmModel(models.Model):
         db_table = 'mm_model'
 
 
-class mmMonitoring(models.Model):
+class mhMonitoring(models.Model):
     id = models.AutoField(primary_key=True)
     model = models.ForeignKey('mmModel', on_delete=models.DO_NOTHING)
     created_at = models.DateTimeField(db_column='created_at', auto_now=True)
@@ -80,4 +85,4 @@ class mmMonitoring(models.Model):
     delete_flag = models.CharField(db_column='delete_flag', max_length=10, default='0')
 
     class Meta:
-        db_table = 'mm_monitoring'
+        db_table = 'mh_monitoring'

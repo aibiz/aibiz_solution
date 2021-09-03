@@ -21,7 +21,7 @@ def test_anomaly(sensor_num, input_data_path, input_file_path, output_path):
     '''
     filename = os.path.basename(input_data_path)
     input_path = os.path.dirname(input_data_path)
-    f = open(f"{input_file_path}\\after_learning\\test_input\\data_length.txt", 'r')
+    f = open(f"{input_file_path}/after_learning/test_input/data_length.txt", 'r')
     data_length = int(f.readline())
     f.close()
 
@@ -34,7 +34,7 @@ def test_anomaly(sensor_num, input_data_path, input_file_path, output_path):
             monitoring_data[0, i, j] = csv_data[i, j]
 
 
-    f = open(f"{input_file_path}\\after_learning\\test_input\\threshold.txt", 'r')
+    f = open(f"{input_file_path}/after_learning/test_input/threshold.txt", 'r')
     threshold = float(f.readline())
     f.close()
 
@@ -47,16 +47,16 @@ def test_anomaly(sensor_num, input_data_path, input_file_path, output_path):
     monitoring_data = np.reshape(monitoring_data, (r,c,1))
 
 
-    with open(f'{input_file_path}\\wafer_list.pickle', 'rb') as f:
+    with open(f'{input_file_path}/wafer_list.pickle', 'rb') as f:
         w_info = pickle.load(f)
         w_info = list(w_info)
 
-    with open(f'{input_file_path}\\sensor_info.txt', 'r') as csv_file:
+    with open(f'{input_file_path}/sensor_info.txt', 'r') as csv_file:
         s_info = reader(csv_file)
         # Passing the cav_reader object to list() to get a list of lists
         s_info = list(s_info)
 
-    model = load_model(f"{input_file_path}\\after_learning\\test_input\\sensor_{sensor_num}.h5")
+    model = load_model(f"{input_file_path}/after_learning/test_input/sensor_{sensor_num}.h5")
     model.summary()
 
 
@@ -90,12 +90,12 @@ def test_anomaly(sensor_num, input_data_path, input_file_path, output_path):
         temp1 = x_test_unno[0]
         temp2 = x_test_pred_unno[0]
         t_csv = np.stack((temp1[:, 0], temp2[:, 0]))
-        np.savetxt(f"{output_path}\\{filename}", t_csv, delimiter=",", fmt="%s")
+        np.savetxt(f"{output_path}/{filename}", t_csv, delimiter=",", fmt="%s")
 
 
 '''
-input_path = 'monitoring\\2020_07_10_0164660_4.csv'
-input_file_path = "train_data\\recipe1"
+input_path = 'monitoring/2020_07_10_0164660_4.csv'
+input_file_path = "train_data/recipe1"
 sensor_num = 2
 
 test_anomaly(sensor_num, input_path, input_file_path)

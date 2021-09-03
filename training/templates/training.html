@@ -378,10 +378,15 @@
     </script>
 
     <script>
-        var chart1 = document.getElementById('canvas1').getContext('2d');
-        var chart2 = document.getElementById('canvas2').getContext('2d');
-        var chart3 = document.getElementById('canvas3').getContext('2d');
-        var chart4 = document.getElementById('canvas4').getContext('2d');
+        var canvas1 = document.getElementById('canvas1').getContext('2d');
+        var canvas2 = document.getElementById('canvas2').getContext('2d');
+        var canvas3 = document.getElementById('canvas3').getContext('2d');
+        var canvas4 = document.getElementById('canvas4').getContext('2d');
+
+        var chart1;
+        var chart2;
+        var chart3;
+        var chart4;
 
         var leftBtn = document.getElementById('leftBtn');
         leftBtn.addEventListener('click', leftBtnClick);
@@ -399,21 +404,21 @@
 
         var timer;
 
-        // todo: 아래 하드코딩 지워주세요 or 주석
-
         // 1번 차트 데이터
-        status_loss = [1,2,3,1,2,1];            // 1차원 배열
-        status_val_loss = [2,3,1,1,2,3];    // 1차원 배열
+        statusLoss = [1,2,3,1,2,1];            // 1차원 배열
+        statusValLoss = [2,3,1,1,2,3];    // 1차원 배열
 
         // 2번 차트 데이터 (우상단)
-        train_anomaly_score = [1,2,1,2,3,3,1];   // 1차원 배열
+        trainAnomalyScore = [1,2,1,2,3,3,1];   // 1차원 배열
 
         // 3번 차트 데이터
         csvList = ['a', 'b', 'c'];   // 파일 이름 (센서 이름 아님) // 1차원 배열
-        dataList = [[1,2,1,2,3], [2,3,4,5,4], [4,3,2,1,2]];  // 차트 데이터 - 2차원 배열
+        dataList = [[[1,2,1,2,3], [2,3,4,5,4]], [[2,3,4,5,4], [4,3,2,1,2]], [[1,2,1,2,3], [4,3,2,1,2]]];  // 차트 데이터 - 2차원 배열
 
         // 4번 차트 데이터
-        test_anomaly_score = [2,3,2,3,1,2]; // 1차원 배열
+        testAnomalyScore = [2,3,2,3,1,2]; // 1차원 배열
+
+        // todo: 아래 하드코딩 지워주세요 or 주석
 
 
         //파일 리스트 호출 함수
@@ -466,21 +471,26 @@
 
                     $("#anomalies_list").append(list);
 
-                    // todo: 데이터 연결되면 하드코딩된 부분 지워주시고 주석된 부분 살려주세요
+                    console.log(result['state']);
 
-                    // // 1번 차트 데이터
-                    // status_loss = result.status_loss[0];            // 1차원 배열
-                    // status_val_loss = result.status_val_loss[1];    // 1차원 배열
-                    //
-                    // // 2번 차트 데이터 (우상단)
-                    // train_anomaly_score = result.train_anomaly_score;   // 1차원 배열
-                    //
-                    // // 3번 차트 데이터
-                    // csvList = result.csv_list[0];   // 파일 이름 (센서 이름 아님) // 1차원 배열
-                    // dataList = result.csv_list[1];  // 차트 데이터 - 2차원 배열
-                    //
-                    // // 4번 차트 데이터
-                    // test_anomaly_score = result.test_anomaly_score; // 1차원 배열
+                    if(result['state']) {
+                        console.log(result);
+                        // 1번 차트 데이터
+                        status_loss = result.status_loss[0];            // 1차원 배열
+                        status_val_loss = result.status_val_loss[1];    // 1차원 배열
+
+                        // 2번 차트 데이터 (우상단)
+                        train_anomaly_score = result.train_anomaly_score;   // 1차원 배열
+
+                        // 3번 차트 데이터
+                        csvList = result.csv_list[0];   // 파일 이름 (센서 이름 아님) // 1차원 배열
+                        dataList = result.csv_list[1];  // 차트 데이터 - 2차원 배열
+
+                        // 4번 차트 데이터
+                        test_anomaly_score = result.test_anomaly_score; // 1차원 배열
+
+                        drawCharts();
+                    }
                 }
             });
 
@@ -488,32 +498,70 @@
             timer = setTimeout("executeMonitoring()", 5000);
         }
 
-        function lineChart(ctx, labelText, dataset) {
-            return new Chart(ctx, {
+        function drawCharts() {
+            chart1 = new Chart(canvas1, {
                 type: 'line',
-                data: dataset,
+                data: {
+                    labels: xAxisOf(statusLoss),
+                    datasets: [
+                        dataset(statusLoss, 'status loss', false, null, 'blue', 1),
+                        dataset(statusValLoss, 'status val loss', false, null, 'red', 1),
+                    ]
+                },
                 options: {},
-            })
+            });
+            chart2 = new Chart(canvas2, {
+                type: 'line',
+                data: {
+                    labels: xAxisOf(trainAnomalyScore),
+                    datasets: [
+                        dataset(trainAnomalyScore, 'train anomaly score', true, 'gray', 'transparent', 0),
+                    ]
+                },
+                options: {},
+            });
+            chart3 =  new Chart(canvas3, {
+                type: 'line',
+                data: {
+                    labels: xAxisOf(dataList[csvIndex][0]),
+                    datasets: [
+                        dataset(dataList[csvIndex][0], 'test data', false, null, 'blue', 1),
+                        dataset(dataList[csvIndex][1], 'test predicted', false, null, 'red', 1),
+                    ]
+                },
+                options: {},
+            });
+            chart4 = new Chart(canvas4, {
+                type: 'line',
+                data: {
+                    labels: xAxisOf(testAnomalyScore),
+                    datasets: [
+                        dataset(testAnomalyScore, 'test anomaly score', true, 'gray', 'transparent', 0),
+                    ]
+                },
+                options: {},
+            });
         }
 
-        // function dataset(
-        //     dataset,
-        //     labelText,
-        //     isFilled,
-        //     backgroundColor,
-        //     borderColor,
-        //     borderWidth
-        // ) {
-        //     var dataList = [];
-        //
-        //     for() {}
-        //
-        //     return [{
-        //             labels: xAxisOf(dataset),
-        //             datasets:
-        //         }
-        //     });
-        // }
+        function dataset(
+            data,
+            labelText,
+            isFilled,
+            backgroundColor,
+            borderColor,
+            borderWidth
+        ) {
+            return {
+                label: labelText,
+                type: 'line',
+                fill: isFilled,
+                backgroundColor: isFilled ? backgroundColor : null,
+                pointRadius: 0,
+                borderColor: borderColor,
+                borderWidth: borderWidth,
+                data: data
+            };
+        }
 
         function leftBtnClick() {
             if(csvIndex <= 0) return;
@@ -523,8 +571,8 @@
 
             chart3.data.datasets[0].data = dataList[csvIndex][0];
             chart3.data.datasets[1].data = dataList[csvIndex][1];
-            chart3.destroy();
-            drawChart();
+            // chart3.destroy();
+            chart3.update();
         }
 
         function rightBtnClick() {
@@ -535,8 +583,8 @@
 
             chart3.data.datasets[0].data = dataList[csvIndex][0];
             chart3.data.datasets[1].data = dataList[csvIndex][1];
-            chart3.destroy();
-            drawChart();
+            // chart3.destroy();
+            chart3.update();
         }
 
         function xAxisOf(dataList) {

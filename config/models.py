@@ -41,11 +41,10 @@ class mmProblem(models.Model):
 
 class mmDataset(models.Model):
     id = models.AutoField(primary_key=True)
-    problem = models.ForeignKey('mmproblem', on_delete=models.DO_NOTHING)
+    problem = models.ForeignKey('mmProblem', on_delete=models.DO_NOTHING)
     data_static_path = models.CharField(db_column='data_static_path', max_length=255, default='')
     purpose = models.CharField(db_column='purpose', max_length=3, default='')
     data_name = models.CharField(db_column='data_name', max_length=255, default='')
-    data_path = models.CharField(db_column='data_path', max_length=255, default='')
     data_cnt = models.IntegerField(db_column='data_cnt', default='0')
     data_size = models.IntegerField(db_column='data_size', default='0')
     created_at = models.DateTimeField(db_column='created_at', auto_now=True)

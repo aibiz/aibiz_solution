@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'uploaddata',
     'training',
     'analysis',
+    'masterdata',
 ]
 
 MIDDLEWARE = [

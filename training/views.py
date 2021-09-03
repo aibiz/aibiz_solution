@@ -23,7 +23,9 @@ def training_main(request):
 
 
 def start_training(request):
+    context = {}
     rsData = json.loads(request.body.decode("utf-8"))
+
 
     rootpath = os.getcwd()
     rootpath = rootpath.split('/')
@@ -48,13 +50,15 @@ def start_training(request):
     #     test_anomaly(sensorNo, testStaticPath, trainStaticPath)
     # else:
     #     print("testdata, traindata모두 입력하세요.")
-
+    return JsonResponse(context, content_type='application/json')
 
 def graphing_training(request):
     context = {}
 
-    rsData = request.GET
-    # print("tstst", rsData)
+    rsData = request.POST
+    print("tstst", rsData)
+    rsData = json.loads(request.body.decode("utf-8"))
+    print("tstst", rsData)
 
     rootpath = os.getcwd()
 

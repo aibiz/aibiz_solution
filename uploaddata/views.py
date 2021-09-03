@@ -40,7 +40,7 @@ class DataUploadView(LoginRequiredMixin, View):
         context = {}
         context['username'] = request.user.username
 
-        rsDataset = mmDataset.objects.filter(delete_flag='0')
+        rsDataset = mmDataset.objects.filter(delete_flag='0').order_by('-id')
         context['rsDataset'] = rsDataset
         
         return render(request, 'dataupload.html', context)

@@ -14,7 +14,7 @@
                 <div class="col-md-6 col-xxl-3 mb-3 pe-md-2">
                     <div class="card">
                         <div class="card-header row pb-0">
-                            <h6 class="col-6"">Train data select</h6>
+                            <h6 class="col-6">Train data select</h6>
                               <!-- Button trigger modal-1 -->
                               <button type="button" class="btn col btn-falcon-default btn-sm" id="select-btn" data-bs-toggle="modal" data-bs-target="#trainDataModal">
                                 Select data
@@ -40,7 +40,7 @@
                 <div class="col-md-6 col-xxl-3 mb-3 pe-md-2 pe-xxl-2">
                     <div class="card">
                         <div class="card-header row pb-0">
-                            <h6 class="col-6"">Test data select</h6>
+                            <h6 class="col-6">Test data select</h6>
                               <!-- Button trigger modal-1 -->
                               <button type="button" class="btn col btn-falcon-default btn-sm" id="select-btn" data-bs-toggle="modal" data-bs-target="#testDataModal">
                                 Select data
@@ -64,8 +64,7 @@
                 
                 </div>
             </div>
-                
-                
+
                 <!------------------ Modal-1 ---------------------->
                 <div class="modal fade" id="trainDataModal" tabindex="-1" aria-labelledby="trainDataModalLabel" aria-hidden="true">
                     <div class="modal-dialog">
@@ -96,10 +95,11 @@
                                                     <td>
                                                         <div style="display: none;">
                                                             <button type="hidden" id="m1_{{ i }}"
-                                                                    onclick="selectId('{{ i.id }}','{{ i.data_name }}','{{ i.data_cnt }}','{{ i.data_size }}')">
+                                                                    onclick="selectTrainId('{{ i.id }}','{{ i.data_name }}'
+                                                                            ,'{{ i.data_cnt }}','{{ i.data_size }}', '{{ i.data_static_path }}')">
                                                             </button>
                                                         </div>
-                                                        <label class="btn-falcon-info" id="is_select"  for="m1_{{i}}">Select</label>
+                                                        <label class="btn-falcon-info" id="is_select"  for="m1_{{ i }}">Select</label>
                                                     </td>
                                                     </tr>
                                                 {% endfor %}
@@ -124,6 +124,7 @@
                                             <div class="card-text">Selected data</div>
                                             <div class="card-text" id="selectedTrainDisp" style="font-weight: bold;"></div>
                                             <input type="hidden" id="selectedTrainHidden" value="Null">
+                                            <input type="hidden" id="selectedTrainpathHidden" value="Null">
                                         </div>
                                     </div>
                                 </div>
@@ -166,7 +167,8 @@
                                                     <td>
                                                         <div style="display: none;">
                                                             <button type="hidden" id="m2_{{ j }}"
-                                                                    onclick="selectTestId('{{ j.id }}','{{ j.data_name }}','{{ j.data_cnt }}','{{ j.data_size }}')">
+                                                                    onclick="selectTestId('{{ j.id }}','{{ j.data_name }}'
+                                                                            ,'{{ j.data_cnt }}','{{ j.data_size }}', '{{ j.data_static_path }}')">
                                                             </button>
                                                         </div>
                                                         <label class="btn-falcon-info" id="is_select"  for="m2_{{ j }}">Select</label>
@@ -194,6 +196,7 @@
                                             <div class="card-text">Selected data</div>
                                             <div class="card-text" id="selectedTestDisp" style="font-weight: bold;"></div>
                                             <input type="hidden" id="selectedTestHidden" value="Null">
+                                            <input type="hidden" id="selectedTestpathHidden" value="Null">
                                     </div>
                                 </div>
                             
@@ -224,17 +227,13 @@
                             </div>
                         </div>
                     </div>
-
                 </div>
-           
-
-
-
                 
                 
                 <div class="row-cols-md-1">ddd</div>
                 <div style="display: flex; float: right;">
                     <button class="btn-primary" id="trainstart-btn" style="border: none; border-radius: 4px; padding: 5px 35px">Start</button>
+                    <button class="btn-primary" id="test-btn" style="border: none; border-radius: 4px; padding: 5px 35px">test</button>
 
                 </div>
             </div>
@@ -257,23 +256,22 @@
         })
     </script>
 
-    {#    modal내 하단 selectedDisp 내용변경   #}
 
     <script>
-
-        function selectId(id, name, cnt, size) {
-            console.log("aaaaaa")
+        {#    modal내 하단 selectedDisp 내용변경   #}
+        function selectTrainId(id, name, cnt, size, path) {
             $('#selectedTrainDisp').text(name)
             $('#selectedTrainHidden').val(id)
+            $('#selectedTrainpathHidden').val(path)
             $('#name_traindata').text(name)
             $('#num_traindata').text(cnt)
+            console.log(path)
+
         }
-    </script>
-    <script>
-        function selectTestId(id, name, cnt, size) {
-            console.log("dfdfdddfd")
+        function selectTestId(id, name, cnt, size,path) {
             $('#selectedTestDisp').text(name)
             $('#selectedTestHidden').val(id)
+            $('#selectedTestpathHidden').val(path)
             $('#name_testdata').text(name)
             $('#num_testdata').text(cnt)
         }
@@ -286,10 +284,10 @@
         button.addEventListener('click', async _ => {
             try {
                 var headers = new Headers();
-var csrftoken = getCookie('csrftoken');
-headers.append('X-CSRFToken', csrftoken);
-headers.append('Accept', 'application/json');
-headers.append('Content-Type', 'application/json');
+                var csrftoken = getCookie('csrftoken');
+                headers.append('X-CSRFToken', csrftoken);
+                headers.append('Accept', 'application/json');
+                headers.append('Content-Type', 'application/json');
 
                 var trainDataId = document.getElementById('selectedTrainHidden').value;
                 var testDataId = document.getElementById('selectedTestHidden').value;
@@ -314,4 +312,37 @@ headers.append('Content-Type', 'application/json');
         });
     </script>
 
+
+
+    <script>
+        {#     graphing test용       #}
+        const button2 = document.getElementById('test-btn');
+        button2.addEventListener('click', async _ => {
+            try {
+                var headers = new Headers();
+                var csrftoken = getCookie('csrftoken');
+                headers.append('X-CSRFToken', csrftoken);
+                headers.append('Accept', 'application/json');
+                headers.append('Content-Type', 'application/json');
+
+                var trainStaticPath = document.getElementById('selectedTrainpathHidden').value;
+                var testStaticPath = document.getElementById('selectedTestpathHidden').value;
+
+
+                console.log(trainStaticPath);
+                console.log(testStaticPath);
+                const response = await fetch('training/graphing', {
+                    method: 'POST',
+                    headers: headers,
+                    body: JSON.stringify({
+                        trainStaticPath : trainStaticPath,
+                        testStaticPath : testStaticPath
+                    })
+                });
+                console.log('Completed!', response);
+            } catch(err) {
+                console.error(`Error: ${err}`);
+            }
+        });
+    </script>
 {% endblock javascripts %}

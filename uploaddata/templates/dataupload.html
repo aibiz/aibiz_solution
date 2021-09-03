@@ -84,6 +84,7 @@
                         <input class="form-check-input" type="checkbox" data-bulk-select='{"body":"bulk-select-body","actions":"bulk-select-actions","replacedElement":"bulk-select-replace-element"}' />
                       </div>
                     </th>
+                    <th class="align-middle">Purpose</th>
                     <th class="align-middle">Name</th>
                     <th class="align-middle">Path</th>
                     <th class="align-middle">Sample 수</th>
@@ -100,11 +101,12 @@
                         <input class="form-check-input" type="checkbox" id="checkbox-1" data-bulk-select-row="data-bulk-select-row" />
                       </div>
                     </td>
+                    <td class="align-middle">{{ i.purpose }}</td>
                     <td class="align-middle">{{ i.data_name }}</td>
-                    <td class="align-middle">{{ i.data_path}}</td>
+                    <td class="align-middle">{{ i.data_static_path}}</td>
                     <td class="align-middle">{{ i.data_cnt }}</td>
                     <td class="align-middle">{{ i.data_size }}</td>
-                    <td class="align-middle white-space-nowrap text-end pe-3">{{ i.problem }}</td>
+                    <td class="align-middle white-space-nowrap text-end pe-3">{{ i.problem.problem_name}}</td>
                   </tr>
                 {% endfor %}
                 {% endif %}

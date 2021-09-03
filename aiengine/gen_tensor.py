@@ -55,7 +55,7 @@ def gen_tensor(input_path):
         with open(f"{input_path}"+"/"+  "wafer_list.pickle", 'wb') as f:
             pickle.dump(w_list, f)
 
-
+        print("x_prime:::", X_prime)
         print("tensor 생성 완료!")
 
 def gen_tensor_for_test(input_data_path, input_file_path):

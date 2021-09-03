@@ -41,7 +41,7 @@ class mmProblem(models.Model):
 
 class mmDataset(models.Model):
     id = models.AutoField(primary_key=True)
-    problem = models.ForeignKey('mmProblem', on_delete=models.DO_NOTHING)
+    # problem = models.ForeignKey('mmProblem', on_delete=models.DO_NOTHING)
     data_static_path = models.CharField(db_column='data_static_path', max_length=255, default='')
     purpose = models.CharField(db_column='purpose', max_length=3, default='')
     data_name = models.CharField(db_column='data_name', max_length=255, default='')

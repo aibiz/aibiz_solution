@@ -81,6 +81,16 @@
                             <h6 class="mb-0">Grape</h6>
                         </div>
                         <div class="card-body">
+                            <div class="row-cols-md-1">
+                                <label id="sensorID">dd</label>
+                            </div>
+                            <div style="display: flex; float: right;">
+                                <button id="leftBtn"><</button>
+                                <button id="rightBtn">></button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="monitorCanvas"></canvas>
                         </div>
                         <!-- <div class="card-footer bg-light py-2">
                           <div class="row flex-between-center g-0">
@@ -173,6 +183,7 @@
 {% block javascripts %}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
     <script src="static/vendors/list.js/list.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 {#    modal내 하단 selectedDisp 내용변경   #}
     <script>
         function selectedId(id, name){
@@ -211,10 +222,28 @@
 
         $(document).ready(function () {
             execute_Monitoring();
+            setTimeout(function exec(){
+                drawChart();
+            }, 100);
         });
 
     </script>
     <script>
+        var monitorCanvas = document.getElementById('monitorCanvas').getContext('2d');
+        var sensorLabel = document.getElementById('sensorId');
+        var leftBtn = document.getElementById('leftBtn');
+        leftBtn.addEventListener('click', leftBtnClick);
+
+        var rightBtn = document.getElementById('rightBtn');
+        rightBtn.addEventListener('click', rightBtnClick);
+
+        var monitorChart;
+
+        var csvList = [];
+        var csvIndex = 0;
+        var dataList = [];
+        var xAxis = [];
+
         //파일 리스트 호출 함수
         function execute_Monitoring(){
 
@@ -260,13 +289,77 @@
 
                     $("#anomalies_list").append(list);
 
-                    //document.getElementById('csv').innerText = result.csv_list[1];
+                    csvList = result.csv_list.map(
+                        (value) => value[0]
+                    );
 
+                    dataList = result.csv_list.map(
+                        (value) => value[1]
+                    );
+
+                    xAxis = dataList[0][0].map(
+                        (_, index) => index+1
+                    );
                 }
             });
-
             //5초 간격으로 하여 디렉토리 파일 리스트 호출 및 csv data 호출(간격 조정 필요한경우 수치 데이터 조정)
             timer = setTimeout("execute_Monitoring()", 5000);
+        }
+
+        function drawChart() {
+            monitorChart = new Chart(monitorCanvas, { type: 'line',
+                data: {
+                    labels: xAxis,
+                    datasets: [{
+                        label: 'test data',
+                        type: 'line',
+                        fill: false,
+                        lineTension: 0,
+                        pointRadius: 0,
+                        borderColor: 'blue',
+                        borderWidth: 1,
+                        data: dataList[csvIndex][0]
+                    }, {
+                        label: 'test predicted',
+                        type: 'line',
+                        fill: false,
+                        lineTension: 0,
+                        pointRadius: 0,
+                        borderColor: 'red',
+                        borderWidth: 1,
+                        data: dataList[csvIndex][1]
+                    }]
+                },
+                options: {
+                    scales: [
+
+                    ]
+                }
+            });
+        }
+
+        function leftBtnClick() {
+            if(csvIndex <= 0) return;
+            console.log(csvIndex);
+
+            csvIndex--;
+
+            monitorChart.data.datasets[0].data = dataList[csvIndex][0];
+            monitorChart.data.datasets[1].data = dataList[csvIndex][1];
+            monitorChart.destroy();
+            drawChart();
+        }
+
+        function rightBtnClick() {
+            if(csvIndex >= dataList.length - 1) return;
+            console.log(csvIndex);
+
+            csvIndex++;
+
+            monitorChart.data.datasets[0].data = dataList[csvIndex][0];
+            monitorChart.data.datasets[1].data = dataList[csvIndex][1];
+            monitorChart.destroy();
+            drawChart();
         }
     </script>
 {% endblock javascripts %}

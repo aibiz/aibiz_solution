@@ -26,7 +26,7 @@ def start_training(request):
 
     rootpath = os.getcwd()
     rootpath = rootpath.split('/')
-    rootpath = rootpath[:-1]
+    # rootpath = rootpath[:-1]
     rootpath = '/'.join(rootpath)
 
     trainDataId = rsData['trainDataId']

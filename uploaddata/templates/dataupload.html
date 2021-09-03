@@ -89,7 +89,6 @@
                     <th class="align-middle">Path</th>
                     <th class="align-middle">Sample 수</th>
                     <th class="align-middle">Size</th>
-                    <th class="align-middle white-space-nowrap pe-3">문제유형</th>
                   </tr>
                 </thead>
                 <tbody id="bulk-select-body">
@@ -106,7 +105,6 @@
                     <td class="align-middle">{{ i.data_static_path}}</td>
                     <td class="align-middle">{{ i.data_cnt }}</td>
                     <td class="align-middle">{{ i.data_size }}</td>
-                    <td class="align-middle white-space-nowrap text-end pe-3">{{ i.problem.problem_name}}</td>
                   </tr>
                 {% endfor %}
                 {% endif %}

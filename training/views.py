@@ -37,8 +37,8 @@ def start_training(request):
     testStaticPath = mmDataset.objects.filter(id = testDataId)[0].data_static_path
     testStaticPath = rootpath + testStaticPath
 
-    sensorNo = rsData['sensorNo']
-    thresholdStd = rsData['thresholdStd']
+    sensorNo = int(rsData['sensorNo'])
+    thresholdStd = int(rsData['thresholdStd'])
     print("path::", trainStaticPath, testStaticPath)
     print(trainDataId, testDataId, sensorNo, thresholdStd)
     if ((trainDataId != 'Null') & (testDataId != 'Null')):

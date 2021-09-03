@@ -232,6 +232,26 @@
                             <button class="btn-primary" id="test-btn" style="border: none; border-radius: 4px; padding: 5px 35px">test</button>
                         </div>
                     </div>
+                    <div>
+                        <div class="row-cols-md-1" style="width: 50%;">
+                            <canvas id="canvas1"></canvas>
+                        </div>
+                        <div style="width: 50%; display: flex; float: right;">
+                            <canvas id="canvas2"></canvas>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="row-cols-md-1" style="width: 50%;">
+                            <div style="width: 50%; display: flex; float: right;">
+                                <button id="leftBtn"><</button>
+                                <button id="rightBtn">></button>
+                            </div>
+                            <canvas id="canvas3"></canvas>
+                        </div>
+                        <div style="width: 50%; display: flex; float: right;">
+                            <canvas id="canvas4"></canvas>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="col">
@@ -256,6 +276,7 @@
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
     <script src="static/vendors/list.js/list.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         {#    모달관련js #}
         var myModal = document.getElementById('myModal')
@@ -284,8 +305,6 @@
             $('#selectedTestpathHidden').val(path)
             $('#name_testdata').text(name)
             $('#num_testdata').text(cnt)
-
-            execute_Monitoring();
         }
     </script>
 
@@ -321,6 +340,8 @@
             } catch(err) {
                 console.error(`Error: ${err}`);
             }
+
+            executeMonitoring();
         });
     </script>
 
@@ -357,14 +378,33 @@
     </script>
 
     <script>
+        var chart1 = document.getElementById('canvas1').getContext('2d');
+        var chart2 = document.getElementById('canvas2').getContext('2d');
+        var chart3 = document.getElementById('canvas3').getContext('2d');
+        var chart4 = document.getElementById('canvas4').getContext('2d');
+
+        var sensorLabel = document.getElementById('sensorId');
+
+        var leftBtn = document.getElementById('leftBtn');
+        leftBtn.addEventListener('click', leftBtnClick);
+
+        var rightBtn = document.getElementById('rightBtn');
+        rightBtn.addEventListener('click', rightBtnClick);
+
+        var monitorChart;
+
+        var csvList = [];
+        var csvIndex = 0;
+        var dataList = [];
+        var xAxis = [];
+
         var timer;
 
         //파일 리스트 호출 함수
-        function execute_Monitoring(){
+        function executeMonitoring() {
             var testStaticPath = document.getElementById('selectedTestpathHidden').value;
-            var url = '/training/test_anomalies?testStaticPath=' + testStaticPath;
+            var url = 'training/graphing';
 
-            console.log(testStaticPath.toString())
             $.ajax({
                 type : 'GET',
                 url : url,
@@ -374,12 +414,15 @@
                 processData: false,
                 error: function(request,status,error){
                     //alert("code:"+request.status+"\n"+"error:"+error);
+                    console.log(error.toString());
                 },
                 success : function(result){
                     var list = "";
                     var file_Name;
                     var date = "";
                     var lot_No = "";
+
+                    console.log('aa');
 
                     $("#anomalies_list").empty();
 
@@ -403,13 +446,70 @@
 
                     $("#anomalies_list").append(list);
 
-                    //document.getElementById('csv').innerText = result.csv_list[1];
-
+                    console.log(result);
                 }
             });
 
             //5초 간격으로 하여 디렉토리 파일 리스트 호출 및 csv data 호출(간격 조정 필요한경우 수치 데이터 조정)
-            timer = setTimeout("execute_Monitoring()", 5000);
+            timer = setTimeout("executeMonitoring()", 5000);
+        }
+
+        function drawChart() {
+            monitorChart = new Chart(monitorCanvas, { type: 'line',
+                data: {
+                    labels: xAxis,
+                    datasets: [{
+                        label: 'test data',
+                        type: 'line',
+                        fill: false,
+                        lineTension: 0,
+                        pointRadius: 0,
+                        borderColor: 'blue',
+                        borderWidth: 1,
+                        data: dataList[csvIndex][0]
+                    }, {
+                        label: 'test predicted',
+                        type: 'line',
+                        fill: false,
+                        lineTension: 0,
+                        pointRadius: 0,
+                        borderColor: 'red',
+                        borderWidth: 1,
+                        data: dataList[csvIndex][1]
+                    }]
+                },
+                options: {
+                    scales: [
+
+                    ]
+                }
+            });
+        }
+
+        function leftBtnClick() {
+            if(csvIndex <= 0) return;
+            console.log(csvIndex);
+
+            csvIndex--;
+
+            monitorChart.data.datasets[0].data = dataList[csvIndex][0];
+            monitorChart.data.datasets[1].data = dataList[csvIndex][1];
+            monitorChart.destroy();
+            drawChart();
+        }
+
+        function rightBtnClick() {
+            if(csvIndex >= dataList.length - 1) return;
+            console.log(csvIndex);
+
+            csvIndex++;
+
+            monitorChart.data.datasets[0].data = dataList[csvIndex][0];
+            monitorChart.data.datasets[1].data = dataList[csvIndex][1];
+            monitorChart.destroy();
+            drawChart();
         }
     </script>
+
+
 {% endblock javascripts %}

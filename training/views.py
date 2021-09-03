@@ -54,7 +54,7 @@ def graphing_training(request):
     context = {}
 
     # rsData = json.loads(request.body.decode("utf-8"))
-    print("tstst", rsData)
+    # print("tstst", rsData)
 
     rootpath = os.getcwd()
 

@@ -56,9 +56,7 @@ def graphing_training(request):
     context = {}
 
     rsData = request.POST
-    print("tstst", rsData)
     rsData = json.loads(request.body.decode("utf-8"))
-    print("tstst", rsData)
 
     rootpath = os.getcwd()
 
@@ -81,7 +79,6 @@ def graphing_training(request):
     if(os.path.isfile(trainingAnomalyFile) & os.path.isfile(trainingAnomalyFile) & os.path.isfile(testAnomalyFile)):
 
         dir = testStaticPath + '/after_test/anomalies/'
-        print("dirdirdir", dir)
         file_list = os.listdir(dir)
         csv_list = []
 
@@ -102,14 +99,13 @@ def graphing_training(request):
             "csv_list" : csv_list
         }
 
-
         context['status_loss'] = convert_data(trainingStatusFile, 0)[0]
         context['status_val_loss'] = convert_data(trainingStatusFile, 0)[1]
         context['train_anomaly_score'] = convert_data(trainingAnomalyFile, 1)
         context['test_anomaly_score'] = convert_data(testAnomalyFile, 1)
 
-        print("status_loss'", context['status_loss'])
-        print("test_anomaly_score", context['test_anomaly_score'])
+        # print("status_loss'", context['status_loss'])
+        # print("test_anomaly_score", context['test_anomaly_score'])
 
         context['state'] = "True"
         return JsonResponse(context, content_type='application/json')

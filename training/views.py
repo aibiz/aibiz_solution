@@ -14,8 +14,8 @@ import pandas
 def training_main(request):
     context = {}
 
-    trainDataList = mmDataset.objects.all().order_by('-id')[:50]
-    testDataList = mmDataset.objects.all().order_by('-id')[:50]
+    trainDataList = mmDataset.objects.filter(purpose="TRN").order_by('-id')[:50]
+    testDataList = mmDataset.objects.filter(purpose="TST").order_by('-id')[:50]
     context['trainDataList'] = trainDataList
     context['testDataList'] = testDataList
     # print(trainDataList)
@@ -25,7 +25,7 @@ def training_main(request):
 def start_training(request):
     context = {}
     rsData = json.loads(request.body.decode("utf-8"))
-
+    print("!!!!!!!!!!!!!Start Training!!!!!!!!!!!!!")
 
     rootpath = os.getcwd()
     rootpath = rootpath.split('/')
@@ -101,12 +101,15 @@ def graphing_training(request):
             "anomalies_list": file_list,
             "csv_list" : csv_list
         }
-        print("listlistlist", context['anomalies_list'])
+
 
         context['status_loss'] = convert_data(trainingStatusFile, 0)[0]
         context['status_val_loss'] = convert_data(trainingStatusFile, 0)[1]
         context['train_anomaly_score'] = convert_data(trainingAnomalyFile, 1)
         context['test_anomaly_score'] = convert_data(testAnomalyFile, 1)
+
+        print("status_loss'", context['status_loss'])
+        print("test_anomaly_score", context['test_anomaly_score'])
 
         context['state'] = "True"
         return JsonResponse(context, content_type='application/json')

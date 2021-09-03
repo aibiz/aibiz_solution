@@ -38,7 +38,7 @@
                                                 <li class="recipe-text">{% if i.rec_cnt == 1 %}<div class="cricle inner"></div>{{ i.recipe_no }}{% endif %}
                                                     <ul>
                                                         <li>
-                                                            <button class="senser-btn" id="{{ i.id }}" type="button" execute_Monitoring();">{{ i.sensor_no }}</button>
+                                                            <button class="senser-btn" id="{{ i.id }}" type="button" onclick='execute_Monitoring();'>{{ i.sensor_no }}</button>
                                                         </li>
                                                     </ul>
                                                 </li>

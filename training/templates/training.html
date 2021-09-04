@@ -408,19 +408,19 @@
         //     drawCharts();
         // }
 
-        // 1번 차트 데이터
-        statusLoss = [1,2,3,1,2,1];            // 1차원 배열
-        {#statusValLoss = [2,3,1,1,2,3];    // 1차원 배열#}
-        {##}
-        {#// 2번 차트 데이터 (우상단)#}
-        {#trainAnomalyScore = [1,2,1,2,3,3,1];   // 1차원 배열#}
-        {##}
-        {#// 3번 차트 데이터#}
-        {#csvList = ['a', 'b', 'c'];   // 파일 이름 (센서 이름 아님) // 1차원 배열#}
-        {#dataList = [[[1,2,1,2,3], [2,3,4,5,4]], [[2,3,4,5,4], [4,3,2,1,2]], [[1,2,1,2,3], [4,3,2,1,2]]];  // 차트 데이터 - 2차원 배열#}
-        {##}
-        {#// 4번 차트 데이터#}
-        {#testAnomalyScore = [2,3,2,3,1,2]; // 1차원 배열#}
+        // // 1번 차트 데이터
+        // statusLoss = [1,2,3,1,2,1];            // 1차원 배열
+        // {#statusValLoss = [2,3,1,1,2,3];    // 1차원 배열#}
+        // {##}
+        // {#// 2번 차트 데이터 (우상단)#}
+        // {#trainAnomalyScore = [1,2,1,2,3,3,1];   // 1차원 배열#}
+        // {##}
+        // {#// 3번 차트 데이터#}
+        // {#csvList = ['a', 'b', 'c'];   // 파일 이름 (센서 이름 아님) // 1차원 배열#}
+        // {#dataList = [[[1,2,1,2,3], [2,3,4,5,4]], [[2,3,4,5,4], [4,3,2,1,2]], [[1,2,1,2,3], [4,3,2,1,2]]];  // 차트 데이터 - 2차원 배열#}
+        // {##}
+        // {#// 4번 차트 데이터#}
+        // {#testAnomalyScore = [2,3,2,3,1,2]; // 1차원 배열#}
 
         // todo: 아래 하드코딩 지워주세요 or 주석
 
@@ -432,22 +432,22 @@
             var url = 'training/graphing';
 
             $.ajax({
-                type : 'POST',
-                url : url,
-                headers: { "X-CSRFToken": getCookie("csrftoken") },
+                type: 'POST',
+                url: url,
+                headers: {"X-CSRFToken": getCookie("csrftoken")},
                 cache: false,
                 dataType: 'json',
                 contentType: 'application/json; charset=utf-8',
-                data : JSON.stringify({
-                        trainStaticPath : trainStaticPath,
-                        testStaticPath : testStaticPath
-                    }),
+                data: JSON.stringify({
+                    trainStaticPath: trainStaticPath,
+                    testStaticPath: testStaticPath
+                }),
                 processData: false,
-                error: function(request,status,error){
+                error: function (request, status, error) {
                     //alert("code:"+request.status+"\n"+"error:"+error);
                     console.log(error.toString());
                 },
-                success : function(result){
+                success: function (result) {
                     var list = "";
                     var file_Name;
                     var date = "";
@@ -456,7 +456,7 @@
                     $("#anomalies_list").empty();
 
                     //파일 리스트를 날짜와 Lot 순서로 변경하여 출력
-                    $.each(result.anomalies_list, function(i, item){
+                    $.each(result.anomalies_list, function (i, item) {
                         //alert(i);
                         file_Name = item.replace(".csv", "").split("_");
                         //일자
@@ -498,7 +498,7 @@
                     //     drawCharts();
                     // }
 
-                    if(result['state'] == 'True') {
+                    if (result['state'] == 'True') {
                         console.log(result);
                         // 1번 차트 데이터
                         statusLoss = result.status_loss;            // 1차원 배열
@@ -565,9 +565,24 @@
             chart4 = new Chart(canvas4, {
                 type: 'line',
                 data: {
-                    labels: xAxisOf(testAnomalyScore),
+                    labels: xAxisOf(trainAnomalyScore),
                     datasets: [
-                        dataset(testAnomalyScore, 'test anomaly score', true, 'gray', 'transparent', 0),
+                        dataset(trainAnomalyScore, 'test anomaly score', true, 'gray', 'transparent', 0),
+                    ]
+                },
+                options: {},
+            });
+        }
+
+
+        function reloadChart3() {
+            chart3 =  new Chart(canvas3, {
+                type: 'line',
+                data: {
+                    labels: xAxisOf(dataList[csvIndex][0]),
+                    datasets: [
+                        dataset(dataList[csvIndex][0], 'test data', false, null, 'blue', 1),
+                        dataset(dataList[csvIndex][1], 'test predicted', false, null, 'red', 1),
                     ]
                 },
                 options: {},
@@ -596,26 +611,24 @@
 
         function leftBtnClick() {
             if(csvIndex <= 0) return;
-            console.log(csvIndex);
 
             csvIndex--;
 
             chart3.data.datasets[0].dataList[csvIndex][0] = dataList[0];
             chart3.data.datasets[1].dataList[csvIndex][1] = dataList[1];
-            // chart3.destroy();
-            chart3.update();
+            chart3.destroy();
+            reloadChart3();
         }
 
         function rightBtnClick() {
             if(csvIndex >= dataList.length - 1) return;
-            console.log(csvIndex);
 
             csvIndex++;
 
             chart3.data.datasets[0].dataList = dataList[csvIndex][0];
             chart3.data.datasets[1].dataList = dataList[csvIndex][1];
-            // chart3.destroy();
-            chart3.update();
+            chart3.destroy();
+            reloadChart3();
         }
 
         function xAxisOf(dataList) {

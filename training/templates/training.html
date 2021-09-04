@@ -501,11 +501,11 @@
                     if(result['state'] == 'True') {
                         console.log(result);
                         // 1번 차트 데이터
-                        status_loss = result.status_loss;            // 1차원 배열
-                        status_val_loss = result.status_val_loss;    // 1차원 배열
+                        statusLoss = result.status_loss;            // 1차원 배열
+                        statusValLoss = result.status_val_loss;    // 1차원 배열
 
                         // 2번 차트 데이터 (우상단)
-                        train_anomaly_score = result.train_anomaly_score;   // 1차원 배열
+                        trainAnomalyScore = result.train_anomaly_score;   // 1차원 배열
 
                         // 3번 차트 데이터
                         csvList = result.csv_list.map(
@@ -518,7 +518,7 @@
                         );  // 차트 데이터 - 2차원 배열
 
                         // 4번 차트 데이터
-                        test_anomaly_score = result.test_anomaly_score; // 1차원 배열
+                        testAnomalyAcore = result.test_anomaly_score; // 1차원 배열
 
                         drawCharts();
                     }

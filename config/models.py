@@ -86,3 +86,25 @@ class mhMonitoring(models.Model):
 
     class Meta:
         db_table = 'mh_monitoring'
+
+class mmEquipspec(models.Model):
+    id = models.AutoField(primary_key=True)
+    equip_name = models.CharField(db_column='equip_name', max_length=50)
+    chamber_name = models.CharField(db_column='chamber_name', max_length=50)
+    sensor_cd = models.CharField(db_column='sensor_cd', max_length=50)
+    sensor_name = models.CharField(db_column='sensor_name', max_length=255)
+
+    class Meta:
+        db_table = 'mm_equipspec'
+
+class mmRecipe(models.Model):
+    id = models.AutoField(primary_key=True)
+    recipe_id = models.IntegerField(db_column='recipe_id')
+    recipe_name = models.CharField(db_column='recipe_name', max_length=50)
+    revision_no = models.CharField(db_column='revision_no', max_length=50)
+    equip_name = models.CharField(db_column='equip_name', max_length=50)
+    sensor_id = models.IntegerField(db_column='sensor_id')
+
+    class Meta:
+        db_table = 'mm_recipe'
+    

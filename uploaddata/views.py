@@ -40,7 +40,7 @@ class DataUploadView(LoginRequiredMixin, View):
         context = {}
         context['username'] = request.user.username
 
-        rsDataset = mmDataset.objects.filter(delete_flag='0')
+        rsDataset = mmDataset.objects.filter(delete_flag='0').order_by('-id')
         context['rsDataset'] = rsDataset
         
         return render(request, 'dataupload.html', context)
@@ -96,7 +96,7 @@ class DataUploadView(LoginRequiredMixin, View):
 
                 mmDataset.objects.create(
                     # id 값 바꿔야함!
-                    problem = mmProblem.objects.get(id=1),
+                    # problem = mmProblem.objects.get(id=1),
                     data_static_path = '/' + save_path,
                     purpose = purpose,
                     data_name = data_name,

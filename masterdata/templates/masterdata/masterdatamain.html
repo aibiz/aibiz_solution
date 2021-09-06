@@ -1,0 +1,180 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+{% block title %}Problem Add{% endblock %}
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+    <main class="main" id="top">
+        <div style="width:20%; float:left;">
+            <ul class="navbar-nav flex-column mb-3">
+                <li onclick="equip_Setting();">Equip_Spec</li>
+                <li onclick="problem_Setting();">Problem</li>
+                <li onclick="dataset_Setting();">Dataset_Data</li>
+            </ul>
+        </div>
+        <div style="width:80%; float:right;">
+            <label class="form-label">Data Info</label>
+            <table class="table mb-0">
+                <thead class="text-black bg-200" id="data_list">
+                </thead>
+            </table>
+        </div>
+    </main>
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+<script language="JavaScript">
+    function equip_Setting()
+    {
+        $("#data_list").empty();
+
+        var i = "";
+        i += "<tr>";
+        i += '<th class="align-middle">ID</th>';
+        i += '<th class="align-middle">Equip</th>';
+        i += '<th class="align-middle">Chamber</th>';
+        i += '<th class="align-middle">Recipe</th>';
+        i += '<th class="align-middle">Sensor</th>';
+        i += '<th class="align-middle">Modify</th>';
+        i += "</tr>";
+
+        $("#data_list").append(i);
+
+        var url = '/master/equipfind';
+
+        //var form = $('#inputForm')[0];
+        //var formData = new FormData(form);
+        $.ajax({
+            type : 'GET',
+            url : url,
+            headers: { "X-CSRFToken": getCookie("csrftoken") },
+            //data : formData,
+            cache: false,
+            contentType: false,
+            processData: false,
+            error: function(request,status,error){
+                 //alert("code:"+request.status+"\n"+"error:"+error);
+            },
+            success : function(result){
+                var list = "";
+
+                $.each(result.data, function(i, item){
+                    //alert(item);
+
+                    list += "<tr>";
+                    list += "<td>" + item.id + "</td>";
+                    list += "<td>" + item.equipment_id + "</td>";
+                    list += "<td>" + item.chamber_id + "</td>";
+                    list += "<td>" + item.recipe_no + "</td>";
+                    list += "<td>" + item.sensor_no + "</td>";
+                    list += "<td><a href='/master/equipmodify?id=" + item.id + "'>수정</a></td>";
+                    list += "</tr>";
+                });
+
+                $("#data_list").append(list);
+            }
+        });
+    }
+
+    function problem_Setting()
+    {
+        $("#data_list").empty();
+
+        var i = "";
+        i += "<tr>";
+        i += '<th class="align-middle">ID</th>';
+        i += '<th class="align-middle">Problem_Name</th>';
+        i += '<th class="align-middle">Modify</th>';
+        i += "</tr>";
+
+        $("#data_list").append(i);
+
+        var url = '/master/problemfind';
+
+        //var form = $('#inputForm')[0];
+        //var formData = new FormData(form);
+        $.ajax({
+            type : 'GET',
+            url : url,
+            headers: { "X-CSRFToken": getCookie("csrftoken") },
+            //data : formData,
+            cache: false,
+            contentType: false,
+            processData: false,
+            error: function(request,status,error){
+                 //alert("code:"+request.status+"\n"+"error:"+error);
+            },
+            success : function(result){
+                var list = "";
+
+                $.each(result.data, function(i, item){
+                    //alert(item);
+
+                    list += "<tr>";
+                    list += "<td>" + item.id + "</td>";
+                    list += "<td>" + item.problem_name + "</td>";
+                    list += "<td><a href='/master/problemmodify?id=" + item.id + "'>수정</a></td>";
+                    list += "</tr>";
+                });
+
+                $("#data_list").append(list);
+            }
+        });
+    }
+
+    function dataset_Setting()
+    {
+        $("#data_list").empty();
+
+        var i = "";
+        i += "<tr>";
+        i += '<th class="align-middle">ID</th>';
+        i += '<th class="align-middle">Problem_ID</th>';
+        i += '<th class="align-middle">Data_Static_Path</th>';
+        i += '<th class="align-middle">Data_Name</th>';
+        i += '<th class="align-middle">Data_Path</th>';
+        i += '<th class="align-middle">Modify</th>';
+        i += "</tr>";
+
+        $("#data_list").append(i);
+
+        var url = '/master/datasetfind';
+
+        //var form = $('#inputForm')[0];
+        //var formData = new FormData(form);
+        $.ajax({
+            type : 'GET',
+            url : url,
+            headers: { "X-CSRFToken": getCookie("csrftoken") },
+            //data : formData,
+            cache: false,
+            contentType: false,
+            processData: false,
+            error: function(request,status,error){
+                 //alert("code:"+request.status+"\n"+"error:"+error);
+            },
+            success : function(result){
+                var list = "";
+
+                $.each(result.data, function(i, item){
+                    //alert(item);
+
+                    list += "<tr>";
+                    list += "<td>" + item.id + "</td>";
+                    list += "<td>" + item.problem_id + "</td>";
+                    list += "<td>" + item.data_static_path + "</td>";
+                    list += "<td>" + item.data_name + "</td>";
+                    list += "<td>" + item.data_path + "</td>";
+                    list += "<td><a href='/master/datasetmodify?id=" + item.id + "'>수정</a></td>";
+                    list += "</tr>";
+                });
+
+                $("#data_list").append(list);
+            }
+        });
+    }
+</script>
+{% endblock javascripts %}

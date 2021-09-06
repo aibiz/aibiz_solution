@@ -25,6 +25,7 @@ urlpatterns = [
     path('', include('training.urls')),
     path('', include('analysis.urls')),
     path('', include('problem.urls')),
+    path('', include('masterdata.urls')),
 
     # 회원정보
     path('login', LoginView.as_view(), name='login'),

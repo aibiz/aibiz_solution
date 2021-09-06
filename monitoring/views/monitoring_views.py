@@ -7,6 +7,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 
 import os
 import csv
+import datetime
+import pandas
 
 class monitoringmain(View):
     def get(self, request: HttpRequest, *args, **kwargs):
@@ -67,21 +69,30 @@ class execute_monitoring(View):
     def get(self, request: HttpRequest, *args, **kwargs):
         context = {}
 
-        file_list = os.listdir("AIBIZ/monitoring_anomalies/")
-        #csv_list = []
+        rootpath = os.getcwd()
+        rootpath = rootpath.split('/')
+        # rootpath = rootpath[:-1]
+        rootpath = '/'.join(rootpath)
 
-        '''
-            with open("AIBIZ/monitoring_anomalies/2020_07_10_0164660_4.csv", "rt") as f :
-                reader = csv.reader(f, delimiter = ";")
-                for row in reader :
-                    csv_list.append(row)
-    
-            print(csv_list)
-        '''
+        dir = rootpath + "/static/data/monitoring_anomalies/"
+        file_list = os.listdir(dir)
+        csv_list = []
+
+        #파일을 수정시간순으로 정렬
+        for i in range(0, len(file_list)) :
+            for j in range(0, len(file_list)) :
+                if datetime.datetime.fromtimestamp(os.stat(dir + file_list[i]).st_mtime) < datetime.datetime.fromtimestamp(os.stat(dir + file_list[j]).st_mtime) :
+                    (file_list[i], file_list[j]) = (file_list[j], file_list[i])
+
+        #파일 리스트 전체의 csv파일 데이터를 읽어들여와 List 형식으로 변환(전체파일)
+        for k in file_list :
+            data = pandas.read_csv(dir + k, header = None)
+            data = data.values.tolist()
+            csv_list.append([k, data])
 
         context = {
-            "anomalies_list": file_list
-            #"reader" : csv_list
+            "anomalies_list": file_list,
+            "csv_list" : csv_list
         }
 
         return JsonResponse(context, content_type='application/json')

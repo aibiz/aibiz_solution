@@ -5,7 +5,7 @@ from csv import reader
 from keras.models import load_model
 import os
 import pandas as pd
-from gen_tensor import gen_tensor_for_test
+from .gen_tensor import gen_tensor_for_test
 
 def test_anomaly(sensor_num, input_data_path, input_file_path, output_path):
     '''

@@ -1,0 +1,79 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+{% block title %}Problem Add{% endblock %}
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+    <div>
+        <h1>Modify Data</h1>
+    </div>
+
+    <main class="main" id="top">
+        <form id="inputForm" method="post" action="">
+            {% csrf_token %}
+            <input type="hidden" id="id" value="{{ data.id }}">
+            <div class="mb-3">
+                <label class="form-label" for="equipment_id">Equipment</label>
+                <input type="text" class="form-control" id="equipment_id" name="equipment_id" value="{{ data.equipment_id }}">
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="chamber_id">Chamber</label>
+                <input type="text" class="form-control" id="chamber_id" name="chamber_id" value="{{ data.chamber_id }}">
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="recipe_no">Recipe</label>
+                <input type="text" class="form-control" id="recipe_no" name="recipe_no" value="{{ data.recipe_no }}">
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="sensor_no">Sensor</label>
+                <input type="text" class="form-control" id="sensor_no" name="sensor_no" value="{{ data.sensor_no }}">
+            </div>
+            <div class="mb-3">
+                <button class="btn btn-falcon-primary w-8 mt-3" type="button" onclick="input()">Confirm</button>
+                <button class="btn btn-falcon-primary w-8 mt-3" type="button" onclick="input()">Delete</button>
+                <button class="btn btn-falcon-primary w-8 mt-3" type="button" onclick="back()">Back</button>
+            </div>
+        </form>
+    </main>
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+<script language="JavaScript">
+    function input(){
+
+        var url = $("#inputForm").attr("action");
+        //console.log(url);
+        var form = $('#inputForm')[0];
+        var formData = new FormData(form);
+        $.ajax({
+            type : 'POST',
+            url : url,
+            headers: { "X-CSRFToken": getCookie("csrftoken") },
+            data : formData,
+            cache: false,
+            contentType: false,
+            processData: false,
+            error: function(request,status,error){
+                 alert("code:"+request.status+"\n"+"error:"+error);
+            },
+            success : function(result){
+                if (result.success == false) {
+                        alert(result.message);
+                }
+                else {
+                    alert(result.message);
+                    location.href='/master'
+                }
+            }
+        });
+    }
+
+    function back()
+    {
+        location.href='/master'
+    }
+</script>
+{% endblock javascripts %}

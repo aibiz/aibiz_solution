@@ -4,34 +4,13 @@
 <!-- Specific Page CSS goes HERE  -->
 {% block stylesheets %}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" />
+<link rel="stylesheet" href="{% static 'assets/css/monitoring.css' %}" >
 {% endblock stylesheets %}
 
 {% block content %}
+
     <main class="main" id="top">
-        <div style="width:20%; float:left;">
-            {% if equip_list %}
-                {% for i in equip_list %}
-                    <ul class="navbar-nav flex-column mb-3">
-                        <li">{% if i.eqip_cnt == 1 %}{{ i.equipment_id }}{% endif %}
-                            <ul>
-                                <li>{% if i.cham_cnt == 1 %}{{ i.chamber_id }}{% endif %}
-                                    <ul>
-                                        <li>{% if i.rec_cnt == 1 %}{{ i.recipe_no }}{% endif %}
-                                            <ul>
-                                                <li>
-                                                    <label class="btn-falcon-info" id="{{ i.id }}" onclick="execute_Monitoring();">{{ i.sensor_no }}</label>
-                                                </li>
-                                            </ul>
-                                        </li>
-                                    </ul>
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
-                {% endfor %}
-            {% endif %}
-        </div>
-        <div style="width:80%; float:right;">
+        <div class="container">
             <div class="mb-3">
                 <label class="form-label">Sensor Number</label>
                 <label class="form-label" id="select_sensor">null</label>
@@ -39,78 +18,164 @@
                     Select Sensor
                 </button>
             </div>
-            <div class="mb-3">
-                <label class="form-label">Warning List</label>
-                <table id="anomalies_list" style="width:100%">
-                    <tr>
-                        <td>Date</td>
-                        <td>Lot No</td>
-                    </tr>
-                </table>
-            </div>
-            <!-- Modal -->
-            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLabel">Sensor List</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="row g-3 mb-3">
+                <div class="col-lg-5">
+                    <div class="card h-100">
+                        <div class="card-header d-flex flex-between-center bg-light py-3">
+                            <h6 class="mb-0">Monitoring</h6>
                         </div>
-                        <div class="modal-body">
-{#                            Table in modal                               #}
-                            <div id="tableExample2" data-list='{"valueNames":["check","data_name","data_cnt","data_size"],"page":5,"pagination":true}'>
-                                <div class="table-responsive scrollbar">
-                                    <table class="table table-bordered table-striped fs--1 mb-0">
-                                        <thead class="bg-200 text-900">
-                                        <tr>
-                                            <th class="sort" data-sort="Equip_ID">Equip_ID</th>
-                                            <th class="sort" data-sort="Chamber_ID">Chamber_ID</th>
-                                            <th class="sort" data-sort="Sensor_No">Sensor_No</th>
-                                            <th data-sort="check"></th>
-                                        </tr>
-                                        </thead>
-                                        <tbody class="list">
-                                        {% if list %}
-                                            {% for i in list %}
-                                                <td class="Equip_ID">{{ i.equipment_id }}</td>
-                                                <td class="Chamber_ID">{{ i.chamber_id }}</td>
-                                                <td class="Sensor_No">{{ i.sensor_no }}</td>
-                                                <input type="hidden" value="{{ i.id }}">
-                                                <input type="hidden" value="{{ i.data_static_path }}">
-                                                <td>
-                                                    <div style="display: none;">
-                                                        <button type="hidden" id="{{ i }}"
-                                                                onclick="selectedId('{{ i.id }}','{{ i.sensor_no }}')">
-                                                        </button>
-                                                    </div>
-                                                        <label class="btn-falcon-info" id="is_select"  for="{{ i }}">Select</label>
-                                                </td>
-                                                </tr>
-                                            {% endfor %}
-                                        {% endif %}
-                                        </tbody>
-                                    </table>
+                        <div class="card-body pb-3">
+                        {% if equip_list %}
+                            {% for i in equip_list %}
+                            <ul >
+                                <li><a class="btn" data-bs-toggle="collapse" href="#eqipment" role="button" aria-controls="false" aria-controls="eqipment">
+                                    {% if i.eqip_cnt == 1 %}<div class="cricle"></div><sapn class="list-title">장비: </sapn>{{ i.equipment_id }}<a class="dropdown-indicator dropdown" ></a>{% endif %}
+                                </a>
+                                    <ul class="collapse multi-collapse" id="eqipment">
+                                        <li><a class="btn" data-bs-toggle="collapse" href="#chamber" role="button" aria-controls="false" aria-controls="chamber">
+                                                {% if i.cham_cnt == 1 %}<span class="list-title">챔버: </span>{{ i.chamber_id }}<a class="dropdown-indicator dropdown" ></a>{% endif %}</a>
+                                            <ul class="collapse multi-collapse" id="chamber">
+                                                <li class="recipe-text">{% if i.rec_cnt == 1 %}<div class="cricle inner"></div>{{ i.recipe_no }}{% endif %}
+                                                    <ul>
+                                                        <li>
+                                                            <button class="senser-btn" id="{{ i.id }}" type="button" onclick='execute_Monitoring();'>{{ i.sensor_no }}</button>
+                                                        </li>
+                                                    </ul>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
+                            {% endfor %}
+                        {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-7">
+                    <div class="card  mb-3">
+                        <div class="card-body py-5 py-sm-3">
+                            <div class="row g-5 g-sm-0">
+                                <div class="col-sm-4">
+                                    <div class="border-sm-end border-300">
+                                        <div class="text-center">
+                                            <h6 class="text-700">Status</h6>
+                                        </div>
+                                        <button id="status-btn" type="button"></button>
+                                        <h6 class="text-center" style="font-weight: 400; color: #2c7be5">Bad or Good</h6>
+                                    </div>
                                 </div>
-                                <div class="d-flex justify-content-center mt-3">
-                                    <button class="btn btn-sm btn-falcon-default me-1" type="button" title="Previous" data-list-pagination="prev">
-                                        <span class="fas fa-chevron-left"></span>
-                                    </button>
-                                    <ul class="pagination mb-0"></ul>
-                                    <button class="btn btn-sm btn-falcon-default ms-1" type="button" title="Next" data-list-pagination="next">
-                                        <span class="fas fa-chevron-right"> </span>
-                                    </button>
+                                <div class="col-sm-8">
+                                    <div>
+                                        <div class="text-center">
+                                        <h6 class="text-700">Upload</h6>
+                                        </div>
+                                        <div></div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">확인</button>
-{#                                <button type="button" class="btn btn-primary">Save changes</button>#}
+                    </div>
+                    <div class="card">
+                        <div class="card-header d-flex flex-between-center bg-light py-3">
+                            <h6 class="mb-0">Grape</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row-cols-md-1">
+                                <label id="sensorID">dd</label>
+                            </div>
+                            <div style="display: flex; float: right;">
+                                <button id="leftBtn"><</button>
+                                <button id="rightBtn">></button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="monitorCanvas"></canvas>
+                        </div>
+                        <!-- <div class="card-footer bg-light py-2">
+                          <div class="row flex-between-center g-0">
+                            <div class="col-auto">
+                              <select class="form-select form-select-sm audience-select-menu">
+                                <option value="week" selected="selected">Last 7 days</option>
+                                <option value="month">Last month</option>
+                                <option value="year">Last Year</option>
+                              </select>
+                            </div>
+                            <div class="col-auto">
+                              <h6 class="mb-0"><a class="py-2" href="#!">Active users report<span class="fas fa-chevron-right ms-1 fs--2"></span></a></h6>
+                            </div>
+                          </div>
+                        </div> -->
+                    </div>
+                </div>
+                <div class="col-lg">
+                    <div class="card h-100">
+                        <div class="card-header d-flex flex-between-center bg-light py-3">
+                            <h6 class="mb-0">Warning List</h6>
+                        </div>
+                        <div class="card-body pb-3" style="margin: 0 2em 0 2em">
+                            <div class="row text-center border-sm-bottom pb-2" style="font-weight: 700;">
+                                <div class="col">Date</div>
+                                <div class="col">제품명</div>
+                            </div>
+                            <table id="anomalies_list" style="width:100%; margin-top:1em">
+                            </table>
                         </div>
                     </div>
                 </div>
             </div>
-{#            end modal             #}
         </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Sensor List</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+{#                            Table in modal                               #}
+                        <div id="tableExample2" data-list='{"valueNames":["check","data_name","data_cnt","data_size"],"page":5,"pagination":true}'>
+                            <div class="table-responsive scrollbar">
+                                <table class="table table-bordered table-striped fs--1 mb-0">
+                                    <thead class="bg-200 text-900">
+                                    <tr>
+                                        <th class="sort" data-sort="Equip_ID">Equip_ID</th>
+                                        <th class="sort" data-sort="Chamber_ID">Chamber_ID</th>
+                                        <th class="sort" data-sort="Sensor_No">Sensor_No</th>
+                                        <th data-sort="check"></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody class="list">
+                                    {% if list %}
+                                        {% for i in list %}
+                                            <td class="Equip_ID">{{ i.equipment_id }}</td>
+                                            <td class="Chamber_ID">{{ i.chamber_id }}</td>
+                                            <td class="Sensor_No">{{ i.sensor_no }}</td>
+                                            <input type="hidden" value="{{ i.id }}">
+                                            <input type="hidden" value="{{ i.data_static_path }}">
+                                            <td>
+                                                <div style="display: none;">
+                                                    <button type="hidden" id="{{ i }}"
+                                                            onclick="selectedId('{{ i.id }}','{{ i.sensor_no }}')">
+                                                    </button>
+                                                </div>
+                                                    <label class="btn-falcon-info" id="is_select"  for="{{ i }}">Select</label>
+                                            </td>
+                                            </tr>
+                                        {% endfor %}
+                                    {% endif %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+{#            end modal             #}
+
     </main>
 {% endblock %}
 
@@ -118,16 +183,7 @@
 {% block javascripts %}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
     <script src="static/vendors/list.js/list.min.js"></script>
-    <script>
-        {#    모달관련js #}
-        var myModal = document.getElementById('myModal')
-        var myInput = document.getElementById('myInput')
-
-        myModal.addEventListener('shown.bs.modal', function () {
-            myInput.focus()
-        })
-    </script>
-
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 {#    modal내 하단 selectedDisp 내용변경   #}
     <script>
         function selectedId(id, name){
@@ -161,29 +217,38 @@
 
     </script>
     <script>
-    $(function () {
-        // 6 create an instance when the DOM is ready
-        $('#jstree').jstree();
-        // 7 bind to events triggered on the tree
-        $('#jstree').on("changed.jstree", function (e, data) {
-            console.log(data.selected);
+        //Monitoring 실시간 화면갱신
+        var timer;
+
+        $(document).ready(function () {
+            execute_Monitoring();
+            setTimeout(function exec(){
+                drawChart();
+            }, 100);
         });
 
-        // 8 interact with the tree - either way is OK
-        $('button').on('click', function () {
-            $('#jstree').jstree(true).select_node('child_node_1');
-            $('#jstree').jstree('select_node', 'child_node_1');
-            $.jstree.reference('#jstree').select_node('child_node_1');
-        });
-    });
     </script>
     <script>
+        var monitorCanvas = document.getElementById('monitorCanvas').getContext('2d');
+        var sensorLabel = document.getElementById('sensorId');
+        var leftBtn = document.getElementById('leftBtn');
+        leftBtn.addEventListener('click', leftBtnClick);
+
+        var rightBtn = document.getElementById('rightBtn');
+        rightBtn.addEventListener('click', rightBtnClick);
+
+        var monitorChart;
+
+        var csvList = [];
+        var csvIndex = 0;
+        var dataList = [];
+        var xAxis = [];
+
+        //파일 리스트 호출 함수
         function execute_Monitoring(){
 
             var url = '/monitoring/execute';
 
-            //var form = $('#inputForm')[0];
-            //var formData = new FormData(form);
             $.ajax({
                 type : 'GET',
                 url : url,
@@ -197,32 +262,104 @@
                 },
                 success : function(result){
                     var list = "";
-                    var list_First = "";
 
                     var file_Name;
                     var date = "";
                     var lot_No = "";
 
-                    list_First = "<tr><td>Date</td><td>Lot No</td></tr>";
-
                     $("#anomalies_list").empty();
-                    $("#anomalies_list").append(list_First);
 
+                    //파일 리스트를 날짜와 Lot 순서로 변경하여 출력
                     $.each(result.anomalies_list, function(i, item){
-                        //alert(item);
+                        //alert(i);
                         file_Name = item.replace(".csv", "").split("_");
+                        //일자
                         date = file_Name[0] + "/" + file_Name[1] + "/" + file_Name[2];
+                        //Lot No
                         lot_No = file_Name[3] + "_" + file_Name[4];
 
+                        //실제 테이블에 리스팅
                         list += "<tr>";
-                        list += "<td>" + date + "</td>";
-                        list += "<td>" + lot_No + "</td>";
+                        list += "   <td>" + date + "</td>";
+                        list += "   <td>" + lot_No + "</td>";
+                        list += "   <input type='hidden' id='seq_" + i + "' value='" + i + "'>";
+                        list += "   <input type='hidden' id='file_" + item + "' value='" + item + "'>";
                         list += "</tr>";
                     });
 
                     $("#anomalies_list").append(list);
+
+                    csvList = result.csv_list.map(
+                        (value) => value[0]
+                    );
+
+                    dataList = result.csv_list.map(
+                        (value) => value[1]
+                    );
+
+                    xAxis = dataList[0][0].map(
+                        (_, index) => index+1
+                    );
                 }
             });
+            //5초 간격으로 하여 디렉토리 파일 리스트 호출 및 csv data 호출(간격 조정 필요한경우 수치 데이터 조정)
+            timer = setTimeout("execute_Monitoring()", 5000);
+        }
+
+        function drawChart() {
+            monitorChart = new Chart(monitorCanvas, { type: 'line',
+                data: {
+                    labels: xAxis,
+                    datasets: [{
+                        label: 'test data',
+                        type: 'line',
+                        fill: false,
+                        lineTension: 0,
+                        pointRadius: 0,
+                        borderColor: 'blue',
+                        borderWidth: 1,
+                        data: dataList[csvIndex][0]
+                    }, {
+                        label: 'test predicted',
+                        type: 'line',
+                        fill: false,
+                        lineTension: 0,
+                        pointRadius: 0,
+                        borderColor: 'red',
+                        borderWidth: 1,
+                        data: dataList[csvIndex][1]
+                    }]
+                },
+                options: {
+                    scales: [
+
+                    ]
+                }
+            });
+        }
+
+        function leftBtnClick() {
+            if(csvIndex <= 0) return;
+            console.log(csvIndex);
+
+            csvIndex--;
+
+            monitorChart.data.datasets[0].data = dataList[csvIndex][0];
+            monitorChart.data.datasets[1].data = dataList[csvIndex][1];
+            monitorChart.destroy();
+            drawChart();
+        }
+
+        function rightBtnClick() {
+            if(csvIndex >= dataList.length - 1) return;
+            console.log(csvIndex);
+
+            csvIndex++;
+
+            monitorChart.data.datasets[0].data = dataList[csvIndex][0];
+            monitorChart.data.datasets[1].data = dataList[csvIndex][1];
+            monitorChart.destroy();
+            drawChart();
         }
     </script>
 {% endblock javascripts %}

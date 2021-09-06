@@ -26,7 +26,7 @@ def learn_anomaly(sensor_num, tresh_num, input_path):
     threshhold.txt : 학습 후 찾아낸 defalt threshhold값
     '''
     gen_tensor(input_path)
-
+    print("learn::::", sensor_num, tresh_num)
     if not os.path.isdir(f"{input_path}/after_learning"):
         os.mkdir(f"{input_path}/after_learning")
         os.mkdir(f"{input_path}/after_learning/test_input")

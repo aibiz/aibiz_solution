@@ -4,7 +4,7 @@ import  pickle
 from csv import reader
 from keras.models import load_model
 import os
-from gen_tensor import gen_tensor_for_test
+from .gen_tensor import gen_tensor_for_test
 
 def test_anomaly(sensor_num, input_data_path, input_file_path):
     '''
@@ -79,7 +79,8 @@ def test_anomaly(sensor_num, input_data_path, input_file_path):
     plt.xlabel("test MAE loss")
     plt.ylabel("No of samples")
     plt.show()
-    np.savetxt(f"{input_path}/after_test/plots/test_anomaly_score.csv", test_mae_loss, delimiter=",", fmt="%s")
+    ################수정##########
+    np.savetxt(f"{input_data_path}/after_test/plots/test_anomaly_score.csv", test_mae_loss, delimiter=",", fmt="%s")
 
     print("Threshhold 값: ", threshold)
 

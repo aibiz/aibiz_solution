@@ -77,7 +77,7 @@ def gen_tensor_for_test(input_data_path, input_file_path):
         length = len(raw_list)
         total = 0
         for file in raw_list:
-            csv_data = pd.read_csv(input_data_path + '/' + file, header=None)
+            csv_data = pd.read_csv(input_data_path + '/'+ file, header=None)
             data_temp2 = []
             for j in csv_data.columns:
                 data_temp2.append(csv_data[j].tolist())
@@ -115,13 +115,3 @@ def gen_tensor_for_test(input_data_path, input_file_path):
 
 
         print("tensor 생성 완료!")
-
-
-'''
-"******Excution method******"
-input_path = 'monitoring/2020_07_10_0164660_1.csv'
-input_file_path = "train_data/recipe1"
-sensor_num = 2
-
-gen_tensor_for_test(input_path, input_file_path)
-'''

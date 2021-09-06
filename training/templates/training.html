@@ -3,7 +3,7 @@
 {% block title %}training{% endblock %}
 <!-- Specific Page CSS goes HERE  -->
 {% block stylesheets %}
-<link href="/static/assets/css/training.css" rel="stylesheet">
+    <link href="/static/assets/css/training.css" rel="stylesheet">
 {% endblock stylesheets %}
 
 {% block content %}
@@ -14,189 +14,192 @@
                 <div class="col-md-6 col-xxl-3 mb-3 pe-md-2">
                     <div class="card">
                         <div class="card-header row pb-0">
-                            <h6 class="col-6"">Train data select</h6>
-                              <!-- Button trigger modal-1 -->
-                              <button type="button" class="btn col btn-falcon-default btn-sm" id="select-btn" data-bs-toggle="modal" data-bs-target="#trainDataModal">
+                            <h6 class="col-6">Train data select</h6>
+                            <!-- Button trigger modal-1 -->
+                            <button type="button" class="btn col btn-falcon-default btn-sm" id="select-btn" data-bs-toggle="modal" data-bs-target="#trainDataModal">
                                 Select data
                             </button>
                         </div>
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-4">
-                                        name: 
-                                    </div>
-                                    <div class="col" id="name_traindata"></div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-4">
+                                    name:
                                 </div>
-                                <div class="row">
-                                    <div class="col-3">
-                                        size: 
-                                    </div>
-                                    <div class="col" id="num_traindata" ></div>
-                                </div>
+                                <div class="col" id="name_traindata"></div>
                             </div>
+                            <div class="row">
+                                <div class="col-3">
+                                    size:
+                                </div>
+                                <div class="col" id="num_traindata" ></div>
+                            </div>
+                        </div>
                     </div>
-    
+
                 </div>
                 <div class="col-md-6 col-xxl-3 mb-3 pe-md-2 pe-xxl-2">
                     <div class="card">
                         <div class="card-header row pb-0">
-                            <h6 class="col-6"">Test data select</h6>
-                              <!-- Button trigger modal-1 -->
-                              <button type="button" class="btn col btn-falcon-default btn-sm" id="select-btn" data-bs-toggle="modal" data-bs-target="#testDataModal">
+                            <h6 class="col-6">Test data select</h6>
+                            <!-- Button trigger modal-1 -->
+                            <button type="button" class="btn col btn-falcon-default btn-sm" id="select-btn" data-bs-toggle="modal" data-bs-target="#testDataModal">
                                 Select data
                             </button>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-4">
+                                    name:
+                                </div>
+                                <div class="col" id="name_testdata" ></div>
                             </div>
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-4">
-                                        name: 
-                                    </div>
-                                    <div class="col" id="name_testdata" ></div>
+                            <div class="row">
+                                <div class="col-3">
+                                    size:
                                 </div>
-                                <div class="row">
-                                    <div class="col-3">
-                                        size: 
-                                    </div>
-                                    <div class="col" id="num_testdata" ></div>
-                                </div>
-                            </div>
-                    </div>
-                
-                </div>
-            </div>
-                
-                
-                <!------------------ Modal-1 ---------------------->
-                <div class="modal fade" id="trainDataModal" tabindex="-1" aria-labelledby="trainDataModalLabel" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="trainDataModalLabel">Select Traindata</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                {#                            Table in modal-1                              #}
-                                <div id="tableExample1" data-list='{"valueNames":["check","data_name","data_cnt","data_size"],"page":5,"pagination":true}'>
-                                    <div class="table-responsive scrollbar">
-                                        <table class="table table-bordered table-striped fs--1 mb-0">
-                                            <thead class="bg-200 text-900">
-                                            <tr>
-                                                <th class="sort data_name" data-sort="data_name">Name</th>
-                                                <th class="sort data_cnt" data-sort="data_cnt" >sample num</th>
-                                                <th class="sort data_size" data-sort="data_size">size</th>
-                                                <th data-sort="check"></th>
-                                            </tr>
-                                            </thead>
-                                            <tbody class="list">
-                                            {% if trainDataList %}
-                                                {% for i in trainDataList %}
-                                                    <td class="data_name">{{ i.data_name }}</td>
-                                                    <td class="data_cnt">{{ i.data_cnt }}</td>
-                                                    <td class="data_size">{{ i.data_size }}</td>
-                                                    <td>
-                                                        <div style="display: none;">
-                                                            <button type="hidden" id="m1_{{ i }}"
-                                                                    onclick="selectId('{{ i.id }}','{{ i.data_name }}','{{ i.data_cnt }}','{{ i.data_size }}')">
-                                                            </button>
-                                                        </div>
-                                                        <label class="btn-falcon-info" id="is_select"  for="m1_{{i}}">Select</label>
-                                                    </td>
-                                                    </tr>
-                                                {% endfor %}
-                                            {% endif %}
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                    <div class="d-flex justify-content-center mt-3 mb-3">
-                                        <button class="btn btn-sm btn-falcon-default me-1" type="button" title="Previous" data-list-pagination="prev">
-                                            <span class="fas fa-chevron-left"></span>
-                                        </button>
-                                        <ul class="pagination mb-0"></ul>
-                                        <button class="btn btn-sm btn-falcon-default ms-1" type="button" title="Next" data-list-pagination="next">
-                                            <span class="fas fa-chevron-right"> </span>
-                                        </button>
-                                    </div>
-                                </div>
-                                
-                                    {#                                모달 하단 card                #}
-                                    <div class="card h-30 p-0" id="selected">
-                                        <div class="card-body" >
-                                            <div class="card-text">Selected data</div>
-                                            <div class="card-text" id="selectedTrainDisp" style="font-weight: bold;"></div>
-                                            <input type="hidden" id="selectedTrainHidden" value="Null">
-                                        </div>
-                                    </div>
-                                </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="footer-btn">확인</button>
-                                {# <button type="button" class="btn btn-primary" ">Save changes</button>#}
+                                <div class="col" id="num_testdata" ></div>
                             </div>
                         </div>
                     </div>
-                </div>
-                {#            end modal-1             #}
 
-                <!----------------------------------- Modal-2 -------------------------------->
-                <div class="modal fade" id="testDataModal" tabindex="-1" aria-labelledby="testDataModalLabel" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="testDataModalLabel">Select Testdata</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+            </div>
+
+            <!------------------ Modal-1 ---------------------->
+            <div class="modal fade" id="trainDataModal" tabindex="-1" aria-labelledby="trainDataModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="trainDataModalLabel">Select Traindata</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            {#                            Table in modal-1                              #}
+                            <div id="tableExample1" data-list='{"valueNames":["check","data_name","data_cnt","data_size"],"page":5,"pagination":true}'>
+                                <div class="table-responsive scrollbar">
+                                    <table class="table table-bordered table-striped fs--1 mb-0">
+                                        <thead class="bg-200 text-900">
+                                        <tr>
+                                            <th class="sort data_name" data-sort="data_name">Name</th>
+                                            <th class="sort data_cnt" data-sort="data_cnt" >sample num</th>
+                                            <th class="sort data_size" data-sort="data_size">size</th>
+                                            <th data-sort="check"></th>
+                                        </tr>
+                                        </thead>
+                                        <tbody class="list">
+                                        {% if trainDataList %}
+                                            {% for i in trainDataList %}
+                                                <td class="data_name">{{ i.data_name }}</td>
+                                                <td class="data_cnt">{{ i.data_cnt }}</td>
+                                                <td class="data_size">{{ i.data_size }}</td>
+                                                <td>
+                                                    <div style="display: none;">
+                                                        <button type="hidden" id="m1_{{ i }}"
+                                                                onclick="selectTrainId('{{ i.id }}','{{ i.data_name }}'
+                                                                        ,'{{ i.data_cnt }}','{{ i.data_size }}', '{{ i.data_static_path }}')">
+                                                        </button>
+                                                    </div>
+                                                    <label class="btn-falcon-info" id="is_select"  for="m1_{{ i }}">Select</label>
+                                                </td>
+                                                </tr>
+                                            {% endfor %}
+                                        {% endif %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="d-flex justify-content-center mt-3 mb-3">
+                                    <button class="btn btn-sm btn-falcon-default me-1" type="button" title="Previous" data-list-pagination="prev">
+                                        <span class="fas fa-chevron-left"></span>
+                                    </button>
+                                    <ul class="pagination mb-0"></ul>
+                                    <button class="btn btn-sm btn-falcon-default ms-1" type="button" title="Next" data-list-pagination="next">
+                                        <span class="fas fa-chevron-right"> </span>
+                                    </button>
+                                </div>
                             </div>
-                            <div class="modal-body">
-                                {#                            Table in modal-2                              #}
-                                <div id="tableExample2" data-list='{"valueNames":["check","data_name","data_cnt","data_size"],"page":5,"pagination":true}'>
-                                    <div class="table-responsive scrollbar">
-                                        <table class="table table-bordered table-striped fs--1 mb-0">
-                                            <thead class="bg-200 text-900">
-                                            <tr>
-                                                <th class="sort data_name" data-sort="data_name">Name</th>
-                                                <th class="sort data_cnt" data-sort="data_cnt">sample num</th>
-                                                <th class="sort data_size" data-sort="data_size">size</th>
-                                                <th data-sort="check"></th>
-                                            </tr>
-                                            </thead>
-                                            <tbody class="list">
-                                            {% if testDataList %}
-                                                {% for j in testDataList %}
-                                                    <td class="data_name">{{ j.data_name }}</td>
-                                                    <td class="data_cnt">{{ j.data_cnt }}</td>
-                                                    <td class="data_size">{{ j.data_size }}</td>
-                                                    <td>
-                                                        <div style="display: none;">
-                                                            <button type="hidden" id="m2_{{ j }}"
-                                                                    onclick="selectTestId('{{ j.id }}','{{ j.data_name }}','{{ j.data_cnt }}','{{ j.data_size }}')">
-                                                            </button>
-                                                        </div>
-                                                        <label class="btn-falcon-info" id="is_select"  for="m2_{{ j }}">Select</label>
-                                                    </td>
-                                                    </tr>
-                                                {% endfor %}
-                                            {% endif %}
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                    <div class="d-flex justify-content-center mt-3 mb-3">
-                                        <button class="btn btn-sm btn-falcon-default me-1" type="button" title="Previous" data-list-pagination="prev">
-                                            <span class="fas fa-chevron-left"></span>
-                                        </button>
-                                        <ul class="pagination mb-0"></ul>
-                                        <button class="btn btn-sm btn-falcon-default ms-1" type="button" title="Next" data-list-pagination="next">
-                                            <span class="fas fa-chevron-right"> </span>
-                                        </button>
-                                    </div>
+
+                            {#                                모달 하단 card                #}
+                            <div class="card h-30 p-0" id="selected">
+                                <div class="card-body" >
+                                    <div class="card-text">Selected data</div>
+                                    <div class="card-text" id="selectedTrainDisp" style="font-weight: bold;"></div>
+                                    <input type="hidden" id="selectedTrainHidden" value="Null">
+                                    <input type="hidden" id="selectedTrainpathHidden" value="Null">
                                 </div>
-                            
-                                    {#                                모달 하단 card                #}
-                                    <div class="card h-30 p-0" id="selected" >
-                                        <div class="card-body">
-                                            <div class="card-text">Selected data</div>
-                                            <div class="card-text" id="selectedTestDisp" style="font-weight: bold;"></div>
-                                            <input type="hidden" id="selectedTestHidden" value="Null">
-                                    </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="footer-btn">확인</button>
+                            {# <button type="button" class="btn btn-primary" ">Save changes</button>#}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {#            end modal-1             #}
+
+            <!----------------------------------- Modal-2 -------------------------------->
+            <div class="modal fade" id="testDataModal" tabindex="-1" aria-labelledby="testDataModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="testDataModalLabel">Select Testdata</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            {#                            Table in modal-2                              #}
+                            <div id="tableExample2" data-list='{"valueNames":["check","data_name","data_cnt","data_size"],"page":5,"pagination":true}'>
+                                <div class="table-responsive scrollbar">
+                                    <table class="table table-bordered table-striped fs--1 mb-0">
+                                        <thead class="bg-200 text-900">
+                                        <tr>
+                                            <th class="sort data_name" data-sort="data_name">Name</th>
+                                            <th class="sort data_cnt" data-sort="data_cnt">sample num</th>
+                                            <th class="sort data_size" data-sort="data_size">size</th>
+                                            <th data-sort="check"></th>
+                                        </tr>
+                                        </thead>
+                                        <tbody class="list">
+                                        {% if testDataList %}
+                                            {% for j in testDataList %}
+                                                <td class="data_name">{{ j.data_name }}</td>
+                                                <td class="data_cnt">{{ j.data_cnt }}</td>
+                                                <td class="data_size">{{ j.data_size }}</td>
+                                                <td>
+                                                    <div style="display: none;">
+                                                        <button type="hidden" id="m2_{{ j }}"
+                                                                onclick="selectTestId('{{ j.id }}','{{ j.data_name }}'
+                                                                        ,'{{ j.data_cnt }}','{{ j.data_size }}', '{{ j.data_static_path }}')">
+                                                        </button>
+                                                    </div>
+                                                    <label class="btn-falcon-info" id="is_select"  for="m2_{{ j }}">Select</label>
+                                                </td>
+                                                </tr>
+                                            {% endfor %}
+                                        {% endif %}
+                                        </tbody>
+                                    </table>
                                 </div>
-                            
+                                <div class="d-flex justify-content-center mt-3 mb-3">
+                                    <button class="btn btn-sm btn-falcon-default me-1" type="button" title="Previous" data-list-pagination="prev">
+                                        <span class="fas fa-chevron-left"></span>
+                                    </button>
+                                    <ul class="pagination mb-0"></ul>
+                                    <button class="btn btn-sm btn-falcon-default ms-1" type="button" title="Next" data-list-pagination="next">
+                                        <span class="fas fa-chevron-right"> </span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            {#                                모달 하단 card                #}
+                            <div class="card h-30 p-0" id="selected" >
+                                <div class="card-body">
+                                    <div class="card-text">Selected data</div>
+                                    <div class="card-text" id="selectedTestDisp" style="font-weight: bold;"></div>
+                                    <input type="hidden" id="selectedTestHidden" value="Null">
+                                    <input type="hidden" id="selectedTestpathHidden" value="Null">
+                                </div>
+                            </div>
+
 
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="footer-btn">확인</button>
@@ -206,47 +209,74 @@
                     </div>
                 </div>
             </div>
-                {#            end modal-2             #}
+            {#            end modal-2             #}
 
-                <div class="col-xxl-6 px-xxl-2 mb-3 pe-md-2">
-                    <div class="card h-100">
-                        <div class="card-header">
-                            <h6>Train data select</h6>
+            <div class="col-xxl-6 px-xxl-2 mb-3 pe-md-2">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h6>Train data select</h6>
+                    </div>
+                    <div class="card-body row" id="data_select" style="--falcon-gutter-x:0">
+                        <div class="form-group mb-2 col">
+                            Sensor No.
+                            <input id="sensorNo" type="text" class="text-center sensor-no" value="2" style="margin-left: 0.5em; border-radius: 4px; border:solid 1px #5e6e82">
                         </div>
-                        <div class="card-body row" id="data_select" style="--falcon-gutter-x:0">
-                            <div class="form-group mb-2 col">
-                                Sensor No.
-                                <input id="sensorNo" type="text" class="text-center sensor-no" value="2" style="margin-left: 0.5em; border-radius: 4px; border:solid 1px #5e6e82">
-                            </div>
-                            <div class="form-group mb-2 col">
-                                기준 Threshold
-                                <input id="thresholdStd" type="text" class="text-center threshold-std" value="10" style="margin-left: 0.5em; border-radius: 4px; border:solid 1px #5e6e82">
-                            </div>
+                        <div class="form-group mb-2 col">
+                            기준 Threshold
+                            <input id="thresholdStd" type="text" class="text-center threshold-std" value="10" style="margin-left: 0.5em; border-radius: 4px; border:solid 1px #5e6e82">
                         </div>
                     </div>
-
+                    <div class="col-lg">
+                        <div style="display: flex; float: right;">
+                            <button class="btn-primary" id="trainstart-btn" style="border: none; border-radius: 4px; padding: 5px 35px">Start</button>
+                            <button class="btn-primary" id="test-btn" style="border: none; border-radius: 4px; padding: 5px 35px">test</button>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="row-cols-md-1" style="width: 50%;">
+                            <canvas id="canvas1"></canvas>
+                        </div>
+                        <div style="width: 50%; display: flex; float: right;">
+                            <canvas id="canvas2"></canvas>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="row-cols-md-1" style="width: 50%;">
+                            <div style="width: 50%; display: flex; float: right;">
+                                <button id="leftBtn"><</button>
+                                <button id="rightBtn">></button>
+                            </div>
+                            <canvas id="canvas3"></canvas>
+                        </div>
+                        <div style="width: 50%; display: flex; float: right;">
+                            <canvas id="canvas4"></canvas>
+                        </div>
+                    </div>
                 </div>
-           
-
-
-
-                
-                
-                <div class="row-cols-md-1">ddd</div>
-                <div style="display: flex; float: right;">
-                    <button class="btn-primary" id="trainstart-btn" style="border: none; border-radius: 4px; padding: 5px 35px">Start</button>
-
+            </div>
+            <div class="col">
+                <div class="card">
+                    <div class="card-header d-flex flex-between-center bg-light py-3">
+                        <h6 class="mb-0">Warning List</h6>
+                    </div>
+                    <div class="card-body pb-3" style="margin: 0 2em 0 2em">
+                        <div class="row text-center border-sm-bottom pb-2" style="font-weight: 700;">
+                            <div class="col">Date</div>
+                            <div class="col">제품명</div>
+                        </div>
+                        <table id="anomalies_list" style="width:100%; margin-top:1em">
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
-        <!--        우측 상단 데이터 입력 card -->
-    </div>
     </main>
 {% endblock %}
 
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
     <script src="static/vendors/list.js/list.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         {#    모달관련js #}
         var myModal = document.getElementById('myModal')
@@ -257,39 +287,38 @@
         })
     </script>
 
-    {#    modal내 하단 selectedDisp 내용변경   #}
 
     <script>
-
-        function selectId(id, name, cnt, size) {
-            console.log("aaaaaa")
+        {#    modal내 하단 selectedDisp 내용변경   #}
+        function selectTrainId(id, name, cnt, size, path) {
             $('#selectedTrainDisp').text(name)
             $('#selectedTrainHidden').val(id)
+            $('#selectedTrainpathHidden').val(path)
             $('#name_traindata').text(name)
             $('#num_traindata').text(cnt)
+            console.log(path)
+
         }
-    </script>
-    <script>
-        function selectTestId(id, name, cnt, size) {
-            console.log("dfdfdddfd")
+        function selectTestId(id, name, cnt, size,path) {
             $('#selectedTestDisp').text(name)
             $('#selectedTestHidden').val(id)
+            $('#selectedTestpathHidden').val(path)
             $('#name_testdata').text(name)
             $('#num_testdata').text(cnt)
         }
     </script>
 
-<script>
+    <script>
         {#     train 시작        #}
         const button = document.getElementById('trainstart-btn');
 
         button.addEventListener('click', async _ => {
             try {
                 var headers = new Headers();
-var csrftoken = getCookie('csrftoken');
-headers.append('X-CSRFToken', csrftoken);
-headers.append('Accept', 'application/json');
-headers.append('Content-Type', 'application/json');
+                var csrftoken = getCookie('csrftoken');
+                headers.append('X-CSRFToken', csrftoken);
+                headers.append('Accept', 'application/json');
+                headers.append('Content-Type', 'application/json');
 
                 var trainDataId = document.getElementById('selectedTrainHidden').value;
                 var testDataId = document.getElementById('selectedTestHidden').value;
@@ -311,7 +340,303 @@ headers.append('Content-Type', 'application/json');
             } catch(err) {
                 console.error(`Error: ${err}`);
             }
+
+            executeMonitoring();
         });
     </script>
+
+    <script>
+        {#     graphing test용       #}
+        const button2 = document.getElementById('test-btn');
+        button2.addEventListener('click', async _ => {
+            try {
+                var headers = new Headers();
+                var csrftoken = getCookie('csrftoken');
+                headers.append('X-CSRFToken', csrftoken);
+                headers.append('Accept', 'application/json');
+                headers.append('Content-Type', 'application/json');
+
+                var trainStaticPath = document.getElementById('selectedTrainpathHidden').value;
+                var testStaticPath = document.getElementById('selectedTestpathHidden').value;
+
+
+                console.log(trainStaticPath);
+                console.log(testStaticPath);
+                const response = await fetch('training/graphing', {
+                    method: 'POST',
+                    headers: headers,
+                    body: JSON.stringify({
+                        trainStaticPath : trainStaticPath,
+                        testStaticPath : testStaticPath
+                    })
+                });
+                console.log('Completed!', response);
+            } catch(err) {
+                console.error(`Error: ${err}`);
+            }
+        });
+    </script>
+
+    <script>
+        var canvas1 = document.getElementById('canvas1').getContext('2d');
+        var canvas2 = document.getElementById('canvas2').getContext('2d');
+        var canvas3 = document.getElementById('canvas3').getContext('2d');
+        var canvas4 = document.getElementById('canvas4').getContext('2d');
+
+        var chart1;
+        var chart2;
+        var chart3;
+        var chart4;
+
+        var leftBtn = document.getElementById('leftBtn');
+        leftBtn.addEventListener('click', leftBtnClick);
+
+        var rightBtn = document.getElementById('rightBtn');
+        rightBtn.addEventListener('click', rightBtnClick);
+
+        var statusLoss = [];
+        var statusValLoss = [];
+        var trainAnomalyScore = [];
+        var testAnomalyScore = [];
+        var csvList = [];
+        var dataList = [];
+        var csvIndex = 0;
+
+        var timer;
+
+        // window.onload = function () {
+        //     drawCharts();
+        // }
+
+        // // 1번 차트 데이터
+        // statusLoss = [1,2,3,1,2,1];            // 1차원 배열
+        // {#statusValLoss = [2,3,1,1,2,3];    // 1차원 배열#}
+        // {##}
+        // {#// 2번 차트 데이터 (우상단)#}
+        // {#trainAnomalyScore = [1,2,1,2,3,3,1];   // 1차원 배열#}
+        // {##}
+        // {#// 3번 차트 데이터#}
+        // {#csvList = ['a', 'b', 'c'];   // 파일 이름 (센서 이름 아님) // 1차원 배열#}
+        // {#dataList = [[[1,2,1,2,3], [2,3,4,5,4]], [[2,3,4,5,4], [4,3,2,1,2]], [[1,2,1,2,3], [4,3,2,1,2]]];  // 차트 데이터 - 2차원 배열#}
+        // {##}
+        // {#// 4번 차트 데이터#}
+        // {#testAnomalyScore = [2,3,2,3,1,2]; // 1차원 배열#}
+
+        // todo: 아래 하드코딩 지워주세요 or 주석
+
+
+        //파일 리스트 호출 함수
+        function executeMonitoring() {
+            var trainStaticPath = document.getElementById('selectedTrainpathHidden').value;
+            var testStaticPath = document.getElementById('selectedTestpathHidden').value;
+            var url = 'training/graphing';
+
+            $.ajax({
+                type: 'POST',
+                url: url,
+                headers: {"X-CSRFToken": getCookie("csrftoken")},
+                cache: false,
+                dataType: 'json',
+                contentType: 'application/json; charset=utf-8',
+                data: JSON.stringify({
+                    trainStaticPath: trainStaticPath,
+                    testStaticPath: testStaticPath
+                }),
+                processData: false,
+                error: function (request, status, error) {
+                    //alert("code:"+request.status+"\n"+"error:"+error);
+                    console.log(error.toString());
+                },
+                success: function (result) {
+                    var list = "";
+                    var file_Name;
+                    var date = "";
+                    var lot_No = "";
+
+                    $("#anomalies_list").empty();
+
+                    //파일 리스트를 날짜와 Lot 순서로 변경하여 출력
+                    $.each(result.anomalies_list, function (i, item) {
+                        //alert(i);
+                        file_Name = item.replace(".csv", "").split("_");
+                        //일자
+                        date = file_Name[0] + "/" + file_Name[1] + "/" + file_Name[2];
+                        //Lot No
+                        lot_No = file_Name[3] + "_" + file_Name[4];
+
+                        //실제 테이블에 리스팅
+                        list += "<tr>";
+                        list += "   <td>" + date + "</td>";
+                        list += "   <td>" + lot_No + "</td>";
+                        list += "   <input type='hidden' id='seq_" + i + "' value='" + i + "'>";
+                        list += "   <input type='hidden' id='file_" + item + "' value='" + item + "'>";
+                        list += "</tr>";
+                    });
+
+                    $("#anomalies_list").append(list);
+
+                    console.log("statttttt")
+                    console.log(result['state']);
+
+                    // if(result['state']) {
+                    //     console.log(result);
+                    //     // 1번 차트 데이터
+                    //     statusLoss = result.status_loss;            // 1차원 배열
+                    //     console.log(statusLoss)
+                    //     statusValLoss = result.status_val_loss;    // 1차원 배열
+                    //
+                    //     // 2번 차트 데이터 (우상단)
+                    //     trainAnomalyScore = result.train_anomaly_score;   // 1차원 배열
+                    //
+                    //     // 3번 차트 데이터
+                    //     csvList = result.anomalies_list;   // 파일 이름 (센서 이름 아님) // 1차원 배열
+                    //     dataList = result.csv_list;  // 차트 데이터 - 2차원 배열
+                    //
+                    //     // 4번 차트 데이터
+                    //     testAnomalyScore = result.test_anomaly_score; // 1차원 배열
+                    //
+                    //     drawCharts();
+                    // }
+
+                    if (result['state'] == 'True') {
+                        console.log(result);
+                        // 1번 차트 데이터
+                        statusLoss = result.status_loss;            // 1차원 배열
+                        statusValLoss = result.status_val_loss;    // 1차원 배열
+
+                        // 2번 차트 데이터 (우상단)
+                        trainAnomalyScore = result.train_anomaly_score;   // 1차원 배열
+
+                        // 3번 차트 데이터
+                        csvList = result.csv_list.map(
+                            (value) => value[0]
+                        );   // 파일 이름 (센서 이[름 아님) // 1차원 배열
+
+
+                        dataList = result.csv_list.map(
+                            (value) => value[1]
+                        );  // 차트 데이터 - 2차원 배열
+
+                        // 4번 차트 데이터
+                        testAnomalyAcore = result.test_anomaly_score; // 1차원 배열
+
+                        drawCharts();
+                    }
+                }
+            });
+
+            //5초 간격으로 하여 디렉토리 파일 리스트 호출 및 csv data 호출(간격 조정 필요한경우 수치 데이터 조정)
+            timer = setTimeout("executeMonitoring()", 5000);
+        }
+
+        function drawCharts() {
+            chart1 = new Chart(canvas1, {
+                type: 'line',
+                data: {
+                    labels: xAxisOf(statusLoss),
+                    datasets: [
+                        dataset(statusLoss, 'status loss', false, null, 'blue', 1),
+                        dataset(statusValLoss, 'status val loss', false, null, 'red', 1),
+                    ]
+                },
+                options: {},
+            });
+            chart2 = new Chart(canvas2, {
+                type: 'line',
+                data: {
+                    labels: xAxisOf(trainAnomalyScore),
+                    datasets: [
+                        dataset(trainAnomalyScore, 'train anomaly score', true, 'gray', 'transparent', 0),
+                    ]
+                },
+                options: {},
+            });
+            chart3 =  new Chart(canvas3, {
+                type: 'line',
+                data: {
+                    labels: xAxisOf(dataList[csvIndex][0]),
+                    datasets: [
+                        dataset(dataList[csvIndex][0], 'test data', false, null, 'blue', 1),
+                        dataset(dataList[csvIndex][1], 'test predicted', false, null, 'red', 1),
+                    ]
+                },
+                options: {},
+            });
+            chart4 = new Chart(canvas4, {
+                type: 'line',
+                data: {
+                    labels: xAxisOf(trainAnomalyScore),
+                    datasets: [
+                        dataset(trainAnomalyScore, 'test anomaly score', true, 'gray', 'transparent', 0),
+                    ]
+                },
+                options: {},
+            });
+        }
+
+
+        function reloadChart3() {
+            chart3 =  new Chart(canvas3, {
+                type: 'line',
+                data: {
+                    labels: xAxisOf(dataList[csvIndex][0]),
+                    datasets: [
+                        dataset(dataList[csvIndex][0], 'test data', false, null, 'blue', 1),
+                        dataset(dataList[csvIndex][1], 'test predicted', false, null, 'red', 1),
+                    ]
+                },
+                options: {},
+            });
+        }
+
+        function dataset(
+            data,
+            labelText,
+            isFilled,
+            backgroundColor,
+            borderColor,
+            borderWidth
+        ) {
+            return {
+                label: labelText,
+                type: 'line',
+                fill: isFilled,
+                backgroundColor: isFilled ? backgroundColor : null,
+                pointRadius: 0,
+                borderColor: borderColor,
+                borderWidth: borderWidth,
+                data: data
+            };
+        }
+
+        function leftBtnClick() {
+            if(csvIndex <= 0) return;
+
+            csvIndex--;
+
+            chart3.data.datasets[0].dataList[csvIndex][0] = dataList[0];
+            chart3.data.datasets[1].dataList[csvIndex][1] = dataList[1];
+            chart3.destroy();
+            reloadChart3();
+        }
+
+        function rightBtnClick() {
+            if(csvIndex >= dataList.length - 1) return;
+
+            csvIndex++;
+
+            chart3.data.datasets[0].dataList = dataList[csvIndex][0];
+            chart3.data.datasets[1].dataList = dataList[csvIndex][1];
+            chart3.destroy();
+            reloadChart3();
+        }
+
+        function xAxisOf(dataList) {
+            return dataList.map(
+                (_, index) => index + 1
+            );
+        }
+    </script>
+
 
 {% endblock javascripts %}

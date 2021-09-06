@@ -2,7 +2,7 @@ from django.views.generic import View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpRequest, JsonResponse
 from django.core.files.storage import FileSystemStorage
-from config.models import mmDataset, mmProblem
+from config.models import mmDataset, mmProblem, mmRecipe, mmEquipspec
 from django.db import transaction
 
 
@@ -39,6 +39,34 @@ class DataUploadView(LoginRequiredMixin, View):
     def get(self, request: HttpRequest, *args, **kwargs):
         context = {}
         context['username'] = request.user.username
+        equip_name = request.GET.get('equip_name','')
+        chamber_name = request.GET.get('chamber_name', '')
+        recipe_name = request.GET.get('recipe_name', '')
+        revision_no = request.GET.get('revision_no', '')
+        rsEquip = mmEquipspec.objects.all().values_list('equip_name', flat=True).distinct()
+        context['rsEquip'] = rsEquip
+        if rsEquip and equip_name=='':
+            equip_name = rsEquip[0]
+
+        context['equip_name'] = equip_name
+
+        rsChamber = mmEquipspec.objects.filter(equip_name=equip_name).values_list('chamber_name', flat=True).distinct()
+        context['rsChamber'] = rsChamber
+        if rsChamber and equip_name=='':
+            chamber_name = rsChamber[0]
+        context['chamber_name'] = chamber_name
+
+        rsRecipe = mmRecipe.objects.filter(equip_name=equip_name).values_list('recipe_name', flat=True).distinct()
+        context['rsRecipe'] = rsRecipe
+        if rsRecipe and recipe_name == '':
+            recipe_name = rsRecipe[0]
+        context['recipe_name'] = recipe_name
+
+        rsRevision = mmRecipe.objects.filter(equip_name=equip_name, recipe_name=recipe_name).values_list('revision_no', flat=True).distinct()
+        context['rsRevision'] = rsRevision
+        if rsRevision and revision_no=='':
+            revision_no = rsRevision[0]
+        context['revision_no'] = revision_no
 
         rsDataset = mmDataset.objects.filter(delete_flag='0').order_by('-id')
         context['rsDataset'] = rsDataset

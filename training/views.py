@@ -10,7 +10,6 @@ from aiengine.learning_code import learn_anomaly
 from aiengine.test_code import test_anomaly
 
 
-
 def training_main(request):
     context = {}
 

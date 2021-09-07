@@ -1,3 +1,6 @@
 from django.shortcuts import render
 
-# Create your views here.
+def analysis_main(request):
+    context = {}
+    return render(request, "analysis.html", context)
+

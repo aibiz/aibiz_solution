@@ -41,7 +41,10 @@ class mmProblem(models.Model):
 
 class mmDataset(models.Model):
     id = models.AutoField(primary_key=True)
-    # problem = models.ForeignKey('mmProblem', on_delete=models.DO_NOTHING)
+    equip_name = models.CharField(db_column='equip_name', max_length=50)
+    chamber_name = models.CharField(db_column='chamber_name', max_length=50)
+    recipe_name = models.CharField(db_column='recipe_name', max_length=50)
+    revision_no = models.CharField(db_column='revision_no', max_length=50)
     data_static_path = models.CharField(db_column='data_static_path', max_length=255, default='')
     purpose = models.CharField(db_column='purpose', max_length=3, default='')
     data_name = models.CharField(db_column='data_name', max_length=255, default='')

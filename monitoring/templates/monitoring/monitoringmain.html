@@ -19,15 +19,15 @@
                 </button>
             </div>
             <div class="row g-3 mb-3">
-                <div class="col-lg-5">
+                <div class="col-lg-3">
                     <div class="card h-100">
                         <div class="card-header d-flex flex-between-center bg-light py-3">
                             <h6 class="mb-0">Monitoring</h6>
                         </div>
-                        <div class="card-body pb-3">
+                        <div class="card-body pb-1 tree-content">
                         {% if equip_list %}
                             {% for i in equip_list %}
-                            <ul >
+                            <ul style="padding: 0;">
                                 <li><a class="btn" data-bs-toggle="collapse" href="#eqipment" role="button" aria-controls="false" aria-controls="eqipment">
                                     {% if i.eqip_cnt == 1 %}<div class="cricle"></div><sapn class="list-title">장비: </sapn>{{ i.equipment_id }}<a class="dropdown-indicator dropdown" ></a>{% endif %}
                                 </a>
@@ -36,7 +36,7 @@
                                                 {% if i.cham_cnt == 1 %}<span class="list-title">챔버: </span>{{ i.chamber_id }}<a class="dropdown-indicator dropdown" ></a>{% endif %}</a>
                                             <ul class="collapse multi-collapse" id="chamber">
                                                 <li class="recipe-text">{% if i.rec_cnt == 1 %}<div class="cricle inner"></div>{{ i.recipe_no }}{% endif %}
-                                                    <ul>
+                                                    <ul style="padding: 0;">
                                                         <li>
                                                             <button class="senser-btn" id="{{ i.id }}" type="button" onclick='execute_Monitoring();'>{{ i.sensor_no }}</button>
                                                         </li>
@@ -52,7 +52,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-7">
+                <div class="col-lg-9">
                     <div class="card  mb-3">
                         <div class="card-body py-5 py-sm-3">
                             <div class="row g-5 g-sm-0">
@@ -85,8 +85,8 @@
                                 <label id="sensorID">dd</label>
                             </div>
                             <div style="display: flex; float: right;">
-                                <button id="leftBtn"><</button>
-                                <button id="rightBtn">></button>
+                                <button class="btn-falcon-default" id="leftBtn"><</button>
+                                <button class="btn-falcon-default" id="rightBtn">></button>
                             </div>
                         </div>
                         <div class="card-body">

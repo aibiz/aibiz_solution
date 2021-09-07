@@ -287,7 +287,6 @@
         })
     </script>
 
-
     <script>
         {#    modal내 하단 selectedDisp 내용변경   #}
         function selectTrainId(id, name, cnt, size, path) {
@@ -296,8 +295,6 @@
             $('#selectedTrainpathHidden').val(path)
             $('#name_traindata').text(name)
             $('#num_traindata').text(cnt)
-            console.log(path)
-
         }
         function selectTestId(id, name, cnt, size,path) {
             $('#selectedTestDisp').text(name)
@@ -314,12 +311,6 @@
 
         button.addEventListener('click', async _ => {
             try {
-                var headers = new Headers();
-                var csrftoken = getCookie('csrftoken');
-                headers.append('X-CSRFToken', csrftoken);
-                headers.append('Accept', 'application/json');
-                headers.append('Content-Type', 'application/json');
-
                 var trainDataId = document.getElementById('selectedTrainHidden').value;
                 var testDataId = document.getElementById('selectedTestHidden').value;
                 var sensorNo = document.getElementById('sensorNo').value;
@@ -328,7 +319,7 @@
                 console.log(trainDataId);
                 const response = await fetch('/training/start', {
                     method: 'POST',
-                    headers: headers,
+                    headers: { "X-CSRFToken": getCookie("csrftoken") },
                     body: JSON.stringify({
                         trainDataId : trainDataId,
                         testDataId : testDataId,
@@ -340,7 +331,6 @@
             } catch(err) {
                 console.error(`Error: ${err}`);
             }
-
             executeMonitoring();
         });
     </script>
@@ -350,21 +340,12 @@
         const button2 = document.getElementById('test-btn');
         button2.addEventListener('click', async _ => {
             try {
-                var headers = new Headers();
-                var csrftoken = getCookie('csrftoken');
-                headers.append('X-CSRFToken', csrftoken);
-                headers.append('Accept', 'application/json');
-                headers.append('Content-Type', 'application/json');
-
                 var trainStaticPath = document.getElementById('selectedTrainpathHidden').value;
                 var testStaticPath = document.getElementById('selectedTestpathHidden').value;
 
-
-                console.log(trainStaticPath);
-                console.log(testStaticPath);
                 const response = await fetch('training/graphing', {
                     method: 'POST',
-                    headers: headers,
+                    headers: { "X-CSRFToken": getCookie("csrftoken") },
                     body: JSON.stringify({
                         trainStaticPath : trainStaticPath,
                         testStaticPath : testStaticPath
@@ -401,28 +382,7 @@
         var csvList = [];
         var dataList = [];
         var csvIndex = 0;
-
         var timer;
-
-        // window.onload = function () {
-        //     drawCharts();
-        // }
-
-        // // 1번 차트 데이터
-        // statusLoss = [1,2,3,1,2,1];            // 1차원 배열
-        // {#statusValLoss = [2,3,1,1,2,3];    // 1차원 배열#}
-        // {##}
-        // {#// 2번 차트 데이터 (우상단)#}
-        // {#trainAnomalyScore = [1,2,1,2,3,3,1];   // 1차원 배열#}
-        // {##}
-        // {#// 3번 차트 데이터#}
-        // {#csvList = ['a', 'b', 'c'];   // 파일 이름 (센서 이름 아님) // 1차원 배열#}
-        // {#dataList = [[[1,2,1,2,3], [2,3,4,5,4]], [[2,3,4,5,4], [4,3,2,1,2]], [[1,2,1,2,3], [4,3,2,1,2]]];  // 차트 데이터 - 2차원 배열#}
-        // {##}
-        // {#// 4번 차트 데이터#}
-        // {#testAnomalyScore = [2,3,2,3,1,2]; // 1차원 배열#}
-
-        // todo: 아래 하드코딩 지워주세요 or 주석
 
 
         //파일 리스트 호출 함수
@@ -478,26 +438,6 @@
                     console.log("statttttt")
                     console.log(result['state']);
 
-                    // if(result['state']) {
-                    //     console.log(result);
-                    //     // 1번 차트 데이터
-                    //     statusLoss = result.status_loss;            // 1차원 배열
-                    //     console.log(statusLoss)
-                    //     statusValLoss = result.status_val_loss;    // 1차원 배열
-                    //
-                    //     // 2번 차트 데이터 (우상단)
-                    //     trainAnomalyScore = result.train_anomaly_score;   // 1차원 배열
-                    //
-                    //     // 3번 차트 데이터
-                    //     csvList = result.anomalies_list;   // 파일 이름 (센서 이름 아님) // 1차원 배열
-                    //     dataList = result.csv_list;  // 차트 데이터 - 2차원 배열
-                    //
-                    //     // 4번 차트 데이터
-                    //     testAnomalyScore = result.test_anomaly_score; // 1차원 배열
-                    //
-                    //     drawCharts();
-                    // }
-
                     if (result['state'] == 'True') {
                         console.log(result);
                         // 1번 차트 데이터
@@ -511,7 +451,6 @@
                         csvList = result.csv_list.map(
                             (value) => value[0]
                         );   // 파일 이름 (센서 이[름 아님) // 1차원 배열
-
 
                         dataList = result.csv_list.map(
                             (value) => value[1]

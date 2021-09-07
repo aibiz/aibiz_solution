@@ -1,3 +1,6 @@
+.tree-content {
+  overflow-x: hidden;
+}
 ul {
   list-style: none;
   padding-left: 1.5em;
@@ -48,6 +51,17 @@ ul {
   border: none;
   border-radius: 50%;
   background-color: #2c7be5;
-  width: 3em;
-  height: 3em;
+  width: 2.5em;
+  height: 2.5em;
+}
+#leftBtn,
+#rightBtn {
+  border: none;
+  border-radius: 0.2rem;
+  background-color: #fff;
+  color: #4d5969;
+  font-size: 0.875rem;
+  margin-left: 5px;
+  padding: 3px 12px;
+  height: fit-content;
 }

@@ -79,7 +79,7 @@ def graphing_training(request):
         #   파일을 수정시간순으로 정렬
         for i in range(0, len(file_list)) :
             for j in range(0, len(file_list)) :
-                if datetime.datetime.fromtimestamp(os.stat(dir + file_list[i]).st_mtime) < datetime.datetime.fromtimestamp(os.stat(dir + file_list[j]).st_mtime) :
+                if datetime.datetime.fromtimestamp(os.stat(testAnomalyList + file_list[i]).st_mtime) < datetime.datetime.fromtimestamp(os.stat(testAnomalyList + file_list[j]).st_mtime) :
                     (file_list[i], file_list[j]) = (file_list[j], file_list[i])
         #   파일 리스트 전체의 csv파일 데이터를 읽어들여와 List 형식으로 변환(전체파일)
         for k in file_list :

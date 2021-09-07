@@ -88,7 +88,7 @@ def graphing_training(request):
 
         #threshold
         thresholdpd = pandas.read_csv(thresholdFile, header=None)
-        threshold = pandas.DataFrame(thresholdpd).loc[0, 0]
+        threshold = round(pandas.DataFrame(thresholdpd).loc[0, 0], 5) * 1000
         print("threshold:::", threshold)
         context = {
             'anomalies_list': file_list,

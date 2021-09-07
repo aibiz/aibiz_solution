@@ -213,9 +213,9 @@
 
           
                 <div class="card h-100 mb-3">
-                    <div class="card-header">
-                        <h6>Train data select</h6>
-                    </div>
+{#                    <div class="card-header">#}
+{#                        <h6></h6>#}
+{#                    </div>#}
                     <div class="card-body row" id="data_select" style="--falcon-gutter-x:0">
                         <div class="form-group mb-2 col">
                             Sensor No.
@@ -225,11 +225,24 @@
                             기준 Threshold
                             <input id="thresholdStd" type="text" class="text-center threshold-std" value="10" style="margin-left: 0.5em; border-radius: 4px; border:solid 1px #5e6e82">
                         </div>
+                        <div class="col-lg">
+                            <div>
+                                <button class="btn btn-primary" id="trainstart-btn" >Start</button>
+                            </div>
+                        </div>
+                        <div class="form-group mb-2 col">
+                            현재 Threshold
+                            <input id="currentThreshold" type="text" class="text-center sensor-no" value="{{ current_threshold }}" disabled style="margin-left: 0.5em; border-radius: 4px; border:solid 1px #5e6e82">
+                        </div>
+
+                        <div class="form-group mb-2 col">
+                            Threshold 변경
+                            <input id="changeThreshold" type="text" class="text-center threshold-std" value="" style="margin-left: 0.5em; border-radius: 4px; border:solid 1px #5e6e82">
+                        </div>
                     </div>
                     <div class="col-lg">
                         <div>
-                            <button class="btn btn-primary" id="trainstart-btn" >Start</button>
-                            <!-- <button class="btn-primary" id="test-btn">test</button> -->
+                            <button class="btn btn-primary" id="threshold-btn" >확인</button>
                         </div>
                     </div>
                 </div>

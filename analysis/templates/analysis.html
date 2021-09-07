@@ -1,20 +1,168 @@
-{% extends 'layouts/base.html' %}
-{% load static %}
-{% block title %}training{% endblock %}
+{% extends 'layouts/base.html' %} {% load static %} {% block title %}training
+{%endblock %}
 <!-- Specific Page CSS goes HERE  -->
-{% block stylesheets %}{% endblock stylesheets %}
-
-{% block content %}
+{% block stylesheets %}<link
+  rel="stylesheet"
+  href="{% static 'assets/css/analysis.css' %}"
+/>
+{% endblock stylesheets %} {% block content %}
 <main class="main" id="top">
-    <div class="container-fluid">
-      <div class="row min-vh-100 flex-center g-0">
+  <div class="container-fluid">
+    <div class="row g-3 mb-3">
+      <div class="col-lg-3">
+        <div class="card h-100">
+          <div class="card-header d-flex flex-between-center bg-light py-3">
+            <h6 class="mb-0">Monitoring</h6>
+          </div>
+          <div class="card-body pb-1">
+            <ul style="padding: 0">
+              <li>
+                <a
+                  class="btn"
+                  data-bs-toggle="collapse"
+                  href="#eqipment"
+                  role="button"
+                  aria-controls="false"
+                  aria-controls="eqipment"
+                >
+                  <div class="cricle"></div>
+                  <sapn class="list-title">장비: </sapn
+                  ><a class="dropdown-indicator dropdown"></a>
+                </a>
+                <ul class="collapse multi-collapse" id="eqipment">
+                  <li>
+                    <a
+                      class="btn"
+                      data-bs-toggle="collapse"
+                      href="#chamber"
+                      role="button"
+                      aria-controls="false"
+                      aria-controls="chamber"
+                    >
+                      <span class="list-title">챔버: </span
+                      ><a class="dropdown-indicator dropdown"></a
+                    ></a>
+                    <ul class="collapse multi-collapse" id="chamber">
+                      <li class="recipe-text">
+                        <div class="cricle inner"></div>
+
+                        <ul style="padding: 0">
+                          recipe
+                          <li>
+                            <button
+                              class="senser-btn"
+                              id="{{ i.id }}"
+                              type="button"
+                              onclick="execute_Monitoring();"
+                            >
+                              recipe
+                            </button>
+                          </li>
+                        </ul>
+                      </li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-9">
+        <div class="card mb-3">
+          <div class="card-header d-flex flex-between-center bg-light py-3">
+            <h6 class="mb-0">Analysis</h6>
+          </div>
+          <div class="card-body py-5 py-sm-3">
+            <div>
+              <form action="https://example.com">
+                <div class="row">
+                  <div class="col-7">
+                    <label>
+                      <span class="list-title period">기간: </span>
+                      <input
+                        type="date"
+                        name="first-day"
+                        id="currentDate-first"
+                      />
+                      -
+                      <input type="date" name="end-day" id="currentDate-end" />
+                    </label>
+                  </div>
+                  <div class="col-5">
+                    <p>
+                      <button class="btn btn-secondary" id="submit-btn">
+                        Submit
+                      </button>
+                    </p>
+                  </div>
+                </div>
+              </form>
+            </div>
+            <div class="row text-center">
+              <div class="col">
+                <button class="btn btn-primary">정상</button>
+              </div>
+              <div class="col">
+                <button class="btn btn-primary">이상</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <div class="card">
+              <div class="card-header d-flex flex-between-center">
+                <h6 class="mb-0">Grape</h6>
+              </div>
+              <div class="card-body"></div>
+            </div>
+          </div>
+          <!-- <div class="col">
+            <div class="card">
+              <div class="card-header d-flex flex-between-center">
+                <h6 class="mb-0">Grape</h6>
+              </div>
+              <div class="card-body"></div>
+            </div>
+          </div> -->
+        </div>
+      </div>
+      <div class="col-lg">
+        <div class="card h-100">
+          <div class="card-header d-flex flex-between-center bg-light py-3">
+            <h6 class="mb-0">Warning List</h6>
+          </div>
+          <div class="card-body pb-3" style="margin: 0 2em 0 2em">
+            <div
+              class="row text-center border-sm-bottom pb-2"
+              style="font-weight: 700"
+            >
+              <div class="col">Date</div>
+              <div class="col">제품명</div>
+            </div>
+            <table
+              id="anomalies_list"
+              style="width: 100%; margin-top: 1em"
+            ></table>
+          </div>
+        </div>
       </div>
     </div>
+  </div>
 </main>
 {% endblock %}
 
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
-<script src="{% static 'jsmeta/monitoring/script_user_register.js' %}"></script> 
+<script src="{% static 'jsmeta/monitoring/script_user_register.js' %}"></script>
+<script>
+  document.getElementById("currentDate-first").value = new Date()
+    .toISOString()
+    .substring(0, 10);
+  document.getElementById("currentDate-end").value = new Date()
+    .toISOString()
+    .substring(0, 10);
+</script>
 
 {% endblock javascripts %}

@@ -47,11 +47,19 @@
   margin: 20px 10px;
   box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.3);
 }
+.input-box {
+  margin-left: 0.5em;
+  border-radius: 4px;
+  border: solid 1px #5e6e82;
+}
 #trainstart-btn {
-  display: flex;
-  float: right;
   margin: 0 20px 15px 0;
   padding: 5px 15px;
+}
+#threshold-btn {
+  font-weight: 600;
+  margin: 0 20px 15px 0;
+  padding: 5px 21px;
 }
 #leftBtn,
 #rightBtn {

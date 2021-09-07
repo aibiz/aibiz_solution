@@ -1,13 +1,13 @@
 from django.views.generic import View
 from django.shortcuts import render
-from config.models import mmDataset
+from config.models import mmDataset, mmModel
 import json
 import os
 from django.http import HttpRequest, JsonResponse
 import datetime
 import pandas
-# from aiengine.learning_code import learn_anomaly
-# from aiengine.test_code import test_anomaly
+from aiengine.learning_code import learn_anomaly
+from aiengine.test_code import test_anomaly
 
 
 def training_main(request):
@@ -42,8 +42,8 @@ def start_training(request):
     print("path::", trainStaticPath, testStaticPath)
     print(trainDataId, testDataId, sensorNo, thresholdStd)
     if ((trainDataId != 'Null') & (testDataId != 'Null')):
-        # learn_anomaly(sensorNo, thresholdStd, trainStaticPath)
-        # test_anomaly(sensorNo, testStaticPath, trainStaticPath)
+        learn_anomaly(sensorNo, thresholdStd, trainStaticPath)
+        test_anomaly(sensorNo, testStaticPath, trainStaticPath)
         print("!!!!!!!!!!!!!End Training!!!!!!!!!!!!!")
     else:
         print("testdata, traindata모두 입력하세요.")
@@ -53,7 +53,6 @@ def start_training(request):
 def graphing_training(request):
     context = {}
 
-    rsData = request.POST
     rsData = json.loads(request.body.decode("utf-8"))
 
     rootpath = os.getcwd()
@@ -71,7 +70,6 @@ def graphing_training(request):
 
 
     if(os.path.isfile(trainingAnomalyFile) & os.path.isfile(trainingAnomalyFile) & os.path.isfile(testAnomalyFile)):
-
         # dir = testStaticPath + '/after_test/anomalies/'
         #3번그래프 데이터처리
         file_list = os.listdir(testAnomalyList)
@@ -79,17 +77,19 @@ def graphing_training(request):
         #   파일을 수정시간순으로 정렬
         for i in range(0, len(file_list)) :
             for j in range(0, len(file_list)) :
-                if datetime.datetime.fromtimestamp(os.stat(testAnomalyList + file_list[i]).st_mtime) < datetime.datetime.fromtimestamp(os.stat(testAnomalyList + file_list[j]).st_mtime) :
+                if datetime.datetime.fromtimestamp(os.stat(testAnomalyList + file_list[i]).st_mtime) \
+                        < datetime.datetime.fromtimestamp(os.stat(testAnomalyList + file_list[j]).st_mtime) :
                     (file_list[i], file_list[j]) = (file_list[j], file_list[i])
         #   파일 리스트 전체의 csv파일 데이터를 읽어들여와 List 형식으로 변환(전체파일)
         for k in file_list :
             data = pandas.read_csv(testAnomalyList + k, header = None)
             data = data.values.tolist()
             csv_list.append([k, data])
+
         #threshold
         thresholdpd = pandas.read_csv(thresholdFile, header=None)
-        threshold = pandas.DataFrame('thresholdpd').loc[0, 0]
-
+        threshold = pandas.DataFrame(thresholdpd).loc[0, 0]
+        print("threshold:::", threshold)
         context = {
             'anomalies_list': file_list,
             'csv_list' : csv_list,
@@ -99,6 +99,10 @@ def graphing_training(request):
             'train_anomaly_score' : convert_data(trainingAnomalyFile, 1),
             'test_anomaly_score' : convert_data(testAnomalyFile, 1)
         }
+
+        # mmModel.objects.create(
+        #
+        # )
         # context['status_loss'] = convert_data(trainingStatusFile, 0)[0]
         # context['status_val_loss'] = convert_data(trainingStatusFile, 0)[1]
         # context['train_anomaly_score'] = convert_data(trainingAnomalyFile, 1)

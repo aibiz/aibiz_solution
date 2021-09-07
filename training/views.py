@@ -87,7 +87,7 @@ def graphing_training(request):
             data = data.values.tolist()
             csv_list.append([k, data])
         #threshold
-        thresholdpd = pandas.read_csv('thresholdFile', header=None)
+        thresholdpd = pandas.read_csv(thresholdFile, header=None)
         threshold = pandas.DataFrame('thresholdpd').loc[0, 0]
 
         context = {

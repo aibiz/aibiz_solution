@@ -47,6 +47,20 @@
   margin: 20px 10px;
   box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.3);
 }
-#traintart-btn {
+#trainstart-btn {
+  display: flex;
+  float: right;
+  margin: 0 20px 15px 0;
+  padding: 5px 15px;
+}
+#leftBtn,
+#rightBtn {
   border: none;
+  border-radius: 0.2rem;
+  background-color: #fff;
+  color: #4d5969;
+  font-size: 0.875rem;
+  margin-left: 5px;
+  padding: 3px 12px;
+  height: fit-content;
 }

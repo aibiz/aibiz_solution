@@ -32,8 +32,8 @@ function upload(){
             }
             else {
                 alert(result.message);
-                location.reload(true);
             }
+            location.reload(true);
         }
     });
 }

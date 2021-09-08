@@ -45,7 +45,7 @@ def start_training(request):
         learn_anomaly(sensorNo, thresholdStd, trainStaticPath)
         test_anomaly(sensorNo, testStaticPath, trainStaticPath)
         mmModel.objects.create(
-            
+            #모델db 생성데이터
         )
         print("!!!!!!!!!!!!!End Training!!!!!!!!!!!!!")
     else:
@@ -59,7 +59,6 @@ def graphing_training(request):
     rsData = json.loads(request.body.decode("utf-8"))
 
     rootpath = os.getcwd()
-
     trainStaticPath = rsData['trainStaticPath']
     trainStaticPath = rootpath + trainStaticPath
     trainingStatusFile = trainStaticPath + "/after_learning/plots/Training_status_loss.csv"
@@ -91,7 +90,9 @@ def graphing_training(request):
 
         #threshold
         thresholdpd = pandas.read_csv(thresholdFile, header=None)
-        threshold = round(pandas.DataFrame(thresholdpd).loc[0, 0], 5) * 1000
+        #      threshold 표시값 조정
+        forAdjustThshld = 1000
+        threshold = round(pandas.DataFrame(thresholdpd).loc[0, 0], 5) * forAdjustThshld
         print("threshold:::", threshold)
         context = {
             'anomalies_list': file_list,
@@ -102,17 +103,6 @@ def graphing_training(request):
             'train_anomaly_score' : convert_data(trainingAnomalyFile, 1),
             'test_anomaly_score' : convert_data(testAnomalyFile, 1)
         }
-
-        # mmModel.objects.create(
-        #
-        # )
-        # context['status_loss'] = convert_data(trainingStatusFile, 0)[0]
-        # context['status_val_loss'] = convert_data(trainingStatusFile, 0)[1]
-        # context['train_anomaly_score'] = convert_data(trainingAnomalyFile, 1)
-        # context['test_anomaly_score'] = convert_data(testAnomalyFile, 1)
-
-        # print("status_loss'", context['status_loss'])
-        # print("test_anomaly_score", context['test_anomaly_score'])
         context['state'] = "True"
         return JsonResponse(context, content_type='application/json')
     else :

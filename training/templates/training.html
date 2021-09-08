@@ -129,7 +129,7 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="footer-btn">확인</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">확인</button>
                             {# <button type="button" class="btn btn-primary" ">Save changes</button>#}
                         </div>
                     </div>
@@ -199,11 +199,8 @@
                                     <input type="hidden" id="selectedTestpathHidden" value="Null">
                                 </div>
                             </div>
-
-
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="footer-btn">확인</button>
-                                {# <button type="button" class="btn btn-primary" >Save changes</button>#}
                             </div>
                         </div>
                     </div>
@@ -240,7 +237,7 @@
     
                             <div class="form-group mb-2 col">
                                 Threshold 변경
-                                <input id="changeThreshold" type="text" class="text-center input-box" value="" >
+                                <input id="adjustThreshold" type="text" class="text-center input-box" value="" >
                             </div>
                         
                             <div class="col-lg">
@@ -292,7 +289,6 @@
                             </div>
                         </div>
                     </div>
-                    
                 </div>
            
             <div class="col">
@@ -320,12 +316,12 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         {#    모달관련js #}
-        var myModal = document.getElementById('myModal')
-        var myInput = document.getElementById('myInput')
-
-        myModal.addEventListener('shown.bs.modal', function () {
-            myInput.focus()
-        })
+{#        var myModal = document.getElementById('myModal')#}
+{#        var myInput = document.getElementById('myInput')#}
+{##}
+{#        myModal.addEventListener('shown.bs.modal', function () {#}
+{#            myInput.focus()#}
+{#        })#}
     </script>
 
     <script>
@@ -376,28 +372,35 @@
         });
     </script>
 
-{#    <script>#}
-        {#     graphing test용       #}
-{#        const button2 = document.getElementById('test-btn');#}
-{#        button2.addEventListener('click', async _ => {#}
-{#            try {#}
-{#                var trainStaticPath = document.getElementById('selectedTrainpathHidden').value;#}
-{#                var testStaticPath = document.getElementById('selectedTestpathHidden').value;#}
-{##}
-{#                const response = await fetch('training/graphing', {#}
-{#                    method: 'POST',#}
-{#                    headers: { "X-CSRFToken": getCookie("csrftoken") },#}
-{#                    body: JSON.stringify({#}
-{#                        trainStaticPath : trainStaticPath,#}
-{#                        testStaticPath : testStaticPath#}
-{#                    })#}
-{#                });#}
-{#                console.log('Completed!', response);#}
-{#            } catch(err) {#}
-{#                console.error(`Error: ${err}`);#}
-{#            }#}
-{#        });#}
-{#    </script>#}
+    <script>
+        const button2 = document.getElementById('threshold-btn');
+
+            button2.addEventListener('click', async _ => {
+                try {
+
+                    console.log("ddddddddd in in")
+                    if (document.getElementById('currentThreshold').value != "") {
+                        console.log("111111111dd1")
+                        var trainStaticPath = document.getElementById('selectedTrainpathHidden').value;
+                        var adjustThreshold = document.getElementById('adjustThreshold').value;
+                        {#var currentThreshold = document.getElementById('')#}
+
+                        const response = await fetch('training/adjust_threshold', {
+                            method: 'POST',
+                            headers: {"X-CSRFToken": getCookie("csrftoken")},
+                            body: JSON.stringify({
+                                trainStaticPath: trainStaticPath,
+                                adjustThreshold: adjustThreshold
+                            })
+                        });
+                        console.log('Completed!', response);
+                    }
+                } catch (err) {
+                    console.error(`Error: ${err}`);
+                }
+                console.log("aaaaaa")
+            });
+    </script>
 
     <script>
         var canvas1 = document.getElementById('canvas1').getContext('2d');
@@ -505,7 +508,6 @@
                     }
                 }
             });
-
             //5초 간격으로 하여 디렉토리 파일 리스트 호출 및 csv data 호출(간격 조정 필요한경우 수치 데이터 조정)
             timer = setTimeout("executeMonitoring()", 5000);
         }

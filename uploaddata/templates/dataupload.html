@@ -1,5 +1,6 @@
 {% extends 'layouts/base.html' %}
 {% load static %}
+{% load humanize %}
 
 <!-- Specific Page CSS goes HERE  -->
 {% block stylesheets %}{% endblock stylesheets %}
@@ -64,7 +65,7 @@
             </div>
           </div>
           <div class="col-4">
-            <h3>버젼</h3>
+            <h3>개정</h3>
               <div class="form-floating">
                 <select class="form-select" id="revisionSelect" aria-label="Floating label select example" onchange="location.href='?equip_name={{equip_name}}&chamber_name={{chamber_name}}&recipe_name={{recipe_name}}&revision_no='+this.value">
                   {% if rsRevision %}
@@ -97,14 +98,32 @@
           </div>
           <form id="UploadForm" method="post" action="/uploaddata">
             {% csrf_token %}
+            <input type="hidden" name="equip_name" value="{{equip_name}}"/>
+            <input type="hidden" name="chamber_name" value="{{chamber_name}}"/>
+            <input type="hidden" name="recipe_name" value="{{recipe_name}}"/>
+            <input type="hidden" name="revision_no" value="{{revision_no}}"/>
+            <input type="hidden" name="data_cnt" value="{{data_cnt}}"/>
+
           <div class="row">
             <div class="col-lg-2">
               <div class="form-check form-check-inline">
-                <input class="form-check-input" id="inlineRadio1" type="radio" name="inlineRadioOptions" value="train_data" checked=""/>
+                {% if purpose == 'TRN' %}
+                <input class="form-check-input" id="inlineRadio1" type="radio" name="inlineRadioOptions" value="train_data" checked="" 
+                onchange="location.href='?equip_name={{equip_name}}&chamber_name={{chamber_name}}&recipe_name={{recipe_name}}&revision_no={{revision_no}}&type='+this.value"/>
+                {% else %}
+                <input class="form-check-input" id="inlineRadio1" type="radio" name="inlineRadioOptions" value="train_data"
+                onchange="location.href='?equip_name={{equip_name}}&chamber_name={{chamber_name}}&recipe_name={{recipe_name}}&revision_no={{revision_no}}&type='+this.value"/>
+                {% endif %}
                 <label class="form-check-label" for="inlineRadio1">Train</label>
               </div>
               <div class="form-check form-check-inline">
-                <input class="form-check-input" id="inlineRadio2" type="radio" name="inlineRadioOptions" value="test_data" />
+                {% if purpose == 'TST' %}
+                <input class="form-check-input" id="inlineRadio2" type="radio" name="inlineRadioOptions" value="test_data" checked=""
+                onchange="location.href='?equip_name={{equip_name}}&chamber_name={{chamber_name}}&recipe_name={{recipe_name}}&revision_no={{revision_no}}&type='+this.value"/>
+                {% else %}
+                <input class="form-check-input" id="inlineRadio2" type="radio" name="inlineRadioOptions" value="test_data"
+                onchange="location.href='?equip_name={{equip_name}}&chamber_name={{chamber_name}}&recipe_name={{recipe_name}}&revision_no={{revision_no}}&type='+this.value"/>
+                {% endif %}
                 <label class="form-check-label" for="inlineRadio2">Test</label>
               </div>
             </div>
@@ -114,40 +133,12 @@
                 </div>
             </div>
             <div class='col-lg-2'>
-              <button class="btn btn-falcon-default btn-sm mt-2" type="button" onclick="showModal()">등록</button>
+              <button class="btn btn-falcon-default btn-sm mt-2" type="button" onclick="upload()">등록</button>
             </div>
           </div>
         </form>
         </div>
     </div>
-    
-    <div class="modal fade" id="directory-modal" tabindex="-1" role="dialog" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered" role="document" style="max-width: 500px">
-        <div class="modal-content position-relative">
-          <div class="position-absolute top-0 end-0 mt-2 me-2 z-index-1">
-            <button class="btn-close btn btn-sm btn-circle d-flex flex-center transition-base" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body p-0">
-            <div class="rounded-top-lg py-3 ps-4 pe-6 bg-light">
-              <h4 class="mb-1" id="modalExampleDemoLabel">폴더</h4>
-            </div>
-            <div class="p-4 pb-0">
-              <form>
-                <div class="mb-3">
-                  <label class="col-form-label" for="directory-name">폴더 명:</label>
-                  <input class="form-control" id="directory-name" type="text" />
-                </div>
-              </form>
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Close</button>
-            <button class="btn btn-primary" type="button" onclick="upload()">OK </button>
-          </div>
-        </div>
-      </div>
-    </div>
-    
     
       <div class="card-body py-0">
         <div class="tab-content">
@@ -167,7 +158,7 @@
                         <th class="align-middle">Name</th>
                         <th class="align-middle">Path</th>
                         <th class="align-middle">Sample 수</th>
-                        <th class="align-middle">Size</th>
+                        <th class="align-middle">Size(bytes)</th>
                       </tr>
                     </thead>
                     <tbody id="bulk-select-body">
@@ -183,7 +174,7 @@
                         <td class="align-middle">{{ i.data_name }}</td>
                         <td class="align-middle">{{ i.data_static_path}}</td>
                         <td class="align-middle">{{ i.data_cnt }}</td>
-                        <td class="align-middle">{{ i.data_size }}</td>
+                        <td class="align-middle">{{ i.data_size | intcomma }}</td>
                       </tr>
                     {% endfor %}
                     {% endif %}

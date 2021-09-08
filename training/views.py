@@ -6,8 +6,8 @@ import os
 from django.http import HttpRequest, JsonResponse
 import datetime
 import pandas
-from aiengine.learning_code import learn_anomaly
-from aiengine.test_code import test_anomaly
+# from aiengine.learning_code import learn_anomaly
+# from aiengine.test_code import test_anomaly
 
 
 def training_main(request):
@@ -41,11 +41,12 @@ def start_training(request):
     thresholdStd = int(rsData['thresholdStd'])
     print("path::", trainStaticPath, testStaticPath)
     print(trainDataId, testDataId, sensorNo, thresholdStd)
-    if ((trainDataId != 'Null') & (testDataId != 'Null')):
-        learn_anomaly(sensorNo, thresholdStd, trainStaticPath)
-        test_anomaly(sensorNo, testStaticPath, trainStaticPath)
+    if (trainDataId != 'Null') & (testDataId != 'Null'):
+        # learn_anomaly(sensorNo, thresholdStd, trainStaticPath)
+        # test_anomaly(sensorNo, testStaticPath, trainStaticPath)
         mmModel.objects.create(
             #모델db 생성데이터
+
         )
         print("!!!!!!!!!!!!!End Training!!!!!!!!!!!!!")
     else:
@@ -70,9 +71,7 @@ def graphing_training(request):
     testAnomalyFile = testStaticPath + "/after_test/plots/test_anomaly_score.csv"
     testAnomalyList = testStaticPath + '/after_test/anomalies/'
 
-
-    if(os.path.isfile(trainingAnomalyFile) & os.path.isfile(trainingAnomalyFile) & os.path.isfile(testAnomalyFile)):
-        # dir = testStaticPath + '/after_test/anomalies/'
+    if os.path.isfile(trainingAnomalyFile) & os.path.isfile(trainingAnomalyFile) & os.path.isfile(testAnomalyFile):
         #3번그래프 데이터처리
         file_list = os.listdir(testAnomalyList)
         csv_list = []
@@ -94,29 +93,40 @@ def graphing_training(request):
         forAdjustThshld = 1000
         threshold = round(pandas.DataFrame(thresholdpd).loc[0, 0], 5) * forAdjustThshld
         print("threshold:::", threshold)
-        context = {
-            'anomalies_list': file_list,
-            'csv_list' : csv_list,
-            'current_threshold' : threshold,
-            'status_loss' : convert_data(trainingStatusFile, 0)[0],
-            'status_val_loss' : convert_data(trainingStatusFile, 0)[1],
-            'train_anomaly_score' : convert_data(trainingAnomalyFile, 1),
-            'test_anomaly_score' : convert_data(testAnomalyFile, 1)
-        }
-        context['state'] = "True"
+        context = {'anomalies_list': file_list, 'csv_list': csv_list, 'current_threshold': threshold,
+                   'status_loss': convert_data(trainingStatusFile, 0)[0],
+                   'status_val_loss': convert_data(trainingStatusFile, 0)[1],
+                   'train_anomaly_score': convert_data(trainingAnomalyFile, 1),
+                   'test_anomaly_score': convert_data(testAnomalyFile, 1), 'state': "True"}
         return JsonResponse(context, content_type='application/json')
     else :
         context['state'] = "False"
         return JsonResponse(context, content_type='application/json')
 
+def adjust_threshold(request):
+    context = {}
+    rsData = json.loads(request.body.decode("utf-8"))
+    print(rsData)
+
+    rootpath = os.getcwd()
+    trainStaticPath = rsData['trainStaticPath']
+    thresholdFile = rootpath + trainStaticPath + "/after_learning/test_input/threshold.txt"
+    print(thresholdFile)
+
+    file = open(thresholdFile, 'w')
+    adjustThreshold = rsData['adjustThreshold']
+    file.write(adjustThreshold)
+    file.close()
+
+    return JsonResponse(context, content_type='application/json')
 
 def convert_data(file, mthd):
     data = pandas.read_csv(file, header=None, encoding='cp949')
     # 1차원 수직행렬의 경우만 mthd = 1
-    if(mthd == 1):
+    if mthd == 1:
         data.transpose()
     data = data.values.tolist()
-    if(mthd == 1):
+    if mthd == 1:
         data = sum(data, [])
     return data
 

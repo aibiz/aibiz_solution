@@ -127,7 +127,11 @@ class DataUploadView(LoginRequiredMixin, View):
                 # csv파일 개수
                 csv_cnt = 0
                 with zipfile.ZipFile(f'{path}/{filename}', 'r') as zipObj:
-                    listOfFileNames = zipObj.namelist() 
+                    listOfFileNames = zipObj.namelist()
+                    inner_dir_name = listOfFileNames[0][:-1]
+                    if inner_dir_name != filename_name:
+                        os.remove(f'{path}/{filename}')
+                        raise Exception('zip파일 명과 zip파일 내 폴더명을 일치 시켜주세요.')
                     for fileName in listOfFileNames:
                         if fileName.endswith("csv"):
                             csv_cnt += 1
@@ -139,7 +143,10 @@ class DataUploadView(LoginRequiredMixin, View):
                         elif fileName.endswith("pickle"):
                             zipObj.extract(fileName, f'{path}')
                 
+                
                 os.remove(f'{path}/{filename}')
+                if os.path.exists(f'{path}/__MACOSX'):
+                    shutil.rmtree(f'{path}/__MACOSX')
                 os.rename(f'{path}/{filename_name}', f'{path}/{save_dir_name}')
                 #용량(바이트)
                 data_size = get_dir_size(f'{path}/{save_dir_name}')
@@ -156,10 +163,10 @@ class DataUploadView(LoginRequiredMixin, View):
                 )
 
         except Exception as e:
-            if os.path.exists(f'{path}/data{int(data_cnt)+1}'):
-                shutil.rmtree(f'{path}/data{int(data_cnt)+1}')
+            if os.path.exists(f'{path}/{save_dir_name}'):
+                shutil.rmtree(f'{path}/{save_dir_name}')
             context['success'] = False
-            context['message'] = '업로드 실패 파일을 확인해주세요.'
+            context['message'] = '업로드 실패! \n' + str(e)
             return JsonResponse(context, content_type='application/json')
 
         context['success'] = True

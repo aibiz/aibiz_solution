@@ -45,6 +45,7 @@ def start_training(request):
     if (trainDataId != 'Null') & (testDataId != 'Null'):
         learn_anomaly(sensorNo, thresholdStd, trainStaticPath)
         test_anomaly(sensorNo, testStaticPath, trainStaticPath)
+        
         # mmModel.objects.create(
         #     #모델db 생성데이터
         #

@@ -100,6 +100,7 @@ def graphing_training(request):
                    'train_anomaly_score': convert_data(trainingAnomalyFile, 1),
                    'test_anomaly_score': convert_data(testAnomalyFile, 1),
                    'state': "True"}
+        print("html-----------------")
         # print("!!!!!!!!!!!!!!!!!!!!!!", context['csv_list'])
         return JsonResponse(context, content_type='application/json')
     else:

@@ -45,7 +45,7 @@ def start_training(request):
     if (trainDataId != 'Null') & (testDataId != 'Null'):
         learn_anomaly(sensorNo, thresholdStd, trainStaticPath)
         test_anomaly(sensorNo, testStaticPath, trainStaticPath)
-        
+
         # mmModel.objects.create(
         #     #모델db 생성데이터
         #
@@ -100,7 +100,7 @@ def graphing_training(request):
                    'train_anomaly_score': convert_data(trainingAnomalyFile, 1),
                    'test_anomaly_score': convert_data(testAnomalyFile, 1),
                    'state': "True"}
-        print("!!!!!!!!!!!!!!!!!!!!!!", context['csv_list'])
+        # print("!!!!!!!!!!!!!!!!!!!!!!", context['csv_list'])
         return JsonResponse(context, content_type='application/json')
     else:
         context['state'] = "False"

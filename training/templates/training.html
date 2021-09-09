@@ -367,6 +367,8 @@
                     })
                 });
                 console.log('Completed!', response);
+                const trainstartBtn = document.getElementById('trainstart-btn');
+                        trainstartBtn.disabled = true;
             } catch(err) {
                 console.error(`Error: ${err}`);
             }
@@ -455,14 +457,13 @@
                 success: function (result) {
                     console.log(result)
 
-                    if (result['state']=='False'){
-                        const trainstartBtn = document.getElementById('trainstart-btn');
-                        trainstartBtn.disabled = true;
-                    }
-                    else{
+                    if (result['state']=='True'){
+                        // const trainstartBtn = document.getElementById('trainstart-btn');
+                        // trainstartBtn.disabled = true;
                         const trainstartBtn = document.getElementById('trainstart-btn');
                         trainstartBtn.disabled = false;
                     }
+                   
                     
 
                     var list = "";

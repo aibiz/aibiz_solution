@@ -168,20 +168,21 @@
 
         button.addEventListener('click', async _ => {
             try {
-                var url = 'analysis'
+                var url = 'analysis?'
                 var date_start = document.getElementById("date-start").value;
                 var date_end = document.getElementById("date-end").value;
 
-
-                const response = await fetch(url+'?'+ 'start_date='+ date_start + '&', {
-                    method: 'POST',
+                var querystr = new URLSearchParams({
+                   date_start: date_start,
+                   date_end: date_end
+                })
+                const response = await fetch(url + querystr, {
+                    method: 'GET',
                     headers: {"X-CSRFToken": getCookie("csrftoken")},
-                    body: JSON.stringify({
-                        date_start: date_start,
-                        date_end: date_end
+                    {#body: JSON.stringify({#}
+                    {#    date_start: date_start,#}
+                    {#    date_end: date_end#}
                         {#sensor_num#}
-
-                    })
                 });
                 console.log('Completed!', response);
             } catch (err) {

@@ -523,7 +523,10 @@
                 }
             });
             //5초 간격으로 하여 디렉토리 파일 리스트 호출 및 csv data 호출(간격 조정 필요한경우 수치 데이터 조정)
-            timer = setTimeout("executeMonitoring()", 5000);
+            if (result['state'] == 'True')
+            {
+                timer = setTimeout("executeMonitoring()", 5000);
+            }
         }
 
         function drawCharts() {

@@ -450,7 +450,7 @@
                     console.log(error.toString());
 
                     const trainstartBtn = document.getElementById('trainstart-btn');
-                    trainstartBtn.disabled = true;
+                    trainstartBtn.disabled = false;
                 },
                 success: function (result) {
                     console.log(result)
@@ -515,14 +515,7 @@
                         // 4번 차트 데이터
                         testAnomalyAcore = result.test_anomaly_score; // 1차원 배열
                         
-                        //button
-                        const trainstartBtn = document.getElementById('trainstart-btn');
-                        trainstartBtn. disabled=true;
-                        // trainstartBtn.addEventListener('click',{
-                        //     if 
-                        // })
-                       
-                    $('#threshold-btn').fadeOut();
+                     
                         drawCharts()
                     };
                 }

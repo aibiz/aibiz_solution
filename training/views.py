@@ -72,7 +72,7 @@ def graphing_training(request):
     testAnomalyFile = testStaticPath + "/after_test/plots/test_anomaly_score.csv"
     testAnomalyList = testStaticPath + '/after_test/anomalies/'
 
-    if os.path.isfile(trainingAnomalyFile) & os.path.isfile(trainingAnomalyFile) & os.path.isfile(testAnomalyFile):
+    if os.path.isfile(trainingStatusFile) & os.path.isfile(testAnomalyFile):
         #3번그래프 데이터처리
         file_list = os.listdir(testAnomalyList)
         csv_list = []
@@ -80,7 +80,7 @@ def graphing_training(request):
         for i in range(0, len(file_list)):
             for j in range(0, len(file_list)):
                 if datetime.datetime.fromtimestamp(os.stat(testAnomalyList + file_list[i]).st_mtime) \
-                        < datetime.datetime.fromtimestamp(os.stat(testAnomalyList + file_list[j]).st_mtime) :
+                        < datetime.datetime.fromtimestamp(os.stat(testAnomalyList + file_list[j]).st_mtime):
                     (file_list[i], file_list[j]) = (file_list[j], file_list[i])
         #   파일 리스트 전체의 csv파일 데이터를 읽어들여와 List 형식으로 변환(전체파일)
         for k in file_list:
@@ -129,12 +129,10 @@ def convert_data(file, mthd):
     elif mthd == 1:
         data = data.iloc[:, 0]
         data = round(data, 5)
-        # data.transpose()
         data = data.tolist()
         data = Counter(data)
         data = sorted(data.items())
         data = dict(data)
-        print(data)
     return data
 
 

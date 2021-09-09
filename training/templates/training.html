@@ -227,7 +227,7 @@
                                 <div>
                                     <button class="btn btn-primary loaded" id="trainstart-btn" 
                                     onclick="this.classList.toggle('button--loading')">
-                                    <span class="button__text">Start</span></button>
+                                    <span class="button__text" >Start</span></button>
                                 </div>
                             </div>
                         </div>
@@ -448,8 +448,23 @@
                 error: function (request, status, error) {
                     //alert("code:"+request.status+"\n"+"error:"+error);
                     console.log(error.toString());
+
+                    const trainstartBtn = document.getElementById('trainstart-btn');
+                    trainstartBtn.disabled = true;
                 },
                 success: function (result) {
+                    console.log(result)
+
+                    if (result['state']=='False'){
+                        const trainstartBtn = document.getElementById('trainstart-btn');
+                        trainstartBtn.disabled = true;
+                    }
+                    else{
+                        const trainstartBtn = document.getElementById('trainstart-btn');
+                        trainstartBtn.disabled = false;
+                    }
+                    
+
                     var list = "";
                     var file_Name;
                     var date = "";
@@ -500,7 +515,14 @@
                         // 4번 차트 데이터
                         testAnomalyAcore = result.test_anomaly_score; // 1차원 배열
                         
-            $('#threshold-btn').fadeOut();
+                        //button
+                        const trainstartBtn = document.getElementById('trainstart-btn');
+                        trainstartBtn. disabled=true;
+                        // trainstartBtn.addEventListener('click',{
+                        //     if 
+                        // })
+                       
+                    $('#threshold-btn').fadeOut();
                         drawCharts()
                     };
                 }

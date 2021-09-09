@@ -399,11 +399,7 @@
             });
     </script>
 
-    <script>
-        $(window).load(function(){
-            $('.button--loading').fadeOut();
-        })
-    </script>
+  
 
     <script>
         var canvas1 = document.getElementById('canvas1').getContext('2d');
@@ -503,7 +499,9 @@
 
                         // 4번 차트 데이터
                         testAnomalyAcore = result.test_anomaly_score; // 1차원 배열
-
+                        
+            $('.button--loading').fadeOut();
+        })
                         drawCharts();
                     }
                 }

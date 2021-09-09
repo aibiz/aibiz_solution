@@ -377,13 +377,9 @@
 
             button2.addEventListener('click', async _ => {
                 try {
-
-                    console.log("ddddddddd in in")
                     if (document.getElementById('currentThreshold').value != "") {
-                        console.log("111111111dd1")
                         var trainStaticPath = document.getElementById('selectedTrainpathHidden').value;
                         var adjustThreshold = document.getElementById('adjustThreshold').value;
-                        {#var currentThreshold = document.getElementById('')#}
 
                         const response = await fetch('training/adjust_threshold', {
                             method: 'POST',
@@ -398,7 +394,6 @@
                 } catch (err) {
                     console.error(`Error: ${err}`);
                 }
-                console.log("aaaaaa")
             });
     </script>
 
@@ -434,7 +429,6 @@
             var trainStaticPath = document.getElementById('selectedTrainpathHidden').value;
             var testStaticPath = document.getElementById('selectedTestpathHidden').value;
             var url = 'training/graphing';
-
             $.ajax({
                 type: 'POST',
                 url: url,
@@ -479,10 +473,8 @@
 
                     $("#anomalies_list").append(list);
 
-
                     if (result['state'] == 'True') {
                         console.log(result);
-
 
                         $('#currentThreshold').val(result.current_threshold)
                         // 1번 차트 데이터

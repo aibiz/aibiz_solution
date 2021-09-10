@@ -714,8 +714,8 @@
         if (idx !== -1) gridLinesColorArray[idx] = 'red';
 
         console.log(gridLinesColorArray);
-        // chart.options.scales.xAxes[0].gridLines.color = gridLinesColorArray;
-        console.log("aa", chart2.options.scales.grid.color);
+        chart.options.scales.grid.color = gridLinesColorArray;
+        chart.options.scales.grid.color[0] = 'red';
     }
 </script>
 

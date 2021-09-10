@@ -593,8 +593,6 @@
                     },
                     xAxes: {
                         id: "train_anomalies_x",
-                        grid: {
-                        },
                     },
                 }
             },
@@ -702,11 +700,9 @@
         );
     }
 
-
-
     function setBranchLine(chart, xValue) {
         let gridLinesColorArray = [];
-        for(let i=0; i<chart.data.labels.length; i++) gridLinesColorArray[i] = '#888888';
+        for(let i=0; i<chart.data.labels.length; i++) gridLinesColorArray[i] = '#E0E0E0';
 
         let idx = chart.data.labels.indexOf(xValue.toString());
         if (idx !== -1) gridLinesColorArray[idx] = 'red';

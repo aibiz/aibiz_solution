@@ -244,8 +244,6 @@
         });
 
         function drawNormalChart(dataList) {
-            if(isNormalChart)   return;
-
             var datasets = dataList.map(
                 function dataMap(value, index, array) {
                     normalDataMaxIndex =
@@ -275,8 +273,6 @@
         }
 
         function drawAnomalyChart(statusLoss, statusValLoss) {
-            if(isAnomalyChart)  return;
-
             var statusLossDatSets = statusLoss.map(
                 (value) => dataset(value, '', false, 'black', null, 1)
             );
@@ -350,6 +346,8 @@
         }
 
         function normalBtnClick() {
+            if(isNormalChart)  return;
+
             chart1.destroy();
 
             drawNormalChart(isNormalized ? normalizedDataArray : normalDataArray);
@@ -359,6 +357,8 @@
         }
 
         function anomalyBtnClick() {
+            if(isAnomalyChart)  return;
+
             chart1.destroy();
 
             isNormalized

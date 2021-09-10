@@ -252,11 +252,6 @@
                     datasets: datasets
                 },
                 options: {
-                    // scales: {
-                    //     legend: {
-                    //         display: false
-                    //     }
-                    // }
                 },
             });
         }
@@ -297,7 +292,11 @@
                     labels: xAxisOf(normalDataArray[normalDataMaxIndex]),
                     datasets: datasets
                 },
-                options: {},
+                options: {
+                    legend: {
+                        display: false
+                    }
+                },
             });
         }
 

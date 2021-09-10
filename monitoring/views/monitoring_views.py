@@ -1,9 +1,10 @@
 from django.views.generic import View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpRequest, JsonResponse
-from config.models import mmModel, mmDataset, mmRecipe
+from config.models import mmModel, mmDataset, mmRecipe, mhMonitoring
 from aiengine.monitoring_excute import Target
 from django.core.files.storage import FileSystemStorage
+from django.db import transaction
 
 from django.shortcuts import render, redirect, get_object_or_404
 
@@ -121,9 +122,26 @@ class run_monitoring(View):
 
         #mh_monitoring 테이블에 관련 데이터를 저장하기 위하여 mm_model 테이블에서 정보를 조회한 뒤 테이블에 입력한다
         dataset_id = mmDataset.objects.filter(equip_name=equip_name, chamber_name=chamber_name, recipe_name=recipe_name, purpose='TRN').values_list('id', flat=True)
-        model_id = mmModel.object.filter(dataset_id=dataset_id).values_list('id', flat=True)
-        model_id = data[len(model_id) - 1]
-        print(model_id)
+        dataset_id = dataset_id[len(dataset_id) - 1]
+        model_id = mmModel.objects.filter(dataset_id=dataset_id).values_list('id', flat=True)
+
+        if len(model_id) > 0:
+            model_id = model_id[len(model_id) - 1]
+        else:
+            model_id = 0
+
+        #경로는 우선 monitoring_anmalies만 지정..
+        try:
+            with transaction.atomic():
+                mhMonitoring.objects.create(
+                    model_id=model_id,
+                    warnlist_path=anomalies_path,
+                    user_id=request.user.id
+                )
+        except Exception as e:
+            context['success'] = False
+            context['message'] = 'DB 저장 작업에서 에러가 발생하였습니다!'
+            return JsonResponse(context, content_type='application/json')
 
         #test용으로 센서 번호만 이렇게..
         #sensor_cd = 2

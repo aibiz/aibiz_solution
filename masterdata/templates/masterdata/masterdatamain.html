@@ -32,6 +32,11 @@
         $("#data_list").empty();
 
         var i = "";
+
+        i = '<tr><td><button class="btn btn-falcon-default btn-sm mt-2" type="button" onclick="add_Recipe()">등록</button>';
+        $("#data_list").append(i);
+
+        i = "";
         i += "<tr>";
         i += '<th class="align-middle">ID</th>';
         i += '<th class="align-middle">Recipe Name</th>';
@@ -41,6 +46,7 @@
         i += "</tr>";
 
         $("#data_list").append(i);
+
 
         var url = '/master/recipefind';
 
@@ -173,6 +179,10 @@
                 $("#data_list").append(list);
             }
         });
+    }
+
+    function add_Recipe(){
+        location.href='/master/recipeinsert'
     }
 </script>
 {% endblock javascripts %}

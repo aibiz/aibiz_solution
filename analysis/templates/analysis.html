@@ -97,10 +97,13 @@
                             </div>
                             <div class="row text-center">
                                 <div class="col">
-                                    <button class="btn btn-primary">정상</button>
+                                    <button class="btn btn-primary" id="normal">정상</button>
                                 </div>
                                 <div class="col">
-                                    <button class="btn btn-primary">이상</button>
+                                    <button class="btn btn-primary" id="anomalies">이상</button>
+                                </div>
+                                <div class="col">
+                                    <button class="btn btn-primary" id="normailize">정규화</button>
                                 </div>
                             </div>
                         </div>
@@ -111,7 +114,9 @@
                                 <div class="card-header d-flex flex-between-center">
                                     <h6 class="mb-0">Grape</h6>
                                 </div>
-                                <div class="card-body"></div>
+                                <div class="card-body">
+                                    <canvas id="canvas"></canvas>
+                                </div>
                             </div>
                         </div>
                         <!-- <div class="col">
@@ -152,6 +157,23 @@
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
     <script>
+        // chart component
+        var canvas = document.getElementById('canvas').getContext('2d');
+        var chart1;
+
+        var normalDataArray = [];
+        var anomalyDataArray = [];
+        var normalizedDataArray = [];
+
+        var normalDataMaxLength = 0;
+        var anomalyDataMaxLength = 0;
+        var normalizedDataMaxLength = 0;
+
+        var normalBtn = document.getElementById('normal');
+        var anomalyBtn = document.getElementById('anomalies');
+        var normalizeBtn = document.getElementById('normalize');
+        var startBtn = document.getElementById('start-btn');
+
         document.getElementById("date-start").value = new Date()
             .toISOString()
             .substring(0, 10);
@@ -160,13 +182,7 @@
             .substring(0, 10);
     </script>
     <script>
-
-        console.log(document.getElementById("date-start").value)
-        console.log(document.getElementById("date-end").value)
-
-        const button = document.getElementById('start-btn');
-
-        button.addEventListener('click', async _ => {
+        startBtn.addEventListener('click', async _ => {
             try {
                 var url = 'analysis?'
                 var date_start = document.getElementById("date-start").value;
@@ -179,18 +195,34 @@
                 const response = await fetch(url + querystr, {
                     method: 'GET',
                     headers: {"X-CSRFToken": getCookie("csrftoken")},
-                    {#body: JSON.stringify({#}
-                    {#    date_start: date_start,#}
-                    {#    date_end: date_end#}
-                        {#sensor_num#}
                 });
-                var res = await response.json();
-                console.log(res);
+
+                var result = await response.json();
+
+                console.log(result);
                 console.log('Completed!', response);
+
+                normalDataArray = result.raw_data.map(
+                    (value) => value[1]
+                );
+                anomalyDataArray = result.anomaly_csvdata.map(
+                    (value) => value[1]
+                );
+                normalizedDataArray = result.normalized_data.map(
+                    (value) => value[1]
+                );
+
+                console.log(normalDataArray);
+                console.log(anomalyDataArray);
+                console.log(normalizedDataArray);
             } catch (err) {
                 console.error(`Error: ${err}`);
             }
         });
+
+        function drawCharts() {
+
+        }
     </script>
 
 {% endblock javascripts %}

@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.views.generic import View
 from django.http import HttpRequest, JsonResponse
 from config.models import mmRecipe, mmProblem, mmDataset
+from django.db import transaction
 
 class masterdatamain(View):
     def get(self, request: HttpRequest, *args, **kwargs):
@@ -39,30 +40,94 @@ class masterdatadatasetfind(View):
 
         return JsonResponse(context, content_type='application/json')
 
-class equipmentdatamodify(View):
+class recipedatainsert(View):
+    def get(self, request: HttpRequest, *args, **kwargs):
+        context = {}
+
+        return render(request, 'masterdata/recipedatainsert.html', context)
+
+class insert_recipe(View):
+    def post(self, request: HttpRequest, *args, **kwargs):
+        context = {}
+
+        try:
+            with transaction.atomic():
+                mmRecipe.objects.create(
+                    recipe_id=request.POST['recipe_id'],
+                    recipe_name=request.POST['recipe_name'],
+                    revision_no=request.POST['revision_no'],
+                    equip_name=request.POST['equip_name'],
+                    chamber_name=request.POST['chamber_name'],
+                    sensor_cd=request.POST['sensor_cd'],
+                    sensor_name=request.POST['sensor_name']
+                )
+        except:
+            context['success'] = False
+            context['message'] = "저장에 실패하였습니다."
+            return JsonResponse(context, content_type='application/json')
+
+        context['success'] = True
+        context['message'] = "저장되었습니다."
+
+        return JsonResponse(context, content_type='application/json')
+
+class recipedatamodify(View):
     def get(self, request: HttpRequest, *args, **kwargs):
         context = {}
 
         id = request.GET['id']
-        data = mmModel.objects.get(id=id)
+        data = mmRecipe.objects.get(id=id)
 
         context = {
             'data' : data
         }
 
-        return render(request, 'masterdata/equipdatamodify.html', context)
+        return render(request, 'masterdata/recipedatamodify.html', context)
 
-class update_equipment(View):
+class update_recipe(View):
     def post(self, request: HttpRequest, *args, **kwargs):
         context = {}
 
-        print(request.POST)
-        id = request.POST['id']
         id = request.POST['id']
 
-        data = mmDataset.objects.all()
-        print(data.values())
-        context['data'] = list(data.values())
+        try:
+            with transaction.atomic():
+                data = mmRecipe.objects.get(id=id)
+                data.recipe_id = request.POST['recipe_id']
+                data.recipe_name = request.POST['recipe_name']
+                data.revision_no = request.POST['revision_no']
+                data.equip_name = request.POST['equip_name']
+                data.chamber_name = request.POST['chamber_name']
+                data.sensor_cd = request.POST['sensor_cd']
+                data.sensor_name = request.POST['sensor_name']
+                data.save()
+        except:
+            context['success'] = False
+            context['message'] = "수정에 실패하였습니다."
+            return JsonResponse(context, content_type='application/json')
+
+        context['success'] = True
+        context['message'] = "수정되었습니다."
+
+        return JsonResponse(context, content_type='application/json')
+
+class delete_recipe(View):
+    def post(self, request: HttpRequest, *args, **kwargs):
+        context = {}
+
+        id = request.POST['id']
+
+        try:
+            with transaction.atomic():
+                data = mmRecipe.objects.get(id=id)
+                data.delete()
+        except:
+            context['success'] = False
+            context['message'] = "삭제에 실패하였습니다."
+            return JsonResponse(context, content_type='application/json')
+
+        context['success'] = True
+        context['message'] = "삭제되었습니다."
 
         return JsonResponse(context, content_type='application/json')
 
@@ -88,10 +153,11 @@ class update_problem(View):
         problem_note = request.POST['problem_note']
 
         try:
-            data = mmProblem.objects.get(id=id)
-            data.problem_name = problem_name
-            data.problem_note = problem_note
-            data.save()
+            with transaction.atomic():
+                data = mmProblem.objects.get(id=id)
+                data.problem_name = problem_name
+                data.problem_note = problem_note
+                data.save()
         except:
             context['success'] = False
             context['message'] = "수정에 실패하였습니다."
@@ -109,8 +175,9 @@ class delete_problem(View):
         id = request.POST['id']
 
         try:
-            data = mmProblem.objects.get(id=id)
-            data.delete()
+            with transaction.atomic():
+                data = mmProblem.objects.get(id=id)
+                data.delete()
         except:
             context['success'] = False
             context['message'] = "삭제에 실패하였습니다."
@@ -141,14 +208,15 @@ class update_dataset(View):
         id = request.POST['id']
 
         try:
-            data = mmDataset.objects.get(id=id)
-            data.equip_name = request.POST['equip_name']
-            data.chamber_name = request.POST['chamber_name']
-            data.recipe_name = request.POST['recipe_name']
-            data.data_static_path = request.POST['data_static_path']
-            data.purpose = request.POST['purpose']
-            data.data_name = request.POST['data_name']
-            data.save()
+            with transaction.atomic():
+                data = mmDataset.objects.get(id=id)
+                data.equip_name = request.POST['equip_name']
+                data.chamber_name = request.POST['chamber_name']
+                data.recipe_name = request.POST['recipe_name']
+                data.data_static_path = request.POST['data_static_path']
+                data.purpose = request.POST['purpose']
+                data.data_name = request.POST['data_name']
+                data.save()
         except:
             context['success'] = False
             context['message'] = "수정에 실패하였습니다."
@@ -166,8 +234,9 @@ class delete_dataset(View):
         id = request.POST['id']
 
         try:
-            data = mmDataset.objects.get(id=id)
-            data.delete()
+            with transaction.atomic():
+                data = mmDataset.objects.get(id=id)
+                data.delete()
         except:
             context['success'] = False
             context['message'] = "삭제에 실패하였습니다."

@@ -259,6 +259,8 @@
         // }
 
         function drawChart(normalList, anomalyList) {
+            maxXAxisLength = 0;
+
             var normalDataSets = isNormalChart
                 ? normalList.map(function dataMap(value) {
                     maxXAxisLength = maxXAxisLength > value.length

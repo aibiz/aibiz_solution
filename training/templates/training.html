@@ -507,7 +507,7 @@
 
                     // 2번 차트 데이터 (우상단)
                     trainAnomalyScoreXAxis = Object.keys(result.train_anomaly_score).map(
-                        (value) => Math.round((Number(value) * 1000000) / 1000)
+                        (value) => Math.round((Number(value).toFixed(5)) / 100
                     ); // 1차원 배열; // 1차원 배열
                     trainAnomalyScoreData = Object.values(result.train_anomaly_score); // 1차원 배열
 

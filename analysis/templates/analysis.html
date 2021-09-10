@@ -8,92 +8,133 @@
 {% endblock stylesheets %} {% block content %}
     <main class="main" id="top">
         <div class="container-fluid">
-            <div class="row g-3 mb-3">
-                <div class="col-lg-3">
-                    <div class="card h-100">
-                        <div class="card-header d-flex flex-between-center bg-light py-3">
-                            <h6 class="mb-0">Monitoring</h6>
-                        </div>
-                        <div class="card-body pb-1">
-                            <ul style="padding: 0">
-                                <li>
-                                    <a
-                                            class="btn"
-                                            data-bs-toggle="collapse"
-                                            href="#eqipment"
-                                            role="button"
-                                            aria-controls="false"
-                                            aria-controls="eqipment"
-                                    >
-                                        <div class="cricle"></div>
-                                        <sapn class="list-title">장비: </sapn
-                                        ><a class="dropdown-indicator dropdown"></a>
-                                    </a>
-                                    <ul class="collapse multi-collapse" id="equipment">
-                                        <li>
-                                            <a
-                                                    class="btn"
-                                                    data-bs-toggle="collapse"
-                                                    href="#chamber"
-                                                    role="button"
-                                                    aria-controls="false"
-                                                    aria-controls="chamber"
-                                            >
-                      <span class="list-title">챔버: </span
-                      ><a class="dropdown-indicator dropdown"></a
-                                            ></a>
-                                            <ul class="collapse multi-collapse" id="chamber">
-                                                <li class="recipe-text">
-                                                    <div class="cricle inner"></div>
 
-                                                    <ul style="padding: 0">
-                                                        recipe
-                                                        <li>
-                                                            <button
-                                                                    class="senser-btn"
-                                                                    id="{{ i.id }}"
-                                                                    type="button"
-                                                                    onclick="execute_Monitoring();"
-                                                            >
-                                                                recipe
-                                                            </button>
-                                                        </li>
-                                                    </ul>
-                                                </li>
-                                            </ul>
-                                        </li>
-                                    </ul>
-                                </li>
-                            </ul>
+                <div class="row g-3 mb-3">
+                <div class="card h-100">
+                    <div class="card-header d-flex flex-between-center bg-light py-3">
+                        <h6 class="mb-0">Analysis</h6>
+                    </div>
+                    <div class="card-header d-flex flex-between-center bg-light py-3">
+                        <div class="row">
+                            <div class="form-control col ms-4 mb-1 select-box">
+                                <select id="equip_select" onchange="find_Chamber(this);">
+                                    <option value=""></option>
+                                    {% if equip_select %} {% for i in equip_select %}
+                                        <option value="{{ i.equip_name }}">{{ i.equip_name }}</option>
+                                    {% endfor %} {% endif %}
+                                </select>
+                            </div>
+                            <div class="form-control col mb-1 select-box">
+                                <select id="chamber_select" onchange="find_Recipe(this);">
+                                    <option value=""></option>
+                                </select>
+                            </div>
+
+                            <div class="form-control col mb-1 select-box">
+                                <select id="recipe_select" onchange="find_Revision(this);">
+                                    <option value=""></option>
+                                </select>
+                            </div>
+                            <div class="form-control col mb-1 select-box">
+                                <select id="revision_select" onchange="find_Sensor(this);">
+                                    <option value=""></option>
+                                </select>
+                            </div>
                         </div>
                     </div>
+                                                        <div class="card-body pb-1 tree-content">
+                            <ul style="padding: 0" id="sensor_list"></ul>
+                        </div>
                 </div>
-                <div class="col-lg-9">
+
+                </div>
+        </div>
+
+                {#                <div class="col-lg-3">#}
+                {#                    <div class="card h-100">#}
+                {#                        <div class="card-header d-flex flex-between-center bg-light py-3">#}
+                {#                            <h6 class="mb-0">Monitoring</h6>#}
+                {#                        </div>#}
+                {#                        <div class="card-body pb-1">#}
+                {#                            <ul style="padding: 0">#}
+                {#                                <li>#}
+                {#                                    <a#}
+                {#                                            class="btn"#}
+                {#                                            data-bs-toggle="collapse"#}
+                {#                                            href="#eqipment"#}
+                {#                                            role="button"#}
+                {#                                            aria-controls="false"#}
+                {#                                            aria-controls="eqipment"#}
+                {#                                    >#}
+                {#                                        <div class="cricle"></div>#}
+                {#                                        <sapn class="list-title">장비: </sapn#}
+                {#                                        ><a class="dropdown-indicator dropdown"></a>#}
+                {#                                    </a>#}
+                {#                                    <ul class="collapse multi-collapse" id="equipment">#}
+                {#                                        <li>#}
+                {#                                            <a#}
+                {#                                                    class="btn"#}
+                {#                                                    data-bs-toggle="collapse"#}
+                {#                                                    href="#chamber"#}
+                {#                                                    role="button"#}
+                {#                                                    aria-controls="false"#}
+                {#                                                    aria-controls="chamber"#}
+                {#                                            >#}
+                {#                      <span class="list-title">챔버: </span#}
+                {#                      ><a class="dropdown-indicator dropdown"></a#}
+                {#                                            ></a>#}
+                {#                                            <ul class="collapse multi-collapse" id="chamber">#}
+                {#                                                <li class="recipe-text">#}
+                {#                                                    <div class="cricle inner"></div>#}
+                {##}
+                {#                                                    <ul style="padding: 0">#}
+                {#                                                        recipe#}
+                {#                                                        <li>#}
+                {#                                                            <button#}
+                {#                                                                    class="senser-btn"#}
+                {#                                                                    id="{{ i.id }}"#}
+                {#                                                                    type="button"#}
+                {#                                                                    onclick="execute_Monitoring();"#}
+                {#                                                            >#}
+                {#                                                                recipe#}
+                {#                                                            </button>#}
+                {#                                                        </li>#}
+                {#                                                    </ul>#}
+                {#                                                </li>#}
+                {#                                            </ul>#}
+                {#                                        </li>#}
+                {#                                    </ul>#}
+                {#                                </li>#}
+                {#                            </ul>#}
+                {#                        </div>#}
+                {#                    </div>#}
+                {#                </div>#}
+                <div class="col-lg">
                     <div class="card mb-3">
                         <div class="card-header d-flex flex-between-center bg-light py-3">
                             <h6 class="mb-0">Analysis</h6>
                         </div>
                         <div class="card-body py-5 py-sm-3">
                             <div>
-{#                                <form action="test()">#}
-                                    <div class="row">
-                                        <div class="col-7">
-                                            <label>
-                                                <span class="list-title period">기간: </span>
-                                                <input type="date" name="start-day" id="date-start" />
-                                                -
-                                                <input type="date" name="end-day" id="date-end" />
-                                            </label>
-                                        </div>
-                                        <div class="col-5">
-                                            <p>
-                                                <button class="btn btn-secondary" id="start-btn" >
-                                                    Submit
-                                                </button>
-                                            </p>
-                                        </div>
+                                {#                                <form action="test()">#}
+                                <div class="row">
+                                    <div class="col-7">
+                                        <label>
+                                            <span class="list-title period">기간: </span>
+                                            <input type="date" name="start-day" id="date-start" />
+                                            -
+                                            <input type="date" name="end-day" id="date-end" />
+                                        </label>
                                     </div>
-{#                                </form>#}
+                                    <div class="col-5">
+                                        <p>
+                                            <button class="btn btn-secondary" id="start-btn" >
+                                                Submit
+                                            </button>
+                                        </p>
+                                    </div>
+                                </div>
+                                {#                                </form>#}
                             </div>
                             <div class="row text-center">
                                 <div class="col">
@@ -109,10 +150,10 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col">
+                        <div class="col-lg">
                             <div class="card">
                                 <div class="card-header d-flex flex-between-center">
-                                    <h6 class="mb-0">Grape</h6>
+                                    <h6 class="mb-0">Graph</h6>
                                 </div>
                                 <div class="card-body">
                                     <canvas id="canvas"></canvas>
@@ -197,8 +238,8 @@
                 var date_end = document.getElementById("date-end").value;
 
                 var querystr = new URLSearchParams({
-                   date_start: date_start,
-                   date_end: date_end
+                    date_start: date_start,
+                    date_end: date_end
                 })
                 const response = await fetch(url + querystr, {
                     method: 'GET',
@@ -360,5 +401,139 @@
             }
         }
     </script>
+    <script>
+        function find_Chamber(object) {
+            var equip_Name = object.value;
 
+            var url = "/analysis/find_chamber";
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                headers: { "X-CSRFToken": getCookie("csrftoken") },
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ equip_name: equip_Name }),
+                cache: false,
+                processData: false,
+                error: function (request, status, error) {
+                    //alert("code:"+request.status+"\n"+"error:"+error);
+                },
+                success: function (result) {
+                    $("#chamber_select").empty();
+                    $("#recipe_select").empty();
+                    $("#revision_select").empty();
+                    $("#chamber_select").append('<option value=""></option>');
+
+                    $.each(result.chamber_list, function (i, item) {
+                        $("#chamber_select").append(
+                            '<option value="' + item + '">' + item + "</option>"
+                        );
+                    });
+                },
+            });
+        }
+
+        function find_Recipe(object) {
+            var chamber_Name = object.value;
+
+            var url = "/analysis/find_recipe";
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                headers: { "X-CSRFToken": getCookie("csrftoken") },
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ chamber_name: chamber_Name }),
+                cache: false,
+                processData: false,
+                error: function (request, status, error) {
+                    //alert("code:"+request.status+"\n"+"error:"+error);
+                },
+                success: function (result) {
+                    $("#recipe_select").empty();
+                    $("#revision_select").empty();
+                    $("#recipe_select").append('<option value=""></option>');
+
+                    $.each(result.recipe_list, function (i, item) {
+                        $("#recipe_select").append(
+                            '<option value="' + item + '">' + item + "</option>"
+                        );
+                    });
+                },
+            });
+        }
+
+        function find_Revision(object) {
+            var recipe_Name = object.value;
+
+            var url = "/analysis/find_revision";
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                headers: { "X-CSRFToken": getCookie("csrftoken") },
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ recipe_name: recipe_Name }),
+                cache: false,
+                processData: false,
+                error: function (request, status, error) {
+                    //alert("code:"+request.status+"\n"+"error:"+error);
+                },
+                success: function (result) {
+                    $("#revision_select").empty();
+                    $("#revision_select").append('<option value=""></option>');
+
+                    $.each(result.revision_list, function (i, item) {
+                        $("#revision_select").append(
+                            '<option value="' + item + '">' + item + "</option>"
+                        );
+                    });
+                },
+            });
+        }
+
+        function find_Sensor() {
+            var equip_Name = document.getElementById("equip_select").value;
+            var chamber_Name = document.getElementById("chamber_select").value;
+            var recipe_Name = document.getElementById("recipe_select").value;
+            var revision_No = document.getElementById("revision_select").value;
+
+            var url = "/analysis/find_sensor";
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                headers: { "X-CSRFToken": getCookie("csrftoken") },
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({
+                    equip_name: equip_Name,
+                    chamber_name: chamber_Name,
+                    recipe_name: recipe_Name,
+                    revision_no: revision_No,
+                }),
+                cache: false,
+                processData: false,
+                error: function (request, status, error) {
+                    //alert("code:"+request.status+"\n"+"error:"+error);
+                },
+                success: function (result) {
+                    $("#sensor_list").empty();
+
+                    $.each(result.sensor_list, function (i, item) {
+                        $("#sensor_list").append(
+                            '<button class="senser-btn" id="' +
+                            item.sensor_cd +
+                            '" type="button" onclick="run_Monitoring(this);">' +
+                            item.sensor_name +
+                            "</button>"
+                        );
+                    });
+                },
+            });
+        }
+    </script>
 {% endblock javascripts %}

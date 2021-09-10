@@ -1,7 +1,9 @@
 from django.shortcuts import render
 from django.views.generic import View
 from django.contrib.auth.mixins import LoginRequiredMixin
+from config.models import mmDataset, mmModel, mmRecipe
 from django.http import HttpRequest, JsonResponse
+import json
 import os
 import time
 import pandas
@@ -17,7 +19,15 @@ class analysis_main(LoginRequiredMixin, View):
         query2 = request.GET.get('date_end','Null')
         if (query1=='Null') & (query2=='Null'):
             print("render!!!!")
+            equip_sql = '''
+            SELECT id, equip_name FROM mm_dataset WHERE purpose='TRN' GROUP BY equip_name 
+        '''
+            context = {
+                'equip_select': mmModel.objects.raw(equip_sql)
+            }
             return render(request, "analysis.html", context)
+
+
 
         today = datetime.today().strftime("%Y-%m-%d")
         date_start = request.GET.get('date_start', today)
@@ -44,13 +54,6 @@ class analysis_main(LoginRequiredMixin, View):
             formatted_file_date = time.strptime(date, "%Y_%m_%d")
             if (formatted_startdate <= formatted_file_date and formatted_file_date <= formatted_enddate):
                 filtered_filelist.append(i)
-        # print(filtered_filelist)
-        # for i in range(0, len(filtered_filelist)):
-        #     for j in range(0, len(filtered_filelist)):
-        #         if datetime.fromtimestamp(os.stat(datapath + filtered_filelist[i]).st_mtime) \
-        #                 < datetime.fromtimestamp(os.stat(datapath + filtered_filelist[j]).st_mtime):
-        #             print(filtered_filelist[i])
-        #             (filtered_filelist[i], filtered_filelist[j]) = (filtered_filelist[j], filtered_filelist[i])
 
         d1_datasum = []
         csv_data = []
@@ -117,3 +120,62 @@ class analysis_main(LoginRequiredMixin, View):
 
 def normalize(element, mean, std):
     return (element-mean)/std
+
+class find_chamber(View):
+    def post(self, request: HttpRequest, *args, **kwargs):
+        context = {}
+
+        rsData = json.loads(request.body.decode("utf-8"))
+        equip_name = rsData['equip_name']
+        data = mmDataset.objects.filter(equip_name=equip_name, purpose="TRN").values_list('chamber_name', flat=True).distinct()
+
+        context = {
+            'chamber_list': list(data)
+        }
+
+        return JsonResponse(context, content_type='application/json')
+
+class find_recipe(View):
+    def post(self, request: HttpRequest, *args, **kwargs):
+        context = {}
+
+        rsData = json.loads(request.body.decode("utf-8"))
+        chamber_name = rsData['chamber_name']
+        data = mmDataset.objects.filter(chamber_name=chamber_name, purpose="TRN").values_list('recipe_name', flat=True).distinct()
+
+        context = {
+            'recipe_list': list(data)
+        }
+
+        return JsonResponse(context, content_type='application/json')
+
+class find_revision(View):
+    def post(self, request: HttpRequest, *args, **kwargs):
+        context = {}
+
+        rsData = json.loads(request.body.decode("utf-8"))
+        recipe_name = rsData['recipe_name']
+        data = mmDataset.objects.filter(recipe_name=recipe_name, purpose="TRN").values_list('revision_no', flat=True).distinct()
+
+        context = {
+            'revision_list': list(data)
+        }
+
+        return JsonResponse(context, content_type='application/json')
+
+class find_sensor(View):
+    def post(self, request: HttpRequest, *args, **kwargs):
+        context = {}
+
+        rsData = json.loads(request.body.decode("utf-8"))
+        equip_name = rsData['equip_name']
+        chamber_name = rsData['chamber_name']
+        recipe_name = rsData['recipe_name']
+        revision_no = rsData['revision_no']
+        data = mmRecipe.objects.filter(equip_name=equip_name, chamber_name=chamber_name, recipe_name=recipe_name, revision_no=revision_no)
+
+        context = {
+            'sensor_list': list(data.values())
+        }
+
+        return JsonResponse(context, content_type='application/json')

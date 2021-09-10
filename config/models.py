@@ -62,7 +62,6 @@ class mmModel(models.Model):
     problem_id = models.IntegerField(db_column='problem_id')
     equipment_id = models.IntegerField(db_column='equipment_id')
     recipe_id = models.IntegerField(db_column='recipe_id')
-    sensor_no = models.CharField(db_column='sensor_no', max_length=255, default='')
     dataset = models.ForeignKey('mmDataset', on_delete=models.DO_NOTHING)
     sensor_cd = models.IntegerField(db_column='sensor_cd')
     model_name = models.CharField(db_column='model_name', max_length=255, default='')

@@ -566,7 +566,7 @@
                         id: "train_anomalies_y",
                     }],
                     xAxes: [{
-                        id: "train_anomalies_y",
+                        id: "train_anomalies_x",
                         gridLines: {
                             drawTicks: false,
                         },
@@ -602,7 +602,7 @@
                         id: "test_anomalies_y",
                     }],
                     xAxes: [{
-                        id: "test_anomalies_y",
+                        id: "test_anomalies_x",
                         gridLines: {
                             drawTicks: false,
                         },
@@ -675,12 +675,11 @@
     }
 
     function setBranchLine(chart, xValue) {
-        var gridLinesColorArray = new Array(chart.data.labels.length);
+        let gridLinesColorArray = [];
+        for(let i=0; i<chart.data.labels.length; i++) gridLinesColorArray[i] = '#888888';
 
-        for(let value in chart.data.labels) {
-            if (value === xValue) gridLinesColorArray[chart.data.labels.indexOf(xValue)] = 'red';
-            else gridLinesColorArray[chart.data.labels.indexOf(xValue)] = 'black';
-        }
+        let idx = chart.data.labels.indexOf(xValue);
+        if (idx !== -1) gridLinesColorArray[idx] = 'red';
 
         console.log(gridLinesColorArray);
         chart.scales.xAxes[0].gridLines.color = gridLinesColorArray;

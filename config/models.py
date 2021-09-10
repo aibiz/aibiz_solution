@@ -101,8 +101,9 @@ class mmRecipe(models.Model):
     recipe_name = models.CharField(db_column='recipe_name', max_length=50)
     revision_no = models.CharField(db_column='revision_no', max_length=50)
     equip_name = models.CharField(db_column='equip_name', max_length=50)
-    equip_name = models.CharField(db_column='equip_name', max_length=50)
-    sensor_id = models.IntegerField(db_column='sensor_id')
+    chamber_name = models.CharField(db_column='chamber_name', max_length=50)
+    sensor_cd = models.IntegerField(db_column='sensor_cd')
+    sensor_name = models.CharField(db_column='sensor_name', max_length=50)
 
     class Meta:
         db_table = 'mm_recipe'

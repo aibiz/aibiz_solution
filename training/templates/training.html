@@ -96,7 +96,9 @@
                                         <div style="display: none;">
                                             <button type="hidden" id="m1_{{ i }}"
                                                     onclick="selectTrainId('{{ i.id }}','{{ i.data_name }}'
-                                                                        ,'{{ i.data_cnt }}','{{ i.data_size }}', '{{ i.data_static_path }}')">
+                                                                        ,'{{ i.data_cnt }}','{{ i.data_size }}', '{{ i.data_static_path }}'
+                                                                        ,'{{ i.equip_name }}', '{{ i.chamber_name }}', '{{ i.recipe_name }}', '{{ i.revision_no }}'
+                                                            )">
 
                                             </button>
                                         </div>
@@ -126,6 +128,10 @@
                                 <div class="card-text" id="selectedTrainDisp" style="font-weight: bold;"></div>
                                 <input type="hidden" id="selectedTrainHidden" value="Null">
                                 <input type="hidden" id="selectedTrainpathHidden" value="Null">
+                                <input type="hidden" id="selectedEquipnameHidden" value="Null">
+                                <input type="hidden" id="selectedChamberNameHidden" value="Null">
+                                <input type="hidden" id="selectedRecipeNameHidden" value="Null">
+                                <input type="hidden" id="selectedRevisionNoHidden" value="Null">
                             </div>
                         </div>
                     </div>
@@ -335,13 +341,16 @@
         {#            myInput.focus()#}
         {#        })#}
 </script>
-
 <script>
     {#    modal내 하단 selectedDisp 내용변경   #}
-    function selectTrainId(id, name, cnt, size, path) {
+    function selectTrainId(id, name, cnt, size, path, equip, chamber, recipe, revision) {
         $('#selectedTrainDisp').text(name)
         $('#selectedTrainHidden').val(id)
         $('#selectedTrainpathHidden').val(path)
+        $('#selectedEquipnameHidden').val(equip)
+        $('#selectedChamberNameHidden').val(chamber)
+        $('#selectedRecipeNameHidden').val(recipe)
+        $('#selectedRevisionNoHidden').val(revision)
         $('#name_traindata').text(name)
         $('#num_traindata').text(cnt)
     }
@@ -362,6 +371,10 @@
         try {
             var trainDataId = document.getElementById('selectedTrainHidden').value;
             var testDataId = document.getElementById('selectedTestHidden').value;
+            var equipName = document.getElementsById('selectedEquipnameHidden')
+            var chamberName = document.getElementsById('selectedChamberNameHidden')
+            var recipeName = document.getElementsById('selectedRecipeNameHidden')
+            var revisionNo = document.getElementsById('selectedRevisionNoHidden')
             var sensorNo = document.getElementById('sensorNo').value;
             var thresholdStd = document.getElementById('thresholdStd').value;
 
@@ -373,7 +386,11 @@
                     trainDataId : trainDataId,
                     testDataId : testDataId,
                     sensorNo : sensorNo,
-                    thresholdStd : thresholdStd
+                    thresholdStd : thresholdStd,
+                    equipName : equipName,
+                    chamberName : chamberName,
+                    recipeName : recipeName,
+                    revisionNo : revisionNo
                 })
             });
             console.log('Completed!', response);

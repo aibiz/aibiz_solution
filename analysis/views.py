@@ -96,15 +96,16 @@ class analysis_main(LoginRequiredMixin, View):
         for k in anomaly_file_list:
             anomaly_data = pandas.read_csv(anomaly_path + k, header=None, )
             anomaly_data = anomaly_data.values.tolist()
-            anomaly_csv_data.append([k, anomaly_data])
+            anomaly_csv_data.append(anomaly_data[0])
+            anomaly_csv_data.append(anomaly_data[1])
 
         context['anomaly_filelist'] = anomaly_file_list
         context['anomaly_csvdata'] = anomaly_csv_data
 
         # print("raw_data:::::::::", context['raw_data'])
-        print("normilized_data:::::::::", context['normalized_data'])
+        # print("normilized_data:::::::::", context['normalized_data'])
         # print("anomaly_filelist:::::::::::::", context['anomaly_filelist'])
-        # print("anomaly_csvdata::::::::::::", context['anomaly_csvdata'])
+        print("anomaly_csvdata::::::::::::", context['anomaly_csvdata'])
         # print("response!!!!")
         return JsonResponse(context, content_type='application/json')
 

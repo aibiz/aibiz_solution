@@ -32,7 +32,7 @@ class analysis_main(LoginRequiredMixin, View):
         # 여러 챔버, 장비 선택시 for문 시작점
         # ex for path in selected_list:
         #       datapath = rootpath + path
-        datapath = rootpath + "/static/data/train_data/11/recipe2" + '/' #server
+        datapath = rootpath + "/static/data/eq1_ch11_recipe1_v1/train_data/data1" + '/' #server
         # datapath = rootpath + "/static/data/train_data/cc/recipe1" + '/'#local
         file_list = os.listdir(datapath)
         file_list_csv = [file for file in file_list if file.endswith(".csv")]
@@ -101,21 +101,17 @@ class analysis_main(LoginRequiredMixin, View):
         for m in range(0, len(anomaly_csv_data)):
             normalized_anomaly_csvdata.append(list(map(lambda element: normalize(element, mean_val, std_val), anomaly_csv_data[m])))
 
-
-        print("nomalized:::::::", normalized_data)
-
         context['raw_data'] = csv_data
         context['normalized_data']= normalized_data
-
         context['anomaly_filelist'] = anomaly_file_list
         context['anomaly_csvdata'] = anomaly_csv_data
         context['normalized_anomaly_csvdata'] = normalized_anomaly_csvdata
 
-        # print("raw_data:::::::::", context['raw_data'])
-        # print("normilized_data:::::::::", context['normalized_data'])
-        # print("anomaly_filelist:::::::::::::", context['anomaly_filelist'])
+        print("raw_data:::::::::", context['raw_data'])
+        print("normilized_data:::::::::", context['normalized_data'])
+        print("anomaly_filelist:::::::::::::", context['anomaly_filelist'])
         print("anomaly_csvdata::::::::::::", context['anomaly_csvdata'])
-        print("normalized_csvdata::::::", context['normalized_anomaly_csvdata'])
+        print("normalized_anomaly_csvdata::::::", context['normalized_anomaly_csvdata'])
         # print("response!!!!")
         return JsonResponse(context, content_type='application/json')
 

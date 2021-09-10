@@ -187,7 +187,7 @@
     </script>
     <script>
         normalBtn.addEventListener('click', normalBtnClick);
-        // anomalyBtn.addEventListener('click', anomalyBtnClick);
+        anomalyBtn.addEventListener('click', anomalyBtnClick);
         normalizeBtn.addEventListener('click', normalizeBtnClick);
 
         startBtn.addEventListener('click', async _ => {
@@ -210,16 +210,16 @@
                 console.log(result);
                 console.log('Completed!', response);
 
-                normalDataArray = result.raw_data.map(
-                    (value) => value[1]
-                );
-                statusLossArray = result.anomaly_csvdata.map(
-                    (value) => value[1][0]
-                );
-                statusValLossArray = result.anomaly_csvdata.map(
-                    (value) => value[1][1]
-                );
-                normalizedDataArray = result.normalized_data;
+                // normalDataArray = result.raw_data.map(
+                //     (value) => value[1]
+                // );
+                // statusLossArray = result.anomaly_csvdata.map(
+                //     (value) => value[1][0]
+                // );
+                // statusValLossArray = result.anomaly_csvdata.map(
+                //     (value) => value[1][1]
+                // );
+                // normalizedDataArray = result.normalized_data;
 
                 console.log("1",normalDataArray);
                 console.log("2.1",statusLossArray);
@@ -333,13 +333,13 @@
             if(isNormalized)    drawNormalChart(normalDataArray)
             else    drawNormalizedChart(normalizedDataArray);
         }
-        //
-        // function anomalyBtnClick() {
-        //     chart1.destroy();
-        //
-        //     if  ;
-        //     else    drawAnomalyChart(statusLossArray, statusValLossArray);
-        // }
+
+        function anomalyBtnClick() {
+            chart1.destroy();
+            //
+            // if  ;
+            // else    drawAnomalyChart(statusLossArray, statusValLossArray);
+        }
 
         function normalizeBtnClick() {
             isNormalized = true;

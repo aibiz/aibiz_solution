@@ -495,6 +495,9 @@
                     list += "</tr>";
                 });
 
+                                    console.log('11');
+
+
                 $("#anomalies_list").append(list);
 
                 if (result['state'] == 'True') {
@@ -511,6 +514,9 @@
                     ); // 1차원 배열; // 1차원 배열
                     trainAnomalyScoreData = Object.values(result.train_anomaly_score); // 1차원 배열
 
+
+                                        console.log('22');
+
                     // 3번 차트 데이터
                     csvList = result.csv_list.map(
                         (value) => value[0]
@@ -525,6 +531,7 @@
                         (value) => (parseFloat(value)*1000).toFixed(2)
                     ); // 1차원 배열
                     testAnomalyScoreData = Object.values(result.test_anomaly_score); // 1차원 배열
+                    console.log('33');
 
                     thresholdLineValue = result.current_threshold;
 
@@ -542,7 +549,7 @@
     }
 
     function drawCharts() {
-                            console.log('bb');
+        console.log('bb');
 
         chart1 = new Chart(canvas1, {
             type: 'line',
@@ -555,7 +562,7 @@
             },
             options: {},
         });
-                    console.log('cc');
+        console.log('cc');
 
         chart2 = new Chart(canvas2, {
             type: 'line',
@@ -580,10 +587,10 @@
                 }
             },
         });
-                            console.log('dd');
+        console.log('dd');
 
         setBranchLine(chart2, thresholdLineValue);
-                    console.log('ee');
+        console.log('ee');
 
         chart3 =  new Chart(canvas3, {
             type: 'line',

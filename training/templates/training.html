@@ -589,20 +589,20 @@
             options: {
                 scales: {
                     id: 'chart2_scales',
-                    yAxes: [{
+                    yAxes: {
                         id: "train_anomalies_y",
-                    }],
-                    xAxes: [{
+                    },
+                    xAxes: {
                         id: "train_anomalies_x",
                         grid: {
-                            display: false,
+                            display: false
                         },
-                    }],
+                    },
                 }
             },
         });
 
-        setBranchLine(chart2, thresholdLineValue);
+        // setBranchLine(chart2, thresholdLineValue);
 
         chart3 =  new Chart(canvas3, {
             type: 'line',
@@ -628,15 +628,15 @@
             },
             options: {
                 scales: {
-                    yAxes: [{
+                    yAxes: {
                         id: "test_anomalies_y",
-                    }],
-                    xAxes: [{
+                    },
+                    xAxes: {
                         id: "test_anomalies_x",
                         gridLines: {
                             drawTicks: false,
                         },
-                    }],
+                    },
                 }
             },
         });

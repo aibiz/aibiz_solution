@@ -553,7 +553,7 @@
                         (value) => (parseFloat(value) * 1000).toFixed(2)
                     ); // 1차원 배열
                     testAnomalyScoreData = Object.values(result.test_anomaly_score); // 1차원 배열
-                    thresholdLineValue = result.current_threshold;
+                    thresholdLineValue = parseFloat(result.current_threshold).toFixed(2);
 
                     drawCharts();
 

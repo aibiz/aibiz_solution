@@ -210,16 +210,16 @@
                 console.log(result);
                 console.log('Completed!', response);
 
-                normalDataArray = result.raw_data.map(
-                    (value) => value[1]
-                );
-                statusLossArray = result.anomaly_csvdata.map(
-                    (value) => value[1][0]
-                );
-                statusValLossArray = result.anomaly_csvdata.map(
-                    (value) => value[1][1]
-                );
-                normalizedDataArray = result.normalized_data;
+                // normalDataArray = result.raw_data.map(
+                //     (value) => value[1]
+                // );
+                // statusLossArray = result.anomaly_csvdata.map(
+                //     (value) => value[1][0]
+                // );
+                // statusValLossArray = result.anomaly_csvdata.map(
+                //     (value) => value[1][1]
+                // );
+                // normalizedDataArray = result.normalized_data;
 
                 console.log("1",normalDataArray);
                 console.log("2.1",statusLossArray);
@@ -229,7 +229,7 @@
                 // drawNormalChart(normalDataArray);
             } catch (err) {
                 console.log('aa');
-                console.error(`Error: ${err}`);
+                // console.error(`Error: ${err}`);
             }
         });
 

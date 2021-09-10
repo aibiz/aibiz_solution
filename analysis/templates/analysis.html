@@ -103,7 +103,7 @@
                                     <button class="btn btn-primary" id="anomalies">이상</button>
                                 </div>
                                 <div class="col">
-                                    <button class="btn btn-primary" id="normailize">정규화</button>
+                                    <button class="btn btn-primary" id="normalize">정규화</button>
                                 </div>
                             </div>
                         </div>
@@ -142,10 +142,6 @@
                                 <div class="col">Date</div>
                                 <div class="col">제품명</div>
                             </div>
-                            <table
-                                    id="anomalies_list"
-                                    style="width: 100%; margin-top: 1em"
-                            ></table>
                         </div>
                     </div>
                 </div>
@@ -156,6 +152,7 @@
 
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         // chart component
         var canvas = document.getElementById('canvas').getContext('2d');
@@ -225,6 +222,7 @@
 
                 drawNormalChart(normalDataArray);
             } catch (err) {
+                console.log('aa');
                 console.error(`Error: ${err}`);
             }
         });

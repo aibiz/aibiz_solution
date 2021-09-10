@@ -9,7 +9,7 @@
     <main class="main" id="top">
         <div style="width:20%; float:left;">
             <ul class="navbar-nav flex-column mb-3">
-                <li onclick="equip_Setting();">Equip_Spec</li>
+                <li onclick="recipe_Setting();">Recipe</li>
                 <li onclick="problem_Setting();">Problem</li>
                 <li onclick="dataset_Setting();">Dataset_Data</li>
             </ul>
@@ -27,23 +27,22 @@
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
 <script language="JavaScript">
-    function equip_Setting()
+    function recipe_Setting()
     {
         $("#data_list").empty();
 
         var i = "";
         i += "<tr>";
         i += '<th class="align-middle">ID</th>';
-        i += '<th class="align-middle">Equip</th>';
-        i += '<th class="align-middle">Chamber</th>';
-        i += '<th class="align-middle">Recipe</th>';
-        i += '<th class="align-middle">Sensor</th>';
+        i += '<th class="align-middle">Recipe Name</th>';
+        i += '<th class="align-middle">Revision No</th>';
+        i += '<th class="align-middle">Sensor Code</th>';
         i += '<th class="align-middle">Modify</th>';
         i += "</tr>";
 
         $("#data_list").append(i);
 
-        var url = '/master/equipfind';
+        var url = '/master/recipefind';
 
         //var form = $('#inputForm')[0];
         //var formData = new FormData(form);
@@ -66,11 +65,10 @@
 
                     list += "<tr>";
                     list += "<td>" + item.id + "</td>";
-                    list += "<td>" + item.equipment_id + "</td>";
-                    list += "<td>" + item.chamber_id + "</td>";
-                    list += "<td>" + item.recipe_no + "</td>";
-                    list += "<td>" + item.sensor_no + "</td>";
-                    list += "<td><a href='/master/equipmodify?id=" + item.id + "'>수정</a></td>";
+                    list += "<td>" + item.recipe_name + "</td>";
+                    list += "<td>" + item.revision_no + "</td>";
+                    list += "<td>" + item.sensor_cd + "</td>";
+                    list += "<td><a href='/master/recipemodify?id=" + item.id + "'>수정</a></td>";
                     list += "</tr>";
                 });
 
@@ -132,10 +130,10 @@
         var i = "";
         i += "<tr>";
         i += '<th class="align-middle">ID</th>';
-        i += '<th class="align-middle">Problem_ID</th>';
+        i += '<th class="align-middle">Equip_Name</th>';
+        i += '<th class="align-middle">Chamber_Name</th>';
+        i += '<th class="align-middle">Recipe_Name</th>';
         i += '<th class="align-middle">Data_Static_Path</th>';
-        i += '<th class="align-middle">Data_Name</th>';
-        i += '<th class="align-middle">Data_Path</th>';
         i += '<th class="align-middle">Modify</th>';
         i += "</tr>";
 
@@ -164,10 +162,10 @@
 
                     list += "<tr>";
                     list += "<td>" + item.id + "</td>";
-                    list += "<td>" + item.problem_id + "</td>";
+                    list += "<td>" + item.equip_name + "</td>";
+                    list += "<td>" + item.chamber_name + "</td>";
+                    list += "<td>" + item.recipe_name + "</td>";
                     list += "<td>" + item.data_static_path + "</td>";
-                    list += "<td>" + item.data_name + "</td>";
-                    list += "<td>" + item.data_path + "</td>";
                     list += "<td><a href='/master/datasetmodify?id=" + item.id + "'>수정</a></td>";
                     list += "</tr>";
                 });

@@ -1,0 +1,119 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+{% block title %}Problem Add{% endblock %}
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+    <div>
+        <h1>Modify Data</h1>
+    </div>
+
+    <main class="main" id="top">
+        <form id="inputForm" method="post" action="">
+            {% csrf_token %}
+            <input type="hidden" id="id" value="{{ data.id }}">
+            <div class="mb-3">
+                <label class="form-label" for="equip_name">Equip Name</label>
+                <input type="text" class="form-control" id="equip_name" name="equip_name" value="{{ data.equip_name }}">
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="chamber_name">Chamber Name</label>
+                <input type="text" class="form-control" id="chamber_name" name="chamber_name" value="{{ data.chamber_name }}">
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="recipe_name">Recipe Name</label>
+                <input type="text" class="form-control" id="recipe_name" name="recipe_name" value="{{ data.recipe_name }}">
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="data_static_path">Data Static Path</label>
+                <input type="text" class="form-control" id="data_static_path" name="data_static_path" value="{{ data.data_static_path }}">
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="purpose">Purpose</label>
+                <input type="text" class="form-control" id="purpose" name="purpose" value="{{ data.purpose }}">
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="data_name">Data Name</label>
+                <input type="text" class="form-control" id="data_name" name="data_name" value="{{ data.data_name }}">
+            </div>
+            <div class="mb-3">
+                <button class="btn btn-falcon-primary w-8 mt-3" type="button" onclick="update_Dataset()">Confirm</button>
+                <button class="btn btn-falcon-primary w-8 mt-3" type="button" onclick="delete_Dataset()">Delete</button>
+                <button class="btn btn-falcon-primary w-8 mt-3" type="button" onclick="back()">Back</button>
+            </div>
+        </form>
+    </main>
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+<script language="JavaScript">
+    function update_Dataset(){
+
+        var url = "/master/updatedataset";
+        //console.log(url);
+        var form = $('#inputForm')[0];
+        var formData = new FormData(form);
+        formData.append("id", document.getElementById('id').value);
+
+        $.ajax({
+            type : 'POST',
+            url : url,
+            headers: { "X-CSRFToken": getCookie("csrftoken") },
+            data : formData,
+            cache: false,
+            contentType: false,
+            processData: false,
+            error: function(request,status,error){
+                 alert("code:"+request.status+"\n"+"error:"+error);
+            },
+            success : function(result){
+                if (result.success == false) {
+                        alert(result.message);
+                }
+                else {
+                    alert(result.message);
+                    location.href='/master'
+                }
+            }
+        });
+    }
+
+    function delete_Dataset(){
+
+        var url = "/master/deletedataset";
+
+        var formData = new FormData();
+        formData.append("id", document.getElementById('id').value);
+
+        $.ajax({
+            type : 'POST',
+            url : url,
+            headers: { "X-CSRFToken": getCookie("csrftoken") },
+            data : formData,
+            cache: false,
+            contentType: false,
+            processData: false,
+            error: function(request,status,error){
+                 alert("code:"+request.status+"\n"+"error:"+error);
+            },
+            success : function(result){
+                if (result.success == false) {
+                        alert(result.message);
+                }
+                else {
+                    alert(result.message);
+                    location.href='/master'
+                }
+            }
+        });
+    }
+
+    function back()
+    {
+        location.href='/master'
+    }
+</script>
+{% endblock javascripts %}

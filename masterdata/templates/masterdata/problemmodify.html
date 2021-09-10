@@ -15,24 +15,17 @@
             {% csrf_token %}
             <input type="hidden" id="id" value="{{ data.id }}">
             <div class="mb-3">
-                <label class="form-label" for="equipment_id">Equipment</label>
-                <input type="text" class="form-control" id="equipment_id" name="equipment_id" value="{{ data.equipment_id }}">
+                <label class="form-label" for="problem_name">Problem Name</label>
+                <input type="text" class="form-control" id="problem_name" name="problem_name" value="{{ data.problem_name }}">
             </div>
             <div class="mb-3">
-                <label class="form-label" for="chamber_id">Chamber</label>
-                <input type="text" class="form-control" id="chamber_id" name="chamber_id" value="{{ data.chamber_id }}">
+                <label class="form-label" for="problem_note">Problem Note</label>
+                <textarea class="form-control" id="problem_note" name="problem_note"
+                    rows="20" maxlength="4096">{{ data.problem_note }}</textarea>
             </div>
             <div class="mb-3">
-                <label class="form-label" for="recipe_no">Recipe</label>
-                <input type="text" class="form-control" id="recipe_no" name="recipe_no" value="{{ data.recipe_no }}">
-            </div>
-            <div class="mb-3">
-                <label class="form-label" for="sensor_no">Sensor</label>
-                <input type="text" class="form-control" id="sensor_no" name="sensor_no" value="{{ data.sensor_no }}">
-            </div>
-            <div class="mb-3">
-                <button class="btn btn-falcon-primary w-8 mt-3" type="button" onclick="update_Equipment()">Confirm</button>
-                <button class="btn btn-falcon-primary w-8 mt-3" type="button" onclick="input()">Delete</button>
+                <button class="btn btn-falcon-primary w-8 mt-3" type="button" onclick="update_Problem()">Confirm</button>
+                <button class="btn btn-falcon-primary w-8 mt-3" type="button" onclick="delete_Problem()">Delete</button>
                 <button class="btn btn-falcon-primary w-8 mt-3" type="button" onclick="back()">Back</button>
             </div>
         </form>
@@ -42,13 +35,44 @@
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
 <script language="JavaScript">
-    function update_Equipment(){
+    function update_Problem(){
 
-        var url = "/master/updateequip";
+        var url = "/master/updateproblem";
         //console.log(url);
         var form = $('#inputForm')[0];
         var formData = new FormData(form);
-        formData = JSON.stringify(formData);
+        formData.append("id", document.getElementById('id').value);
+
+        $.ajax({
+            type : 'POST',
+            url : url,
+            headers: { "X-CSRFToken": getCookie("csrftoken") },
+            data : formData,
+            cache: false,
+            contentType: false,
+            processData: false,
+            error: function(request,status,error){
+                 alert("code:"+request.status+"\n"+"error:"+error);
+            },
+            success : function(result){
+                if (result.success == false) {
+                        alert(result.message);
+                }
+                else {
+                    alert(result.message);
+                    location.href='/master'
+                }
+            }
+        });
+    }
+
+    function delete_Problem(){
+
+        var url = "/master/deleteproblem";
+
+        var formData = new FormData();
+        formData.append("id", document.getElementById('id').value);
+
         $.ajax({
             type : 'POST',
             url : url,

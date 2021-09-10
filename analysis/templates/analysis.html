@@ -203,13 +203,13 @@
                 console.log('Completed!', response);
 
                 normalDataArray = result.raw_data.map(
-                    (value) => parseFloat(value[1])
+                    (value) => value[1]
                 );
                 anomalyDataArray = result.anomaly_csvdata.map(
-                    (value) => parseFloat(value[1])
+                    (value) => <value></value>
                 );
                 normalizedDataArray = result.normalized_data.map(
-                    (value) => parseFloat(value[1])
+                    (value) => value[1]
                 );
 
                 console.log(normalDataArray);

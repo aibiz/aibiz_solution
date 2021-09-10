@@ -47,12 +47,13 @@ def start_training(request):
         test_anomaly(sensorNo, testStaticPath, trainStaticPath)
 
         recipeId = mmRecipe.objects.get(equip_name=rsData['equipName'], chamber_name=rsData['chamberName'], recipe_name=rsData['recipeName'],
-                             revision_no=rsData['revisionNo'], sensor_cd=rsData[sensorNo])['id']
+                             revision_no=rsData['revisionNo'], sensor_cd=rsData[sensorNo])
+        print("ID::::::::", recipeId.id)
           # equip_name, chamber_name, recipe_name, revision_no, sensor_cd -> recipe id
         mmModel.objects.create(
             #모델db 생성데이터
             problem_id=1,
-            recipe_id=recipeId,
+            recipe_id=recipeId.id,
             dataset_id=rsData['trainDataId'],
             sensor_cd=sensorNo
         )

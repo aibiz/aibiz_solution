@@ -495,7 +495,11 @@
                 error: function(request,status,error){
                      //alert("code:"+request.status+"\n"+"error:"+error);
                 },
-                success : function(result){}
+                success : function(result){
+                    if (result.success == false) {
+                        alert(result.message);
+                    }
+                }
             });
         }
 

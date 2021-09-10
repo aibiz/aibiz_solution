@@ -139,7 +139,10 @@ class run_monitoring(View):
         rootpath = '/'.join(rootpath)
 
         #모니터링 후 에러 파일 저장 디렉토리
-        dir = rootpath + "/static/data/monitoring_anomalies/"
+        anomalies_path = rootpath + "/static/data/monitoring_anomalies/"
+
+        #모니터링을 진행할 파일 업로드 경로
+        monitoring_path = rootpath + '/static/data/monitoring'
 
         rsData = json.loads(request.body.decode("utf-8"))
         equip_name = rsData['equip_name']
@@ -155,10 +158,17 @@ class run_monitoring(View):
         sensor_no = 2
 
         #모니터링 작업을 위한 watchdog thread 생성
-        monitoring = Target()
-        monitoring.get_path(rootpath + '/static/data/monitoring', sensor_no, path, dir)
-        monitoring.daemon = True
-        monitoring.run()
+        #모니터링 경로가 존재하지 않는 경우에는 watchdog thread 실행후 센서 변경시 런타임 에러가 발생하므로
+        #모니터링 파일 경로가 존재하는 경우에만 기능 동작하도록 처리
+        if os.path.isdir(monitoring_path):
+            monitoring = Target()
+            monitoring.get_path(monitoring_path, sensor_no, path, anomalies_path)
+            monitoring.daemon = True
+            monitoring.run()
+        else:
+            context['success'] = False
+            context['message'] = '경로가 존재하지 않아 실행할 수 없습니다!'
+            return JsonResponse(context, content_type='application/json')
 
         return JsonResponse(context, content_type='application/json')
 

@@ -57,7 +57,7 @@ def start_training(request):
         mmModel.objects.create(
             #모델db 생성데이터
             problem_id=1,
-            recipe_id=recipeId.id,
+            recipe_id=recipeId,
             dataset_id=rsData['trainDataId'],
             sensor_cd=sensorNo
         )

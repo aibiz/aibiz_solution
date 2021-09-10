@@ -1,7 +1,7 @@
 from django.views.generic import View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpRequest, JsonResponse
-from config.models import mmModel, mmDataset, mmEquipspec
+from config.models import mmModel, mmDataset, mmRecipe
 from aiengine.monitoring_excute import Target
 from django.core.files.storage import FileSystemStorage
 
@@ -58,6 +58,20 @@ class find_recipe(View):
 
         return JsonResponse(context, content_type='application/json')
 
+class find_revision(View):
+    def post(self, request: HttpRequest, *args, **kwargs):
+        context = {}
+
+        rsData = json.loads(request.body.decode("utf-8"))
+        recipe_name = rsData['recipe_name']
+        data = mmDataset.objects.filter(recipe_name=recipe_name, purpose="TRN").values_list('revision_no', flat=True).distinct()
+
+        context = {
+            'revision_list': list(data)
+        }
+
+        return JsonResponse(context, content_type='application/json')
+
 class find_sensor(View):
     def post(self, request: HttpRequest, *args, **kwargs):
         context = {}
@@ -65,7 +79,9 @@ class find_sensor(View):
         rsData = json.loads(request.body.decode("utf-8"))
         equip_name = rsData['equip_name']
         chamber_name = rsData['chamber_name']
-        data = mmEquipspec.objects.filter(equip_name=equip_name, chamber_name=chamber_name)
+        recipe_name = rsData['recipe_name']
+        revision_no = rsData['revision_no']
+        data = mmRecipe.objects.filter(equip_name=equip_name, chamber_name=chamber_name, recipe_name=recipe_name, revision_no=revision_no)
 
         context = {
             'sensor_list': list(data.values())
@@ -97,21 +113,21 @@ class run_monitoring(View):
         equip_name = rsData['equip_name']
         chamber_name = rsData['chamber_name']
         recipe_name = rsData['recipe_name']
-        sensor_no = rsData['sensor_no']
-        
+        sensor_cd = rsData['sensor_cd']
+
         #학습 파일 경로 파악
         data = mmDataset.objects.filter(equip_name=equip_name, chamber_name=chamber_name, recipe_name=recipe_name, purpose='TRN').values_list('data_static_path', flat=True)
         path = rootpath + data[len(data) - 1]
 
         #test용으로 센서 번호만 이렇게..
-        sensor_no = 2
+        #sensor_cd = 2
 
         #모니터링 작업을 위한 watchdog thread 생성
         #모니터링 경로가 존재하지 않는 경우에는 watchdog thread 실행후 센서 변경시 런타임 에러가 발생하므로
         #모니터링 파일 경로가 존재하는 경우에만 기능 동작하도록 처리
         if os.path.isdir(monitoring_path):
             monitoring = Target()
-            monitoring.get_path(monitoring_path, sensor_no, path, anomalies_path)
+            monitoring.get_path(monitoring_path, sensor_cd, path, anomalies_path)
             monitoring.daemon = True
             monitoring.run()
         else:

@@ -1,7 +1,9 @@
 from django.views.generic import View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpRequest, JsonResponse
-from config.models import mmModel
+from config.models import mmModel, mmDataset, mmEquipspec
+from aiengine.monitoring_excute import Target
+from django.core.files.storage import FileSystemStorage
 
 from django.shortcuts import render, redirect, get_object_or_404
 
@@ -9,6 +11,9 @@ import os
 import csv
 import datetime
 import pandas
+import json
+
+monitoring = None
 
 class monitoringmain(View):
     def get(self, request: HttpRequest, *args, **kwargs):
@@ -20,21 +25,28 @@ class monitoringmain(View):
             LEFT OUTER JOIN mm_dataset DS ON MD.dataset_id = DS.id
             ORDER BY MD.id
         '''
+        
+        #초기화시 장비에 대한 기본 정보 전체 조회
+        equip_sql = '''
+            SELECT id, equip_name FROM mm_dataset WHERE purpose='TRN' GROUP BY equip_name 
+        '''
 
         #Tree 구현을 위해 각 장비, Chamber, Recipe 별로 카운트를 구해서 처리한다.
         tree_sql = '''
             SELECT 
-                id,
-                equipment_id, 
-                chamber_id, 
-                recipe_no, 
-                sensor_no,
-                eqip_cnt,
-                cham_cnt,
-                rec_cnt
+                TEMP.id,
+                TEMP.equipment_id, 
+                TEMP.chamber_id, 
+                TEMP.recipe_no, 
+                TEMP.sensor_no,
+                TEMP.eqip_cnt,
+                TEMP.cham_cnt,
+                TEMP.rec_cnt,
+                MM_D.data_static_path
             FROM(
                 SELECT 
                     id,
+                    dataset_id,
                     equipment_id, 
                     chamber_id, 
                     recipe_no, 
@@ -54,16 +66,138 @@ class monitoringmain(View):
                             @gru_rec:='', 
                             @num_rec:=0) sub
                 ORDER BY equipment_id) TEMP
+                LEFT OUTER JOIN
+                mm_dataset MM_D ON
+                TEMP.dataset_id = MM_D.id
         '''
 
         #list = mmModel.objects.select_related('dataset').all().order_by('id')
 
         context = {
             'list': mmModel.objects.raw(sql),
-            'equip_list': mmModel.objects.raw(tree_sql)
+            'equip_list': mmModel.objects.raw(tree_sql),
+            'equip_select': mmModel.objects.raw(equip_sql)
         }
 
         return render(request, 'monitoring/monitoringmain.html', context)
+
+class find_chamber(View):
+    def post(self, request: HttpRequest, *args, **kwargs):
+        context = {}
+
+        rsData = json.loads(request.body.decode("utf-8"))
+        equip_name = rsData['equip_name']
+        data = mmDataset.objects.filter(equip_name=equip_name, purpose="TRN").values_list('chamber_name', flat=True).distinct()
+
+        context = {
+            'chamber_list': list(data)
+        }
+
+        return JsonResponse(context, content_type='application/json')
+
+class find_recipe(View):
+    def post(self, request: HttpRequest, *args, **kwargs):
+        context = {}
+
+        rsData = json.loads(request.body.decode("utf-8"))
+        chamber_name = rsData['chamber_name']
+        data = mmDataset.objects.filter(chamber_name=chamber_name, purpose="TRN").values_list('recipe_name', flat=True).distinct()
+
+        context = {
+            'recipe_list': list(data)
+        }
+
+        return JsonResponse(context, content_type='application/json')
+
+class find_sensor(View):
+    def post(self, request: HttpRequest, *args, **kwargs):
+        context = {}
+
+        rsData = json.loads(request.body.decode("utf-8"))
+        equip_name = rsData['equip_name']
+        chamber_name = rsData['chamber_name']
+        data = mmEquipspec.objects.filter(equip_name=equip_name, chamber_name=chamber_name)
+
+        context = {
+            'sensor_list': list(data.values())
+        }
+
+        return JsonResponse(context, content_type='application/json')
+
+class run_monitoring(View):
+    def post(self, request: HttpRequest, *args, **kwargs):
+        global monitoring   #global 변수로 선언하여 센서 재선택시 기존 thread가 중단되도록 설정
+        context = {}
+
+        #기존 thread가 존재하는 경우 기존 thread 중단
+        if monitoring != None :
+            monitoring.run_stop()
+
+        rootpath = os.getcwd()
+        rootpath = rootpath.split('/')
+        # rootpath = rootpath[:-1]
+        rootpath = '/'.join(rootpath)
+
+        #모니터링 후 에러 파일 저장 디렉토리
+        dir = rootpath + "/static/data/monitoring_anomalies/"
+
+        rsData = json.loads(request.body.decode("utf-8"))
+        equip_name = rsData['equip_name']
+        chamber_name = rsData['chamber_name']
+        recipe_name = rsData['recipe_name']
+        sensor_no = rsData['sensor_no']
+        
+        #학습 파일 경로 파악
+        data = mmDataset.objects.filter(equip_name=equip_name, chamber_name=chamber_name, recipe_name=recipe_name, purpose='TRN').values_list('data_static_path', flat=True)
+        path = rootpath + data[len(data) - 1]
+
+        #test용으로 센서 번호만 이렇게..
+        sensor_no = 2
+
+        #모니터링 작업을 위한 watchdog thread 생성
+        monitoring = Target()
+        monitoring.get_path(rootpath + '/static/data/monitoring', sensor_no, path, dir)
+        monitoring.daemon = True
+        monitoring.run()
+
+        return JsonResponse(context, content_type='application/json')
+
+
+class monitoring_upload(LoginRequiredMixin, View):
+    def post(self, request: HttpRequest, *args, **kwargs):
+        context = {}
+
+        file = request.FILES.get('file', '')
+        directory_name = request.POST['dir']
+
+        path = f'static/data/{directory_name}'
+
+        if file == '':
+            context['success'] = False
+            context['message'] = '파일을 선택해주세요.'
+            return JsonResponse(context, content_type='application/json')
+
+        filename = file.name
+        name_ext = os.path.splitext(filename)[1]
+        
+        #csv 파일만 저장되도록 지정
+        if name_ext != '.csv':
+            context['success'] = False
+            context['message'] = 'csv 파일을 넣어주세요.'
+            return JsonResponse(context, content_type='application/json')
+
+        try:
+            fs = FileSystemStorage(location=path)
+            fs.save(f"{filename}", file)
+            print(fs)
+        except:
+            context['success'] = False
+            context['message'] = '업로드에 실패하였습니다.'
+            return JsonResponse(context, content_type='application/json')
+
+        context['success'] = True
+        context['message'] = '업로드에 성공하였습니다.'
+        return JsonResponse(context, content_type='application/json')
 
 class execute_monitoring(View):
     def get(self, request: HttpRequest, *args, **kwargs):
@@ -79,10 +213,12 @@ class execute_monitoring(View):
         csv_list = []
 
         #파일을 수정시간순으로 정렬
-        for i in range(0, len(file_list)) :
+        file_list.sort(key=lambda s: os.stat(os.path.join(dir, s)).st_mtime)
+
+        '''for i in range(0, len(file_list)) :
             for j in range(0, len(file_list)) :
                 if datetime.datetime.fromtimestamp(os.stat(dir + file_list[i]).st_mtime) < datetime.datetime.fromtimestamp(os.stat(dir + file_list[j]).st_mtime) :
-                    (file_list[i], file_list[j]) = (file_list[j], file_list[i])
+                    (file_list[i], file_list[j]) = (file_list[j], file_list[i])'''
 
         #파일 리스트 전체의 csv파일 데이터를 읽어들여와 List 형식으로 변환(전체파일)
         for k in file_list :
@@ -94,5 +230,16 @@ class execute_monitoring(View):
             "anomalies_list": file_list,
             "csv_list" : csv_list
         }
+
+        return JsonResponse(context, content_type='application/json')
+
+class stop_thread(View):
+    def get(self, request: HttpRequest, *args, **kwargs):
+        #global 변수를 이용하여 페이지를 종료하거나 이동하는 경우 기존에 동작중이던 모니터링 thread를 중단시킨다.
+        global monitoring
+        context = {}
+
+        if monitoring != None :
+            monitoring.run_stop()
 
         return JsonResponse(context, content_type='application/json')

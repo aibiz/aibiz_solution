@@ -24,31 +24,24 @@
                         <div class="card-header d-flex flex-between-center bg-light py-3">
                             <h6 class="mb-0">Monitoring</h6>
                         </div>
+                        <div class="card-header d-flex flex-between-center bg-light py-3">
+                            <select id="equip_select" class="mb-0" onchange="find_Chamber(this);">
+                                <option value=""></option>
+                                {% if equip_select %}
+                                    {% for i in equip_select %}
+                                    <option value="{{ i.equip_name }}">{{ i.equip_name }}</option>
+                                    {% endfor %}
+                                {% endif %}
+                            </select>
+                            <select id="chamber_select" class="mb-0" onchange="find_Recipe(this);">
+                                <option value=""></option>
+                            </select>
+                            <select id="recipe_select" class="mb-0" onchange="find_Sensor(this);">
+                                <option value=""></option>
+                            </select>
+                        </div>
                         <div class="card-body pb-1 tree-content">
-                        {% if equip_list %}
-                            {% for i in equip_list %}
-                            <ul style="padding: 0;">
-                                <li><a class="btn" data-bs-toggle="collapse" href="#eqipment" role="button" aria-controls="false" aria-controls="eqipment">
-                                    {% if i.eqip_cnt == 1 %}<div class="cricle"></div><sapn class="list-title">장비: </sapn>{{ i.equipment_id }}<a class="dropdown-indicator dropdown" ></a>{% endif %}
-                                </a>
-                                    <ul class="collapse multi-collapse" id="eqipment">
-                                        <li><a class="btn" data-bs-toggle="collapse" href="#chamber" role="button" aria-controls="false" aria-controls="chamber">
-                                                {% if i.cham_cnt == 1 %}<span class="list-title">챔버: </span>{{ i.chamber_id }}<a class="dropdown-indicator dropdown" ></a>{% endif %}</a>
-                                            <ul class="collapse multi-collapse" id="chamber">
-                                                <li class="recipe-text">{% if i.rec_cnt == 1 %}<div class="cricle inner"></div>{{ i.recipe_no }}{% endif %}
-                                                    <ul style="padding: 0;">
-                                                        <li>
-                                                            <button class="senser-btn" id="{{ i.id }}" type="button" onclick='execute_Monitoring();'>{{ i.sensor_no }}</button>
-                                                        </li>
-                                                    </ul>
-                                                </li>
-                                            </ul>
-                                        </li>
-                                    </ul>
-                                </li>
-                            </ul>
-                            {% endfor %}
-                        {% endif %}
+                            <ul style="padding: 0;" id="sensor_list"></ul>
                         </div>
                     </div>
                 </div>
@@ -70,7 +63,14 @@
                                         <div class="text-center">
                                         <h6 class="text-700">Upload</h6>
                                         </div>
-                                        <div></div>
+                                        <form id="UploadForm" method="post" action="/monitoring/upload">
+                                            <div class="row">
+                                                <div class='col-lg-8'>
+                                                    <input class="form-control" id="file" name="file" type="file" multiple="multiple"/>
+                                                    <button class="btn btn-falcon-default btn-sm mt-2" type="button" onclick="monitoring_Upload()">등록</button>
+                                                </div>
+                                            </div>
+                                        </form>
                                     </div>
                                 </div>
                             </div>
@@ -214,7 +214,6 @@
             console.error(`Error: ${err}`);
         }
     });
-
     </script>
     <script>
         //Monitoring 실시간 화면갱신
@@ -227,6 +226,26 @@
             }, 100);
         });
 
+        //페이지 이동시 작동중인 watchdog thread 종료...
+        $(window).on("beforeunload", function(){
+            stop_Thread();
+        });
+
+        function stop_Thread(){
+            var url = '/monitoring/stop_thread';
+
+            $.ajax({
+                type : 'GET',
+                url : url,
+                headers: { "X-CSRFToken": getCookie("csrftoken") },
+                //data : formData,
+                cache: false,
+                contentType: false,
+                processData: false,
+                error: function(request,status,error){},
+                success : function(result){}
+            });
+        }
     </script>
     <script>
         var monitorCanvas = document.getElementById('monitorCanvas').getContext('2d');
@@ -361,5 +380,155 @@
             monitorChart.destroy();
             drawChart();
         }
+
+        function find_Chamber(object){
+            var equip_Name = object.value;
+
+            var url = '/monitoring/find_chamber';
+
+            $.ajax({
+                type : 'POST',
+                url : url,
+                headers: { "X-CSRFToken": getCookie("csrftoken") },
+                dataType: 'json',
+                contentType: 'application/json; charset=utf-8',
+                data : JSON.stringify({ equip_name: equip_Name }),
+                cache: false,
+                processData: false,
+                error: function(request,status,error){
+                     //alert("code:"+request.status+"\n"+"error:"+error);
+                },
+                success : function(result){
+                    $('#chamber_select').empty();
+                    $('#recipe_select').empty();
+                    $('#chamber_select').append('<option value=""></option>');
+
+                    $.each(result.chamber_list, function(i, item){
+                        $('#chamber_select').append('<option value="' + item + '">' + item + '</option>');
+                    });
+                }
+            });
+        }
+
+        function find_Recipe(object){
+            var chamber_Name = object.value;
+
+            var url = '/monitoring/find_recipe';
+
+            $.ajax({
+                type : 'POST',
+                url : url,
+                headers: { "X-CSRFToken": getCookie("csrftoken") },
+                dataType: 'json',
+                contentType: 'application/json; charset=utf-8',
+                data : JSON.stringify({ chamber_name: chamber_Name }),
+                cache: false,
+                processData: false,
+                error: function(request,status,error){
+                     //alert("code:"+request.status+"\n"+"error:"+error);
+                },
+                success : function(result){
+                    $('#recipe_select').empty();
+                    $('#recipe_select').append('<option value=""></option>');
+
+                    $.each(result.recipe_list, function(i, item){
+                        $('#recipe_select').append('<option value="' + item + '">' + item + '</option>');
+                    });
+                }
+            });
+        }
+
+        function find_Sensor(){
+            var equip_Name = document.getElementById('equip_select').value;
+            var chamber_Name = document.getElementById('chamber_select').value;
+
+            var url = '/monitoring/find_sensor';
+
+            $.ajax({
+                type : 'POST',
+                url : url,
+                headers: { "X-CSRFToken": getCookie("csrftoken") },
+                dataType: 'json',
+                contentType: 'application/json; charset=utf-8',
+                data : JSON.stringify({
+                    equip_name: equip_Name,
+                    chamber_name: chamber_Name
+                }),
+                cache: false,
+                processData: false,
+                error: function(request,status,error){
+                     //alert("code:"+request.status+"\n"+"error:"+error);
+                },
+                success : function(result){
+                    $('#sensor_list').empty();
+
+                    $.each(result.sensor_list, function(i, item){
+                        $('#sensor_list').append('<li><button class="senser-btn" id="'
+                            + item.sensor_cd + '" type="button" onclick="run_Monitoring(this);">' + item.sensor_name + '</button></li>');
+                    });
+                }
+            });
+        }
+
+        function run_Monitoring(object){
+            var equip_Name = document.getElementById('equip_select').value;
+            var chamber_Name = document.getElementById('chamber_select').value;
+            var recipe_Name = document.getElementById('recipe_select').value;
+            var sensor_No = object.id;
+
+            var url = '/monitoring/run_monitoring';
+
+            $.ajax({
+                type : 'POST',
+                url : url,
+                headers: { "X-CSRFToken": getCookie("csrftoken") },
+                dataType: 'json',
+                contentType: 'application/json; charset=utf-8',
+                data : JSON.stringify({
+                    equip_name: equip_Name,
+                    chamber_name: chamber_Name,
+                    recipe_name: recipe_Name,
+                    sensor_no: sensor_No
+                }),
+                cache: false,
+                processData: false,
+                error: function(request,status,error){
+                     //alert("code:"+request.status+"\n"+"error:"+error);
+                },
+                success : function(result){}
+            });
+        }
+
+        function monitoring_Upload(){
+
+            var dir = 'monitoring';
+
+            var url = $("#UploadForm").attr("action");
+            var form = $('#UploadForm')[0];
+            var formData = new FormData(form);
+            formData.append('dir', dir);
+
+            $.ajax({
+                type : 'POST',
+                url : url,
+                headers: { "X-CSRFToken": csrftoken },
+                data : formData,
+                cache: false,
+                contentType: false,
+                processData: false,
+                error: function(request,status,error){
+                     alert("code:"+request.status+"\n"+"error:"+error);
+                },
+                success : function(result){
+                    if (result.success == false) {
+                        alert(result.message);
+                    }
+                    else {
+                        alert(result.message);
+                    }
+                }
+            });
+        }
+
     </script>
 {% endblock javascripts %}

@@ -102,9 +102,9 @@ class analysis_main(LoginRequiredMixin, View):
         context['anomaly_csvdata'] = anomaly_csv_data
 
         # print("raw_data:::::::::", context['raw_data'])
-        # print("normilized_data:::::::::", context['normalized_data'])
+        print("normilized_data:::::::::", context['normalized_data'])
         # print("anomaly_filelist:::::::::::::", context['anomaly_filelist'])
-        print("anomaly_csvdata::::::::::::", context['anomaly_csvdata'])
+        # print("anomaly_csvdata::::::::::::", context['anomaly_csvdata'])
         # print("response!!!!")
         return JsonResponse(context, content_type='application/json')
 

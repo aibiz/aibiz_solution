@@ -219,73 +219,73 @@
                 console.log("2.2",statusValLossArray);
                 console.log("3",normalizedDataArray);
 
-                drawNormalChart(normalDataArray);
+                // drawNormalChart(normalDataArray);
             } catch (err) {
                 console.error(`Error: ${err}`);
             }
         });
 
-        function drawNormalChart(dataList) {
-            var datasets = dataList.map(
-                function dataMap(value, index, array) {
-                    normalDataMaxIndex =
-                        array[normalDataMaxIndex].length > value.length
-                            ? normalDataMaxIndex
-                            : index;
-
-                    return dataset(value, '', false, 'black', null, 1);
-                }
-            );
-
-            chart1 = new Chart(canvas, {
-                type: 'line',
-                data: {
-                    labels: xAxisOf(normalDataArray[normalDataMaxIndex]),
-                    datasets: datasets
-                },
-                options: {},
-            });
-        }
-
-        function drawAnomalyChart(statusLoss, statusValLoss) {
-            var statusLossDatSets = statusLoss.map(
-                (value) => dataset(value, '', false, 'black', null, 1)
-            );
-            var statusValLossDatSets = statusValLoss.map(
-                (value) => dataset(value, '', false, 'black', null, 1)
-            );
-
-            chart1 = new Chart(canvas, {
-                type: 'line',
-                data: {
-                    labels: xAxisOf(normalDataArray[normalDataMaxIndex]),
-                    datasets: statusLoss + statusLossDatSets,
-                },
-                options: {},
-            });
-        }
-
-        function drawNormalizedChart(dataList) {
-            var datasets = dataList.map(
-                function dataMap(value, index, array) {
-                    normalDataMaxIndex =
-                        array[normalizedDataMaxIndex].length > value.length
-                            ? normalDataMaxIndex
-                            : index;
-
-                    return dataset(value, '', false, 'black', null, 1);
-                }
-            );
-
-            chart1 = new Chart(canvas, {
-                type: 'line',
-                data: {
-                    labels: xAxisOf(normalDataArray[normalDataMaxIndex]),
-                    datasets: datasets
-                },
-                options: {},
-            });
-        }
+        // function drawNormalChart(dataList) {
+        //     var datasets = dataList.map(
+        //         function dataMap(value, index, array) {
+        //             normalDataMaxIndex =
+        //                 array[normalDataMaxIndex].length > value.length
+        //                     ? normalDataMaxIndex
+        //                     : index;
+        //
+        //             return dataset(value, '', false, 'black', null, 1);
+        //         }
+        //     );
+        //
+        //     chart1 = new Chart(canvas, {
+        //         type: 'line',
+        //         data: {
+        //             labels: xAxisOf(normalDataArray[normalDataMaxIndex]),
+        //             datasets: datasets
+        //         },
+        //         options: {},
+        //     });
+        // }
+        //
+        // function drawAnomalyChart(statusLoss, statusValLoss) {
+        //     var statusLossDatSets = statusLoss.map(
+        //         (value) => dataset(value, '', false, 'black', null, 1)
+        //     );
+        //     var statusValLossDatSets = statusValLoss.map(
+        //         (value) => dataset(value, '', false, 'black', null, 1)
+        //     );
+        //
+        //     chart1 = new Chart(canvas, {
+        //         type: 'line',
+        //         data: {
+        //             labels: xAxisOf(normalDataArray[normalDataMaxIndex]),
+        //             datasets: statusLoss + statusLossDatSets,
+        //         },
+        //         options: {},
+        //     });
+        // }
+        //
+        // function drawNormalizedChart(dataList) {
+        //     var datasets = dataList.map(
+        //         function dataMap(value, index, array) {
+        //             normalDataMaxIndex =
+        //                 array[normalizedDataMaxIndex].length > value.length
+        //                     ? normalDataMaxIndex
+        //                     : index;
+        //
+        //             return dataset(value, '', false, 'black', null, 1);
+        //         }
+        //     );
+        //
+        //     chart1 = new Chart(canvas, {
+        //         type: 'line',
+        //         data: {
+        //             labels: xAxisOf(normalDataArray[normalDataMaxIndex]),
+        //             datasets: datasets
+        //         },
+        //         options: {},
+        //     });
+        // }
 
         function dataset(
             data,

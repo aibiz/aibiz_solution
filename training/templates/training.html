@@ -502,8 +502,8 @@
                     statusValLoss = result.status_val_loss;    // 1차원 배열
 
                     // 2번 차트 데이터 (우상단)
-                    trainAnomalyScoreXAxis = result.train_anomaly_score.keys; // 1차원 배열
-                    trainAnomalyScoreData = result.train_anomaly_score.values; // 1차원 배열
+                    trainAnomalyScoreXAxis = Object.keys(result.train_anomaly_score); // 1차원 배열
+                    trainAnomalyScoreData = Onject.values(result.train_anomaly_score); // 1차원 배열
 
                     // 3번 차트 데이터
                     csvList = result.csv_list.map(
@@ -515,40 +515,12 @@
                     );  // 차트 데이터 - 2차원 배열
 
                     // 4번 차트 데이터
-                    // testAnomalyScoreXAxis = result.test_anomaly_score.keys; // 1차원 배열
-                    testAnomalyScoreData = result.test_anomaly_score; // 1차원 배열
-                    // console.log(testAnomalyScoreData.type);
+                    testAnomalyScoreXAxis = Object.keys(result.test_anomaly_score).map(
+                        (value) => int.parse(value) * 1000
+                    ); // 1차원 배열
+                    testAnomalyScoreData = Object.values(result.test_anomaly_score); // 1차원 배열
 
-                    // if(testAnomalyScoreData.keys() === undefined) console.log("no key");
-                    // // else console.log(testAnomalyScoreData.keys());
-                    // else console.log('else');
-                    // if(testAnomalyScoreData.values() === undefined) console.log("no value");
-                    // // else console.log(testAnomalyScoreData.values());
-                    // else console.log('else');
-
-                    // console.log(testAnomalyScoreData[0]);
-                    // console.log(testAnomalyScoreData[0.001]);
-                    console.log(Object.keys(testAnomalyScoreData));
-
-                    // if(testAnomalyScoreData.key === undefined) console.log("no key2");
-                    // // else console.log(testAnomalyScoreData.key);
-                    // else console.log('else');
-                    // if(testAnomalyScoreData.value === undefined) console.log("no value2");
-                    // // else console.log(testAnomalyScoreData.value);
-                    //                     else console.log('else');
-                    //
-                    // if(testAnomalyScoreData.keys === undefined) console.log("no key3");
-                    // else console.log(testAnomalyScoreData.keys);
-                    // if(testAnomalyScoreData.values === undefined) console.log("no value3");
-                    // else console.log(testAnomalyScoreData.values);
-
-                    // console.log(testAnomalyScoreData.values());
-                    // console.log(testAnomalyScoreData.key);
-                    // console.log(testAnomalyScoreData.value);
-                    // testAnomalyScoreXAxis = testAnomalyScoreData.map();
-
-                    if(result.state === "True") console.log('true')
-                    if(result.statusCode === 200) console.log('200');
+                    if(result.state === "True") drawCharts();
                 };
             }
         });
@@ -580,17 +552,17 @@
                 ]
             },
             options: {
-                //     scales: {
-                //         yAxis: [{
-                //             id: "train_anomalies_y",
-                //         }],
-                //         xAxis: [{
-                //             id: "train_anomalies_y",
-                //             gridLines: {
-                //                 drawTicks: false,
-                //             },
-                //         }],
-                //     }
+                scales: {
+                    yAxis: [{
+                        id: "train_anomalies_y",
+                    }],
+                    xAxis: [{
+                        id: "train_anomalies_y",
+                        gridLines: {
+                            drawTicks: false,
+                        },
+                    }],
+                }
             },
         });
         chart3 =  new Chart(canvas3, {
@@ -613,17 +585,17 @@
                 ]
             },
             options: {
-                // scales: {
-                //     yAxis: [{
-                //         id: "train_anomalies_y",
-                //     }],
-                //     xAxis: [{
-                //         id: "train_anomalies_y",
-                //         gridLines: {
-                //             drawTicks: false,
-                //         },
-                //     }],
-                // }
+                scales: {
+                    yAxis: [{
+                        id: "train_anomalies_y",
+                    }],
+                    xAxis: [{
+                        id: "train_anomalies_y",
+                        gridLines: {
+                            drawTicks: false,
+                        },
+                    }],
+                }
             },
         });
     }

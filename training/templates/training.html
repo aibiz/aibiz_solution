@@ -518,7 +518,7 @@
                     testAnomalyScoreXAxis = result.test_anomaly_score.keys; // 1차원 배열
                     testAnomalyScoreData = result.test_anomaly_score.values; // 1차원 배열
 
-                    drawCharts();
+                    if(result.state === "True") drawCharts();
                 };
             }
         });
@@ -550,18 +550,18 @@
                 ]
             },
             options: {
-            //     scales: {
-            //         yAxis: [{
-            //             id: "train_anomalies_y",
-            //         }],
-            //         xAxis: [{
-            //             id: "train_anomalies_y",
-            //             gridLines: {
-            //                 drawTicks: false,
-            //             },
-            //         }],
-            //     }
-            // },
+                //     scales: {
+                //         yAxis: [{
+                //             id: "train_anomalies_y",
+                //         }],
+                //         xAxis: [{
+                //             id: "train_anomalies_y",
+                //             gridLines: {
+                //                 drawTicks: false,
+                //             },
+                //         }],
+                //     }
+            },
         });
         chart3 =  new Chart(canvas3, {
             type: 'line',
@@ -633,7 +633,10 @@
     }
 
     function leftBtnClick() {
+        console.log(csvIndex);
+
         if(csvIndex <= 0) return;
+        console.log(csvIndex);
 
         csvIndex--;
 
@@ -644,9 +647,7 @@
     }
 
     function rightBtnClick() {
-        console.log()
         if(csvIndex >= dataList.length - 1) return;
-        console.log(csvIndex);
 
         csvIndex++;
 

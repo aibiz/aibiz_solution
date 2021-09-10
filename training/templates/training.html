@@ -291,7 +291,7 @@
                         </div>
                     </div>
                     <div class="card-body justify-content-end">
-                        
+
                         <div> <canvas id="canvas3"></canvas></div>
 
                     </div>
@@ -489,17 +489,17 @@
             success: function (result) {
                 console.log(result)
 
-                if (result['state']=='True'){
-                    // const trainstartBtn = document.getElementById('trainstart-btn');
-                    // trainstartBtn.disabled = true;
-                    const trainstartBtn = document.getElementById('trainstart-btn');
-                    const buttonText = document.getElementsByClassName('.button__text');
-                    trainstartBtn.disabled = false;
-                    buttonText.style.visibility = visible;
-                }
+                // if (result['state'] == 'True') {
+                //     // const trainstartBtn = document.getElementById('trainstart-btn');
+                //     // trainstartBtn.disabled = true;
+                //     const trainstartBtn = document.getElementById('trainstart-btn');
+                //     const buttonText = document.getElementsByClassName('.button__text');
+                //     trainstartBtn.disabled = false;
+                //     buttonText.style.visibility = 'visible';
+                // }
 
                 var list = "";
-                var file_Name;
+                var file_Name = "";
                 var date = "";
                 var lot_No = "";
 
@@ -523,14 +523,9 @@
                     list += "</tr>";
                 });
 
-                                    console.log('11');
-
-
                 $("#anomalies_list").append(list);
 
                 if (result['state'] == 'True') {
-                                        console.log('abcabc');
-
                     console.log(result);
                     console.log('123123');
 
@@ -541,12 +536,12 @@
 
                     // 2번 차트 데이터 (우상단)
                     trainAnomalyScoreXAxis = Object.keys(result.train_anomaly_score).map(
-                        (value) => (parseFloat(value)*1000).toFixed(2)
+                        (value) => (parseFloat(value) * 1000).toFixed(2)
                     ); // 1차원 배열; // 1차원 배열
                     trainAnomalyScoreData = Object.values(result.train_anomaly_score); // 1차원 배열
 
 
-                                        console.log('22');
+                    console.log('22');
 
                     // 3번 차트 데이터
                     csvList = result.csv_list.map(
@@ -559,7 +554,7 @@
 
                     // 4번 차트 데이터
                     testAnomalyScoreXAxis = Object.keys(result.test_anomaly_score).map(
-                        (value) => (parseFloat(value)*1000).toFixed(2)
+                        (value) => (parseFloat(value) * 1000).toFixed(2)
                     ); // 1차원 배열
                     testAnomalyScoreData = Object.values(result.test_anomaly_score); // 1차원 배열
                     console.log('33');
@@ -569,14 +564,13 @@
                     console.log('aa');
 
                     drawCharts();
-                }
+
+                    timer = setTimeout("executeMonitoring()", 5000);
+
+                }//5초 간격으로 하여 디렉토리 파일 리스트 호출 및 csv data 호출(간격 조정 필요한경우 수치 데이터 조정)
             }
         });
-        //5초 간격으로 하여 디렉토리 파일 리스트 호출 및 csv data 호출(간격 조정 필요한경우 수치 데이터 조정)
-        if (result['state'] == 'True')
-        {
-            timer = setTimeout("executeMonitoring()", 5000);
-        }
+
     }
 
     function drawCharts() {

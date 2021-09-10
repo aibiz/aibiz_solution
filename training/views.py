@@ -46,6 +46,10 @@ def start_training(request):
         learn_anomaly(sensorNo, thresholdStd, trainStaticPath)
         test_anomaly(sensorNo, testStaticPath, trainStaticPath)
 
+        print(rsData['equipName'])
+        print(rsData['chamberName'])
+        print(rsData['recipeName'])
+        print(rsData['revisionNo'])
         recipeId = mmRecipe.objects.get(equip_name=rsData['equipName'], chamber_name=rsData['chamberName'], recipe_name=rsData['recipeName'],
                              revision_no=rsData['revisionNo'], sensor_cd=rsData['sensorNo']).id
         print("ID::::::::", recipeId)
@@ -58,10 +62,7 @@ def start_training(request):
             sensor_cd=sensorNo
         )
         print("!!!!!!!!!!!!!End Training!!!!!!!!!!!!!")
-        print(rsData['equipName'])
-        print(rsData['chamberName'])
-        print(rsData['recipeName'])
-        print(rsData['revisionNo'])
+
     else:
         print("testdata, traindata모두 입력하세요.")
     return JsonResponse(context, content_type='application/json')

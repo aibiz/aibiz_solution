@@ -107,9 +107,9 @@ class analysis_main(LoginRequiredMixin, View):
         context['anomaly_csvdata'] = anomaly_csv_data
         context['normalized_anomaly_csvdata'] = normalized_anomaly_csvdata
 
-        print("raw_data:::::::::", context['raw_data'])
-        print("normilized_data:::::::::", context['normalized_data'])
-        print("anomaly_filelist:::::::::::::", context['anomaly_filelist'])
+        # print("raw_data:::::::::", context['raw_data'])
+        # print("normilized_data:::::::::", context['normalized_data'])
+        # print("anomaly_filelist:::::::::::::", context['anomaly_filelist'])
         print("anomaly_csvdata::::::::::::", context['anomaly_csvdata'])
         print("normalized_anomaly_csvdata::::::", context['normalized_anomaly_csvdata'])
         # print("response!!!!")

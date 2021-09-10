@@ -163,22 +163,19 @@
         var chart1;
 
         var normalDataArray = [];
-        var statusLossArray = [];
-        var statusValLossArray = [];
-        var normalizedStatusLossArray = [];
-        var normalizedStatusValLossArray = [];
         var normalizedDataArray = [];
+        var anomalyDataArray = [];
+        var normalizedAnomalyDataArray = [];
 
-        var normalDataMaxIndex = 0;
-        var anomalyDataMaxIndex = 0;
+        var maxXAxisLength = 0;
 
         var normalBtn = document.getElementById('normal');
         var anomalyBtn = document.getElementById('anomalies');
         var normalizeBtn = document.getElementById('normalize');
         var startBtn = document.getElementById('start-btn');
 
-        var isNormalized = true;
-        var isNormalChart = false;
+        var isNormalized = false;
+        var isNormalChart = true;
         var isAnomalyChart = false;
 
         document.getElementById("date-start").value = new Date()
@@ -216,23 +213,13 @@
                 normalDataArray = result.raw_data.map(
                     (value) => value[1]
                 );
-                statusLossArray = result.anomaly_csvdata.map(
-                    (value) => value[1][0]
-                );
-                statusValLossArray = result.anomaly_csvdata.map(
-                    (value) => value[1][1]
-                );
-                normalizedStatusLossArray = result.normalized_anomaly_csvdata.map(
-                    (value) => value[1][0]
-                );
-                normalizedStatusValLossArray = result.normalized_anomaly_csvdata.map(
-                    (value) => value[1][1]
-                );
+                anomalyDataArray = result.anomaly_csvdata;
+                normalizedAnomalyDataArray = result.normalized_anomaly_csvdata;
                 normalizedDataArray = result.normalized_data;
 
                 console.log("1",normalDataArray);
-                console.log("2.1",statusLossArray);
-                console.log("2.2",statusValLossArray);
+                console.log("2.1",anomalyDataArray);
+                console.log("2.2",normalizedAnomalyDataArray);
                 console.log("3",normalizedDataArray);
 
                 drawNormalChart(normalDataArray);
@@ -242,72 +229,22 @@
             }
         });
 
-        function drawNormalChart(dataList) {
-            var datasets = dataList.map(
-                function dataMap(value, index, array) {
-                    normalDataMaxIndex =
-                        array[normalDataMaxIndex].length > value.length
-                            ? normalDataMaxIndex
-                            : index;
-
-                    return dataset(value, '', false, null, 'transparent', 1);
-                }
-            );
-
-            chart1 = new Chart(canvas, {
-                type: 'line',
-                data: {
-                    labels: xAxisOf(dataList[normalDataMaxIndex]),
-                    datasets: datasets
-                },
-                options: {
-                    legend: {
-                        display: false
-                    }
-                },
-            });
-
-            isNormalChart = true;
-            isAnomalyChart = false;
-        }
-
-        function drawAnomalyChart(statusLoss, statusValLoss) {
-            var statusLossDatSets = statusLoss.map(
-                (value) => dataset(value, '', false, 'black', null, 1)
-            );
-            var statusValLossDatSets = statusValLoss.map(
-                (value) => dataset(value, '', false, 'black', null, 1)
-            );
-
-            chart1 = new Chart(canvas, {
-                type: 'line',
-                data: {
-                    labels: xAxisOf(normalDataArray[normalDataMaxIndex]),
-                    datasets: [...statusLossDatSets, ...statusValLossDatSets],
-                },
-                options: {},
-            });
-
-            isNormalChart = false;
-            isAnomalyChart = true;
-        }
-
-        // function drawNormalizedChart(dataList) {
+        // function drawNormalChart(dataList) {
         //     var datasets = dataList.map(
         //         function dataMap(value, index, array) {
-        //             normalDataMaxIndex =
-        //                 array[normalizedDataMaxIndex].length > value.length
+        //              =
+        //                 array[normalDataMaxIndex].length > value.length
         //                     ? normalDataMaxIndex
         //                     : index;
         //
-        //             return dataset(value, '', false, 'black', null, 1);
+        //             return dataset(value, '', false, null, 'transparent', 1);
         //         }
         //     );
         //
         //     chart1 = new Chart(canvas, {
         //         type: 'line',
         //         data: {
-        //             labels: xAxisOf(normalDataArray[normalDataMaxIndex]),
+        //             labels: xAxisOf(maxXAxisLength),
         //             datasets: datasets
         //         },
         //         options: {
@@ -316,7 +253,44 @@
         //             }
         //         },
         //     });
+        //
+        //     isNormalChart = true;
+        //     isAnomalyChart = false;
         // }
+
+        function drawChart(normalList, anomalyList) {
+            var normalDataSets = isNormalChart
+                ? normalList.map(function dataMap(value) {
+                    maxXAxisLength = maxXAxisLength > value.length
+                        ? maxXAxisLength
+                        : value.length;
+
+                    return dataset(value, '', false, null, 'black', 1);
+                })
+                : [];
+
+            var anomalyDataSets = isAnomalyChart
+                ? anomalyList.map(function dataMap(value) {
+                    maxXAxisLength = maxXAxisLength > value.length
+                        ? maxXAxisLength
+                        : value.length;
+
+                    return dataset(value, '', false, null, 'red', 1);
+                })
+                : [];
+
+            chart1 = new Chart(canvas, {
+                type: 'line',
+                data: {
+                    labels: xAxisOf(maxXAxisLength),
+                    datasets: [...normalDataSets, ...anomalyDataSets],
+                },
+                options: {},
+            });
+
+            isNormalChart = false;
+            isAnomalyChart = true;
+        }
 
         function dataset(
             data,
@@ -338,45 +312,47 @@
             };
         }
 
-        function xAxisOf(dataList) {
-            return dataList.map(
-                (_, index) => index + 1
-            );
+        function xAxisOf(length) {
+            var arr = [];
+
+            for(let i=0; i<length; i++) arr[i] = i+1;
+
+            return arr;
         }
 
         function normalBtnClick() {
-            if(isNormalChart)  return;
+            isNormalChart = !isNormalChart;
 
             chart1.destroy();
 
-            drawNormalChart(isNormalized ? normalizedDataArray : normalDataArray);
+            isNormalized
+                ? drawChart(normalDataArray, anomalyDataArray)
+                : drawChart(normalizedDataArray, normalizedAnomalyDataArray);
 
             // if(isNormalized)    drawNormalChart(normalDataArray)
             // else    drawNormalChart(normalizedDataArray);
         }
 
         function anomalyBtnClick() {
-            if(isAnomalyChart)  return;
+            isAnomalyChart = !isAnomalyChart;
 
             chart1.destroy();
 
-            console.log(normalizedStatusLossArray);
-            console.log(normalizedStatusValLossArray);
-            console.log(statusLossArray);
-            console.log(statusValLossArray);
-
             isNormalized
-                ? drawAnomalyChart(normalizedStatusLossArray, normalizedStatusValLossArray)
-                : drawAnomalyChart(statusLossArray, statusValLossArray);
+                ? drawChart(normalDataArray, anomalyDataArray)
+                : drawChart(normalizedDataArray, normalizedAnomalyDataArray);
         }
 
         function normalizeBtnClick() {
-            if(isNormalized)    return;
-            isNormalized = true;
+            isNormalized = !isNormalized;
 
-            if(!isNormalized && !isAnomalyChart)    return;
-            if(isNormalChart)   drawNormalChart(normalizedDataArray);
-            if(isAnomalyChart)  drawAnomalyChart(normalizedStatusLossArray, normalizedStatusValLossArray);
+            if(isNormalChart || isAnomalyChart) {
+                chart1.destroy();
+                
+                isNormalized
+                    ? drawChart(normalDataArray, anomalyDataArray)
+                    : drawChart(normalizedDataArray, normalizedAnomalyDataArray);
+            }
         }
     </script>
 

@@ -515,8 +515,9 @@
                     );  // 차트 데이터 - 2차원 배열
 
                     // 4번 차트 데이터
-                    testAnomalyScoreXAxis = result.test_anomaly_score.keys; // 1차원 배열
+                    // testAnomalyScoreXAxis = result.test_anomaly_score.keys; // 1차원 배열
                     testAnomalyScoreData = result.test_anomaly_score.values; // 1차원 배열
+                    testAnomalyScoreXAxis = testAnomalyScoreData.map();
 
                     if(result.state === "True") drawCharts();
                 };
@@ -544,7 +545,7 @@
         chart2 = new Chart(canvas2, {
             type: 'line',
             data: {
-                labels: trainAnomalyScoreXAxis,
+                labels: xAxisOf(trainAnomalyScoreXAxis),
                 datasets: [
                     dataset(trainAnomalyScoreData, 'train anomaly score', true, 'gray', 'transparent', 0),
                 ]
@@ -577,7 +578,7 @@
         chart4 = new Chart(canvas4, {
             type: 'line',
             data: {
-                labels: testAnomalyScoreXAxis,
+                labels: xAxisOf(testAnomalyScoreData),
                 datasets: [
                     dataset(testAnomalyScoreData, 'test anomaly score', true, 'gray', 'transparent', 0),
                 ]

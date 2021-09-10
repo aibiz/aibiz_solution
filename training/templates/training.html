@@ -398,6 +398,8 @@
         } catch (err) {
             console.error(`Error: ${err}`);
         }
+
+        setBranchLine(chart2, );
     });
 </script>
 
@@ -428,7 +430,9 @@
     var testAnomalyScoreData = [];
     var csvList = [];
     var dataList = [];
+
     var csvIndex = 0;
+    var thresholdLineValue;
     var timer;
 
     //파일 리스트 호출 함수
@@ -522,8 +526,8 @@
                     ); // 1차원 배열
                     testAnomalyScoreData = Object.values(result.test_anomaly_score); // 1차원 배열
 
-                    // if(result.state === "True") drawCharts();
-                    console.log('true');
+                    thresholdLineValue = Number(result.current_threshold);
+
                     drawCharts();
                 };
             }
@@ -547,20 +551,21 @@
             },
             options: {},
         });
+
         chart2 = new Chart(canvas2, {
             type: 'line',
             data: {
-                labels: xAxisOf(trainAnomalyScoreXAxis),
+                labels: trainAnomalyScoreXAxis,
                 datasets: [
                     dataset(trainAnomalyScoreData, 'train anomaly score', true, 'gray', 'transparent', 0),
                 ]
             },
             options: {
                 scales: {
-                    yAxis: [{
+                    yAxes: [{
                         id: "train_anomalies_y",
                     }],
-                    xAxis: [{
+                    xAxes: [{
                         id: "train_anomalies_y",
                         gridLines: {
                             drawTicks: false,
@@ -569,6 +574,8 @@
                 }
             },
         });
+        setBranchLine(chart2, thresholdLineValue);
+
         chart3 =  new Chart(canvas3, {
             type: 'line',
             data: {
@@ -580,21 +587,22 @@
             },
             options: {},
         });
+
         chart4 = new Chart(canvas4, {
             type: 'line',
             data: {
-                labels: xAxisOf(testAnomalyScoreData),
+                labels: testAnomalyScoreData,
                 datasets: [
                     dataset(testAnomalyScoreData, 'test anomaly score', true, 'gray', 'transparent', 0),
                 ]
             },
             options: {
                 scales: {
-                    yAxis: [{
-                        id: "train_anomalies_y",
+                    yAxes: [{
+                        id: "test_anomalies_y",
                     }],
-                    xAxis: [{
-                        id: "train_anomalies_y",
+                    xAxes: [{
+                        id: "test_anomalies_y",
                         gridLines: {
                             drawTicks: false,
                         },
@@ -669,10 +677,7 @@
     function setBranchLine(chart, xValue) {
         var gridLinesColorArray = new Array(chart.data.labels.length);
 
-        for(let xVal in chart.data.labels) {
-            if(xVal === xValue) gridLinesColorArray[chart.data.labels.indexOf(xVal)] = 'red';
-        }
-
+        gridLinesColorArray[chart.data.labels.indexOf(xValue)] = 'red';
         console.log(gridLinesColorArray);
         chart.scales.xAxes[0].gridLines.color = gridLinesColorArray;
     }
@@ -680,24 +685,3 @@
 
 
 {% endblock javascripts %}
-
-
-
-var gridLinesColor = new Array(period_list.length);
-var gridLineWidth = new Array(period_list.length);
-
-for (var i = 1; i <= period_list.length; i++) {
-if (i == 5) {
-gridLinesColor[gridLinesColor.length - i] = 'red';
-gridLineWidth[gridLineWidth.length - i] = 3;
-
-}
-else {
-gridLinesColor[gridLinesColor.length - i] = '#E0E0E0';
-gridLineWidth[gridLineWidth.length - i] = 1;
-}
-}
-
-simul_opt.scales.xAxes[0].gridLines.color = gridLinesColor;
-simul_opt.scales.xAxes[0].gridLines.lineWidth = gridLineWidth;
-}

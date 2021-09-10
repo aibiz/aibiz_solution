@@ -26,7 +26,7 @@ class analysis_main(LoginRequiredMixin, View):
         # 여러 챔버, 장비 선택시 for문 시작점
         # ex for path in selected_list:
         #       datapath = rootpath + path
-        datapath = rootpath + "/static/data/train_data/cc/recipe1" + '/'
+        datapath = rootpath + "/static/data/train_data/11/recipe2" + '/'
         file_list = os.listdir(datapath)
         file_list_csv = [file for file in file_list if file.endswith(".csv")]
         filtered_filelist = []
@@ -76,7 +76,7 @@ class analysis_main(LoginRequiredMixin, View):
         context['normalized_data']= normalized_data
 
         #anomaly 데이터처리
-        anomaly_path = rootpath + "/static/data/monitoring_anomalies/"
+        anomaly_path = rootpath + "/static/data/monitoring_anomalies" + '/'
         anomaly_file_list = os.listdir(anomaly_path)
         anomaly_csv_data = []
         #   파일을 수정시간순으로 정렬

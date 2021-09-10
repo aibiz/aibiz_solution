@@ -505,6 +505,9 @@
                     list += "</tr>";
                 });
 
+                                    console.log('11');
+
+
                 $("#anomalies_list").append(list);
 
                 if (result['state'] == 'True') {
@@ -517,9 +520,12 @@
 
                     // 2번 차트 데이터 (우상단)
                     trainAnomalyScoreXAxis = Object.keys(result.train_anomaly_score).map(
-                        (value) => Math.round((Number(value) * 1000000) / 1000)
+                        (value) => (parseFloat(value)*1000).toFixed(2)
                     ); // 1차원 배열; // 1차원 배열
                     trainAnomalyScoreData = Object.values(result.train_anomaly_score); // 1차원 배열
+
+
+                                        console.log('22');
 
                     // 3번 차트 데이터
                     csvList = result.csv_list.map(
@@ -532,14 +538,17 @@
 
                     // 4번 차트 데이터
                     testAnomalyScoreXAxis = Object.keys(result.test_anomaly_score).map(
-                        (value) => Math.round((Number(value) * 1000000) / 1000)
+                        (value) => (parseFloat(value)*1000).toFixed(2)
                     ); // 1차원 배열
                     testAnomalyScoreData = Object.values(result.test_anomaly_score); // 1차원 배열
+                    console.log('33');
 
-                    thresholdLineValue = Number(result.current_threshold);
+                    thresholdLineValue = result.current_threshold;
+
+                    console.log('aa');
 
                     drawCharts();
-                };
+                }
             }
         });
         //5초 간격으로 하여 디렉토리 파일 리스트 호출 및 csv data 호출(간격 조정 필요한경우 수치 데이터 조정)
@@ -550,6 +559,8 @@
     }
 
     function drawCharts() {
+        console.log('bb');
+
         chart1 = new Chart(canvas1, {
             type: 'line',
             data: {
@@ -561,6 +572,7 @@
             },
             options: {},
         });
+        console.log('cc');
 
         chart2 = new Chart(canvas2, {
             type: 'line',
@@ -576,15 +588,19 @@
                         id: "train_anomalies_y",
                     }],
                     xAxes: [{
-                        id: "train_anomalies_y",
+                        id: "train_anomalies_x",
                         gridLines: {
                             drawTicks: false,
+                            color: [],
                         },
                     }],
                 }
             },
         });
+        console.log('dd');
+
         setBranchLine(chart2, thresholdLineValue);
+        console.log('ee');
 
         chart3 =  new Chart(canvas3, {
             type: 'line',
@@ -612,7 +628,7 @@
                         id: "test_anomalies_y",
                     }],
                     xAxes: [{
-                        id: "test_anomalies_y",
+                        id: "test_anomalies_x",
                         gridLines: {
                             drawTicks: false,
                         },
@@ -685,12 +701,14 @@
     }
 
     function setBranchLine(chart, xValue) {
-        var gridLinesColorArray = new Array(chart.data.labels.length);
+        let gridLinesColorArray = [];
+        for(let i=0; i<chart.data.labels.length; i++) gridLinesColorArray[i] = '#888888';
 
-        for(let value in chart.data.labels) {
-            if (value === xValue) gridLinesColorArray[chart.data.labels.indexOf(xValue)] = 'red';
-            else gridLinesColorArray[chart.data.labels.indexOf(xValue)] = 'black';
-        }
+        console.log("data", chart.data.labels);
+        console.log("x", xValue);
+
+        let idx = chart.data.labels.indexOf(xValue.toString());
+        if (idx !== -1) gridLinesColorArray[idx] = 'red';
 
         console.log(gridLinesColorArray);
         chart.scales.xAxes[0].gridLines.color = gridLinesColorArray;

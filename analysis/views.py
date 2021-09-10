@@ -32,7 +32,8 @@ class analysis_main(LoginRequiredMixin, View):
         # 여러 챔버, 장비 선택시 for문 시작점
         # ex for path in selected_list:
         #       datapath = rootpath + path
-        datapath = rootpath + "/static/data/train_data/11/recipe2" + '/'
+        datapath = rootpath + "/static/data/train_data/11/recipe2" + '/' #server
+        # datapath = rootpath + "/static/data/train_data/cc/recipe1" + '/'#local
         file_list = os.listdir(datapath)
         file_list_csv = [file for file in file_list if file.endswith(".csv")]
         filtered_filelist = []
@@ -43,7 +44,7 @@ class analysis_main(LoginRequiredMixin, View):
             formatted_file_date = time.strptime(date, "%Y_%m_%d")
             if (formatted_startdate <= formatted_file_date and formatted_file_date <= formatted_enddate):
                 filtered_filelist.append(i)
-        print(filtered_filelist)
+        # print(filtered_filelist)
         # for i in range(0, len(filtered_filelist)):
         #     for j in range(0, len(filtered_filelist)):
         #         if datetime.fromtimestamp(os.stat(datapath + filtered_filelist[i]).st_mtime) \
@@ -70,7 +71,7 @@ class analysis_main(LoginRequiredMixin, View):
         ori_data = []
         for i in range(0, len(csv_data)):
             ori_data.append(csv_data[i][1])
-        print("ori:::::::::::::", ori_data)
+        # print("ori:::::::::::::", ori_data)
 
         # 정규화
         normalized_data = []
@@ -93,18 +94,18 @@ class analysis_main(LoginRequiredMixin, View):
                     (anomaly_file_list[i], anomaly_file_list[j]) = (anomaly_file_list[j], anomaly_file_list[i])
         #   파일 리스트 전체의 csv파일 데이터를 읽어들여와 List 형식으로 변환(전체파일)
         for k in anomaly_file_list:
-            anomaly_data = pandas.read_csv(anomaly_path + k, header = None)
+            anomaly_data = pandas.read_csv(anomaly_path + k, header=None, )
             anomaly_data = anomaly_data.values.tolist()
             anomaly_csv_data.append([k, anomaly_data])
 
         context['anomaly_filelist'] = anomaly_file_list
         context['anomaly_csvdata'] = anomaly_csv_data
 
-        print("raw_data:::::::::", context['raw_data'])
-        print("normilized_data:::::::::", context['normalized_data'])
-        print("anomaly_filelist:::::::::::::", context['anomaly_filelist'])
+        # print("raw_data:::::::::", context['raw_data'])
+        # print("normilized_data:::::::::", context['normalized_data'])
+        # print("anomaly_filelist:::::::::::::", context['anomaly_filelist'])
         print("anomaly_csvdata::::::::::::", context['anomaly_csvdata'])
-        print("response!!!!")
+        # print("response!!!!")
         return JsonResponse(context, content_type='application/json')
 
 def normalize(element, mean, std):

@@ -103,6 +103,7 @@ def graphing_training(request):
                    'test_anomaly_score': convert_data(testAnomalyFile, 1),
                    'state': "True"}
         # print("!!!!!!!!!!!!!!!!!!!!!!", context['csv_list'])
+        print(context['status_loss'])
         return JsonResponse(context, content_type='application/json')
     else:
         context['state'] = "False"

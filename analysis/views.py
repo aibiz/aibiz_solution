@@ -96,8 +96,8 @@ class analysis_main(LoginRequiredMixin, View):
 
         print("raw_data:::::::::", context['raw_data'])
         print("normilized_data:::::::::", context['normalized_data'])
-        print("anomaly_filelist:::::::::::::", context['anomaly_filelist'])
-        print("anomaly_csvdata::::::::::::", context['anomaly_csvdata'])
+        # print("anomaly_filelist:::::::::::::", context['anomaly_filelist'])
+        # print("anomaly_csvdata::::::::::::", context['anomaly_csvdata'])
         return render(request, "analysis.html", context)
 
 def normalize(element, mean, std):

@@ -646,8 +646,8 @@
 
         csvIndex--;
 
-        chart3.data.datasets[0].dataList[csvIndex][0] = dataList[0];
-        chart3.data.datasets[1].dataList[csvIndex][1] = dataList[1];
+        chart3.data.datasets[0].dataList = dataList[csvIndex][0];
+        chart3.data.datasets[1].dataList = dataList[csvIndex][1];
         chart3.destroy();
         reloadChart3();
     }

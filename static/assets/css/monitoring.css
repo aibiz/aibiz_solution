@@ -35,15 +35,13 @@ ul {
 .dropdown {
   margin-left: 10px;
 }
-
 .recipe-text {
   color: #5e6e82;
   font-size: 1em;
   font-weight: 510;
 }
 .senser-btn {
-  margin-top: 0.5em;
-  margin-bottom: 0.5em;
+  margin: 0.5em;
   padding: 7px 12px;
   border: none;
   border-radius: 5px;

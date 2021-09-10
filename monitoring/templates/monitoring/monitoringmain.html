@@ -456,11 +456,11 @@ Monitoring{% endblock %}
 
         $.each(result.sensor_list, function (i, item) {
           $("#sensor_list").append(
-            '<li><button class="senser-btn" id="' +
+            '<button class="senser-btn" id="' +
               item.sensor_cd +
               '" type="button" onclick="run_Monitoring(this);">' +
               item.sensor_name +
-              "</button></li>"
+              "</button>"
           );
         });
       },

@@ -128,7 +128,7 @@
                                 <div class="card-text" id="selectedTrainDisp" style="font-weight: bold;"></div>
                                 <input type="hidden" id="selectedTrainHidden" value="Null">
                                 <input type="hidden" id="selectedTrainpathHidden" value="Null">
-                                <input type="hidden" id="selectedEquipnameHidden" value="Null">
+                                <input type="hidden" id="selectedEquipNameHidden" value="Null">
                                 <input type="hidden" id="selectedChamberNameHidden" value="Null">
                                 <input type="hidden" id="selectedRecipeNameHidden" value="Null">
                                 <input type="hidden" id="selectedRevisionNoHidden" value="Null">
@@ -347,7 +347,7 @@
         $('#selectedTrainDisp').text(name)
         $('#selectedTrainHidden').val(id)
         $('#selectedTrainpathHidden').val(path)
-        $('#selectedEquipnameHidden').val(equip)
+        $('#selectedEquipNameHidden').val(equip)
         $('#selectedChamberNameHidden').val(chamber)
         $('#selectedRecipeNameHidden').val(recipe)
         $('#selectedRevisionNoHidden').val(revision)
@@ -371,10 +371,10 @@
         try {
             var trainDataId = document.getElementById('selectedTrainHidden').value;
             var testDataId = document.getElementById('selectedTestHidden').value;
-            var equipName = document.getElementsById('selectedEquipnameHidden')
-            var chamberName = document.getElementsById('selectedChamberNameHidden')
-            var recipeName = document.getElementsById('selectedRecipeNameHidden')
-            var revisionNo = document.getElementsById('selectedRevisionNoHidden')
+            var equipName = document.getElementById('selectedEquipNameHidden').value;
+            var chamberName = document.getElementById('selectedChamberNameHidden').value;
+            var recipeName = document.getElementById('selectedRecipeNameHidden').value;
+            var revisionNo = document.getElementById('selectedRevisionNoHidden').value;
             var sensorNo = document.getElementById('sensorNo').value;
             var thresholdStd = document.getElementById('thresholdStd').value;
 

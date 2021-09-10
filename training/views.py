@@ -1,6 +1,6 @@
 from django.views.generic import View
 from django.shortcuts import render
-from config.models import mmDataset, mmModel
+from config.models import mmDataset, mmModel, mmRecipe
 import json
 import os
 from django.http import HttpRequest, JsonResponse
@@ -46,13 +46,23 @@ def start_training(request):
         learn_anomaly(sensorNo, thresholdStd, trainStaticPath)
         test_anomaly(sensorNo, testStaticPath, trainStaticPath)
 
-        #   equip_name, chamber_name, recipe_name, revision_no, sensor_cd -> recipe id
-        # mmModel.objects.create(
-        #     #모델db 생성데이터
-        #     problem_id=1,
-        #
-        # )
+        print(rsData['equipName'])
+        print(rsData['chamberName'])
+        print(rsData['recipeName'])
+        print(rsData['revisionNo'])
+        recipeId = mmRecipe.objects.get(equip_name=rsData['equipName'], chamber_name=rsData['chamberName'], recipe_name=rsData['recipeName'],
+                             revision_no=rsData['revisionNo'], sensor_cd=rsData['sensorNo']).id
+        print("ID::::::::", recipeId)
+          # equip_name, chamber_name, recipe_name, revision_no, sensor_cd -> recipe id
+        mmModel.objects.create(
+            #모델db 생성데이터
+            problem_id=1,
+            recipe_id=recipeId,
+            dataset_id=rsData['trainDataId'],
+            sensor_cd=sensorNo
+        )
         print("!!!!!!!!!!!!!End Training!!!!!!!!!!!!!")
+
     else:
         print("testdata, traindata모두 입력하세요.")
     return JsonResponse(context, content_type='application/json')

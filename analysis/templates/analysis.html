@@ -222,7 +222,7 @@
                 console.log("2.2",normalizedAnomalyDataArray);
                 console.log("3",normalizedDataArray);
 
-                drawNormalChart(normalDataArray);
+                drawChart(normalDataArray, anomalyDataArray);
             } catch (err) {
                 console.log('aa');
                 console.error(`Error: ${err}`);
@@ -348,7 +348,7 @@
 
             if(isNormalChart || isAnomalyChart) {
                 chart1.destroy();
-                
+
                 isNormalized
                     ? drawChart(normalDataArray, anomalyDataArray)
                     : drawChart(normalizedDataArray, normalizedAnomalyDataArray);

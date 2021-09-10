@@ -11,13 +11,6 @@
 
     <main class="main" id="top">
         <div class="container">
-            <div class="mb-3">
-                <label class="form-label">Sensor Number</label>
-                <label class="form-label" id="select_sensor">null</label>
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                    Select Sensor
-                </button>
-            </div>
             <div class="row g-3 mb-3">
                 <div class="col-lg-3">
                     <div class="card h-100">
@@ -37,6 +30,9 @@
                                 <option value=""></option>
                             </select>
                             <select id="recipe_select" class="mb-0" onchange="find_Sensor(this);">
+                                <option value=""></option>
+                            </select>
+                            <select id="revision_select" class="mb-0" onchange="find_Revision(this);">
                                 <option value=""></option>
                             </select>
                         </div>
@@ -125,57 +121,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- Modal -->
-        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Sensor List</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-{#                            Table in modal                               #}
-                        <div id="tableExample2" data-list='{"valueNames":["check","data_name","data_cnt","data_size"],"page":5,"pagination":true}'>
-                            <div class="table-responsive scrollbar">
-                                <table class="table table-bordered table-striped fs--1 mb-0">
-                                    <thead class="bg-200 text-900">
-                                    <tr>
-                                        <th class="sort" data-sort="Equip_ID">Equip_ID</th>
-                                        <th class="sort" data-sort="Chamber_ID">Chamber_ID</th>
-                                        <th class="sort" data-sort="Sensor_No">Sensor_No</th>
-                                        <th data-sort="check"></th>
-                                    </tr>
-                                    </thead>
-                                    <tbody class="list">
-                                    {% if list %}
-                                        {% for i in list %}
-                                            <td class="Equip_ID">{{ i.equipment_id }}</td>
-                                            <td class="Chamber_ID">{{ i.chamber_id }}</td>
-                                            <td class="Sensor_No">{{ i.sensor_no }}</td>
-                                            <input type="hidden" value="{{ i.id }}">
-                                            <input type="hidden" value="{{ i.data_static_path }}">
-                                            <td>
-                                                <div style="display: none;">
-                                                    <button type="hidden" id="{{ i }}"
-                                                            onclick="selectedId('{{ i.id }}','{{ i.sensor_no }}')">
-                                                    </button>
-                                                </div>
-                                                    <label class="btn-falcon-info" id="is_select"  for="{{ i }}">Select</label>
-                                            </td>
-                                            </tr>
-                                        {% endfor %}
-                                    {% endif %}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-{#            end modal             #}
-
     </main>
 {% endblock %}
 
@@ -184,37 +129,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
     <script src="static/vendors/list.js/list.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-{#    modal내 하단 selectedDisp 내용변경   #}
-    <script>
-        function selectedId(id, name){
-            $('#selectedDisp').text(name)
-            $('#select_sensor').text(name)
-            $('#selectedHidden').val(id)
-        }
-    </script>
-    <script>
-{#     train 시작        #}
-    const button = document.getElementById('train-btn');
-
-    button.addEventListener('click', async _ => {
-        try {
-            var trainDataId = document.getElementById('selectedHidden').value;
-
-            console.log(trainDataId);
-            const response = await fetch('/training/', {
-                method: 'post',
-                body: {
-                    'trainDataId' : trainDataId
-
-                }
-            });
-
-            console.log('Completed!', response);
-        } catch(err) {
-            console.error(`Error: ${err}`);
-        }
-    });
-    </script>
     <script>
         //Monitoring 실시간 화면갱신
         var timer;

@@ -19,63 +19,12 @@ class monitoringmain(View):
     def get(self, request: HttpRequest, *args, **kwargs):
         context = {}
 
-        sql = '''
-            SELECT MD.id, MD.problem_id, MD.equipment_id, MD.chamber_id, MD.recipe_no, MD.sensor_no, MD.dataset_id, DS.data_static_path
-            FROM mm_model MD
-            LEFT OUTER JOIN mm_dataset DS ON MD.dataset_id = DS.id
-            ORDER BY MD.id
-        '''
-        
         #초기화시 장비에 대한 기본 정보 전체 조회
         equip_sql = '''
             SELECT id, equip_name FROM mm_dataset WHERE purpose='TRN' GROUP BY equip_name 
         '''
 
-        #Tree 구현을 위해 각 장비, Chamber, Recipe 별로 카운트를 구해서 처리한다.
-        tree_sql = '''
-            SELECT 
-                TEMP.id,
-                TEMP.equipment_id, 
-                TEMP.chamber_id, 
-                TEMP.recipe_no, 
-                TEMP.sensor_no,
-                TEMP.eqip_cnt,
-                TEMP.cham_cnt,
-                TEMP.rec_cnt,
-                MM_D.data_static_path
-            FROM(
-                SELECT 
-                    id,
-                    dataset_id,
-                    equipment_id, 
-                    chamber_id, 
-                    recipe_no, 
-                    sensor_no,
-                    (CASE @gru_eqip WHEN equipment_id THEN @num_eqip:=@num_eqip+1 ELSE @num_eqip:=1 END) AS eqip_cnt,
-                    (@gru_eqip:=equipment_id) AS tmp_eqip,
-                    (CASE @gru_cham WHEN chamber_id THEN @num_cham:=@num_cham+1 ELSE @num_cham:=1 END) AS cham_cnt,
-                    (@gru_cham:=chamber_id) AS tmp_cham,
-                    (CASE @gru_rec WHEN recipe_no THEN @num_rec:=@num_rec+1 ELSE @num_rec:=1 END) AS rec_cnt,
-                    (@gru_rec:=recipe_no) AS tmp_rec
-                FROM mm_model, 
-                     (SELECT 
-                            @gru_eqip:='', 
-                            @num_eqip:=0, 
-                            @gru_cham:='', 
-                            @num_cham:=0,
-                            @gru_rec:='', 
-                            @num_rec:=0) sub
-                ORDER BY equipment_id) TEMP
-                LEFT OUTER JOIN
-                mm_dataset MM_D ON
-                TEMP.dataset_id = MM_D.id
-        '''
-
-        #list = mmModel.objects.select_related('dataset').all().order_by('id')
-
         context = {
-            'list': mmModel.objects.raw(sql),
-            'equip_list': mmModel.objects.raw(tree_sql),
             'equip_select': mmModel.objects.raw(equip_sql)
         }
 

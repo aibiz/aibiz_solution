@@ -502,8 +502,10 @@
                     statusValLoss = result.status_val_loss;    // 1차원 배열
 
                     // 2번 차트 데이터 (우상단)
-                    trainAnomalyScoreXAxis = Object.keys(result.train_anomaly_score); // 1차원 배열
-                    trainAnomalyScoreData = Onject.values(result.train_anomaly_score); // 1차원 배열
+                    trainAnomalyScoreXAxis = Object.keys(result.train_anomaly_score).map(
+                        (value) => Number(value) * 1000
+                    ); // 1차원 배열; // 1차원 배열
+                    trainAnomalyScoreData = Object.values(result.train_anomaly_score); // 1차원 배열
 
                     // 3번 차트 데이터
                     csvList = result.csv_list.map(
@@ -516,7 +518,7 @@
 
                     // 4번 차트 데이터
                     testAnomalyScoreXAxis = Object.keys(result.test_anomaly_score).map(
-                        (value) => int.parse(value) * 1000
+                        (value) => Number(value) * 1000
                     ); // 1차원 배열
                     testAnomalyScoreData = Object.values(result.test_anomaly_score); // 1차원 배열
 

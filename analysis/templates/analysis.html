@@ -220,8 +220,44 @@
             }
         });
 
-        function drawCharts() {
+        function drawCharts(dataList) {
+            chart1 = new Chart(canvas, {
+                type: 'line',
+                data: {
+                    labels: xAxisOf(dataList),
+                    datasets: [
+                        dataset(dataList, 'status loss', false, null, 'blue', 1),
+                        dataset(statusValLoss, 'status val loss', false, null, 'red', 1),
+                    ]
+                },
+                options: {},
+            });
+        }
 
+        function dataset(
+            data,
+            labelText,
+            isFilled,
+            backgroundColor,
+            borderColor,
+            borderWidth
+        ) {
+            return {
+                label: labelText,
+                type: 'line',
+                fill: isFilled,
+                backgroundColor: isFilled ? backgroundColor : null,
+                pointRadius: 0,
+                borderColor: borderColor,
+                borderWidth: borderWidth,
+                data: data
+            };
+        }
+
+        function xAxisOf(dataList) {
+            return dataList.map(
+                (_, index) => index + 1
+            );
         }
     </script>
 

@@ -588,14 +588,12 @@
             },
             options: {
                 scales: {
-                    id: 'chart2_scales',
                     yAxes: {
                         id: "train_anomalies_y",
                     },
                     xAxes: {
                         id: "train_anomalies_x",
                         grid: {
-                            display: false
                         },
                     },
                 }
@@ -714,8 +712,7 @@
         if (idx !== -1) gridLinesColorArray[idx] = 'red';
 
         console.log(gridLinesColorArray);
-        chart.options.scales.grid.color = gridLinesColorArray;
-        chart.options.scales.grid.color[0] = 'red';
+        chart.options.scales.xAxes.grid.color = gridLinesColorArray;
     }
 </script>
 

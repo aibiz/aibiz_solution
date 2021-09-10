@@ -1,0 +1,125 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+{% block title %}Problem Add{% endblock %}
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+    <div>
+        <h1>Insert Data</h1>
+    </div>
+
+    <main class="main" id="top">
+        <form id="inputForm" method="post" action="">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label class="form-label" for="recipe_id">Recipe ID</label>
+                <input type="text" class="form-control" id="recipe_id" name="recipe_id">
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="recipe_name">Recipe_Name</label>
+                <input type="text" class="form-control" id="recipe_name" name="recipe_name">
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="revision_no">Revision No</label>
+                <input type="text" class="form-control" id="revision_no" name="revision_no">
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="equip_name">Equipment</label>
+                <input type="text" class="form-control" id="equip_name" name="equip_name">
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="chamber_name">Chamber</label>
+                <input type="text" class="form-control" id="chamber_name" name="chamber_name">
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="sensor_cd">Sensor Code</label>
+                <input type="text" class="form-control" id="sensor_cd" name="sensor_cd">
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="sensor_name">Sensor</label>
+                <input type="text" class="form-control" id="sensor_name" name="sensor_name">
+            </div>
+            <div class="mb-3">
+                <button class="btn btn-falcon-primary w-8 mt-3" type="button" onclick="insert_Recipe()">Insert</button>
+                <button class="btn btn-falcon-primary w-8 mt-3" type="button" onclick="back()">Back</button>
+            </div>
+        </form>
+    </main>
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+<script language="JavaScript">
+    function insert_Recipe(){
+
+        if(document.getElementById('recipe_id').value == ""){
+            alert("Recipe ID가 입력되지 않았습니다!");
+            return false;
+        }
+
+        if(document.getElementById('recipe_name').value == ""){
+            alert("Recipe Name가 입력되지 않았습니다!");
+            return false;
+        }
+
+        if(document.getElementById('revision_no').value == ""){
+            alert("Revision No가 입력되지 않았습니다!");
+            return false;
+        }
+
+        if(document.getElementById('equip_name').value == ""){
+            alert("장비명이 입력되지 않았습니다!");
+            return false;
+        }
+
+        if(document.getElementById('chamber_name').value == ""){
+            alert("챔버명이 입력되지 않았습니다!");
+            return false;
+        }
+
+        if(document.getElementById('sensor_cd').value == ""){
+            alert("센서 코드가 입력되지 않았습니다!");
+            return false;
+        }
+
+        if(document.getElementById('sensor_name').value == ""){
+            alert("센서명이 입력되지 않았습니다!");
+            return false;
+        }
+
+        var url = "/master/insertrecipe";
+        //console.log(url);
+        var form = $('#inputForm')[0];
+        var formData = new FormData(form);
+
+        $.ajax({
+            type : 'POST',
+            url : url,
+            headers: { "X-CSRFToken": getCookie("csrftoken") },
+            data : formData,
+            cache: false,
+            contentType: false,
+            processData: false,
+            error: function(request,status,error){
+                 alert("code:"+request.status+"\n"+"error:"+error);
+            },
+            success : function(result){
+                if (result.success == false) {
+                        alert(result.message);
+                }
+                else {
+                    alert(result.message);
+                    location.href='/master'
+                }
+            }
+        });
+    }
+
+    function back()
+    {
+        location.href='/master'
+    }
+</script>
+{% endblock javascripts %}

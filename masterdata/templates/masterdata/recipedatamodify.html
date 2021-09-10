@@ -15,17 +15,36 @@
             {% csrf_token %}
             <input type="hidden" id="id" value="{{ data.id }}">
             <div class="mb-3">
-                <label class="form-label" for="problem_name">Problem Name</label>
-                <input type="text" class="form-control" id="problem_name" name="problem_name" value="{{ data.problem_name }}">
+                <label class="form-label" for="recipe_id">Recipe ID</label>
+                <input type="text" class="form-control" id="recipe_id" name="recipe_id" value="{{ data.recipe_id }}">
             </div>
             <div class="mb-3">
-                <label class="form-label" for="problem_note">Problem Note</label>
-                <textarea class="form-control" id="problem_note" name="problem_note"
-                    rows="20" maxlength="4096">{{ data.problem_note }}</textarea>
+                <label class="form-label" for="recipe_name">Recipe_Name</label>
+                <input type="text" class="form-control" id="recipe_name" name="recipe_name" value="{{ data.recipe_name }}">
             </div>
             <div class="mb-3">
-                <button class="btn btn-falcon-primary w-8 mt-3" type="button" onclick="update_Problem()">Confirm</button>
-                <button class="btn btn-falcon-primary w-8 mt-3" type="button" onclick="delete_Problem()">Delete</button>
+                <label class="form-label" for="revision_no">Revision No</label>
+                <input type="text" class="form-control" id="revision_no" name="revision_no" value="{{ data.revision_no }}">
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="equip_name">Equipment</label>
+                <input type="text" class="form-control" id="equip_name" name="equip_name" value="{{ data.equip_name }}">
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="chamber_name">Chamber</label>
+                <input type="text" class="form-control" id="chamber_name" name="chamber_name" value="{{ data.chamber_name }}">
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="sensor_cd">Sensor Code</label>
+                <input type="text" class="form-control" id="sensor_cd" name="sensor_cd" value="{{ data.sensor_cd }}">
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="sensor_name">Sensor</label>
+                <input type="text" class="form-control" id="sensor_name" name="sensor_name" value="{{ data.sensor_name }}">
+            </div>
+            <div class="mb-3">
+                <button class="btn btn-falcon-primary w-8 mt-3" type="button" onclick="update_Recipe()">Confirm</button>
+                <button class="btn btn-falcon-primary w-8 mt-3" type="button" onclick="delete_Recipe()">Delete</button>
                 <button class="btn btn-falcon-primary w-8 mt-3" type="button" onclick="back()">Back</button>
             </div>
         </form>
@@ -35,9 +54,9 @@
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
 <script language="JavaScript">
-    function update_Problem(){
+    function update_Recipe(){
 
-        var url = "/master/updateproblem";
+        var url = "/master/updaterecipe";
         //console.log(url);
         var form = $('#inputForm')[0];
         var formData = new FormData(form);
@@ -66,9 +85,9 @@
         });
     }
 
-    function delete_Problem(){
+    function delete_Recipe(){
 
-        var url = "/master/deleteproblem";
+        var url = "/master/deleterecipe";
 
         var formData = new FormData();
         formData.append("id", document.getElementById('id').value);

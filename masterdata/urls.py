@@ -6,9 +6,12 @@ urlpatterns = [
     path('master/recipefind', views.masterdatarecipefind.as_view(), name='mastermainrecipefind'),
     path('master/problemfind', views.masterdataproblemfind.as_view(), name='mastermainproblemfind'),
     path('master/datasetfind', views.masterdatadatasetfind.as_view(), name='mastermaindatasetfind'),
-    #mm_model
-    path('master/equipmodify', views.equipmentdatamodify.as_view(), name='equipmodify'),
-    path('master/updateequip', views.update_equipment.as_view(), name='updateequip'),
+    #mm_recipe
+    path('master/recipemodify', views.recipedatamodify.as_view(), name='recipemodify'),
+    path('master/updaterecipe', views.update_recipe.as_view(), name='updaterecipe'),
+    path('master/deleterecipe', views.delete_recipe.as_view(), name='deleterecipe'),
+    path('master/recipeinsert', views.recipedatainsert.as_view(), name='recipeinsert'),
+    path('master/insertrecipe', views.insert_recipe.as_view(), name='insertrecipe'),
     #mm_problem
     path('master/problemmodify', views.problemdatamodify.as_view(), name='problemmodify'),
     path('master/updateproblem', views.update_problem.as_view(), name='updateproblem'),

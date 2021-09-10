@@ -171,7 +171,6 @@
 
         var normalDataMaxIndex = 0;
         var anomalyDataMaxIndex = 0;
-        var normalizedDataMaxIndex = 0;
 
         var normalBtn = document.getElementById('normal');
         var anomalyBtn = document.getElementById('anomalies');
@@ -251,7 +250,7 @@
                             ? normalDataMaxIndex
                             : index;
 
-                    return dataset(value, '', false, 'red', null, 1);
+                    return dataset(value, '', false, null, 'red', 1);
                 }
             );
 

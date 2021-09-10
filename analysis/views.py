@@ -13,6 +13,11 @@ class analysis_main(LoginRequiredMixin, View):
     def get(self, request: HttpRequest, *args, **kwargs):
         context = {}
 
+        query1 = request.GET.get('date_start', 'Null')
+        query2 = request.GET.get('date_end','Null')
+        if (query1=='Null') & (query2=='Null'):
+            return render(request, "analysis.html", context)
+
         today = datetime.today().strftime("%Y-%m-%d")
         date_start = request.GET.get('date_start', today)
         date_end = request.GET.get('date_end', today)
@@ -96,9 +101,9 @@ class analysis_main(LoginRequiredMixin, View):
 
         print("raw_data:::::::::", context['raw_data'])
         print("normilized_data:::::::::", context['normalized_data'])
-        # print("anomaly_filelist:::::::::::::", context['anomaly_filelist'])
-        # print("anomaly_csvdata::::::::::::", context['anomaly_csvdata'])
-        return render(request, "analysis.html", context)
+        print("anomaly_filelist:::::::::::::", context['anomaly_filelist'])
+        print("anomaly_csvdata::::::::::::", context['anomaly_csvdata'])
+        return JsonResponse(context, content_type='application/json')
 
 def normalize(element, mean, std):
     return (element-mean)/std

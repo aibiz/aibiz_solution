@@ -61,16 +61,12 @@ class mmModel(models.Model):
     id = models.AutoField(primary_key=True)
     problem_id = models.IntegerField(db_column='problem_id')
     equipment_id = models.IntegerField(db_column='equipment_id')
-    chamber_id = models.IntegerField(db_column='chamber_id')
-    recipe_no = models.CharField(db_column='recipe_no', max_length=45, default='')
+    recipe_id = models.IntegerField(db_column='recipe_id')
     sensor_no = models.CharField(db_column='sensor_no', max_length=255, default='')
     dataset = models.ForeignKey('mmDataset', on_delete=models.DO_NOTHING)
     sensor_no = models.CharField(db_column='sensor_no', max_length=255, default='')
-    threshold_std = models.FloatField(db_column='threshold_std', default='0')
-    threshold_output = models.FloatField(db_column='threshold_output', default='0')
-    threshold_adjust = models.FloatField(db_column='threshold_adjust', default='0')
     model_name = models.CharField(db_column='model_name', max_length=255, default='')
-    model_name = models.CharField(db_column='model_name_en', max_length=255, default='')
+    model_name_en = models.CharField(db_column='model_name_en', max_length=255, default='')
     user_id = models.IntegerField(db_column='user_id')
     created_at = models.DateTimeField(db_column='created_at', auto_now=True)
     delete_flag = models.CharField(db_column='delete_flag', max_length=10, default='0')
@@ -93,9 +89,8 @@ class mhMonitoring(models.Model):
 class mmEquipspec(models.Model):
     id = models.AutoField(primary_key=True)
     equip_name = models.CharField(db_column='equip_name', max_length=50)
-    chamber_name = models.CharField(db_column='chamber_name', max_length=50)
-    sensor_cd = models.CharField(db_column='sensor_cd', max_length=50)
-    sensor_name = models.CharField(db_column='sensor_name', max_length=255)
+    chamber_cnt = models.IntegerField(db_column='chamber_cnt')
+    sensor_cnt = models.IntegerField(db_column='sensor_cnt')
 
     class Meta:
         db_table = 'mm_equipspec'
@@ -105,6 +100,7 @@ class mmRecipe(models.Model):
     recipe_id = models.IntegerField(db_column='recipe_id')
     recipe_name = models.CharField(db_column='recipe_name', max_length=50)
     revision_no = models.CharField(db_column='revision_no', max_length=50)
+    equip_name = models.CharField(db_column='equip_name', max_length=50)
     equip_name = models.CharField(db_column='equip_name', max_length=50)
     sensor_id = models.IntegerField(db_column='sensor_id')
 

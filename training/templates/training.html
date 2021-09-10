@@ -639,10 +639,7 @@
     }
 
     function leftBtnClick() {
-        console.log(csvIndex);
-
         if(csvIndex <= 0) return;
-        console.log(csvIndex);
 
         csvIndex--;
 
@@ -668,7 +665,39 @@
             (_, index) => index + 1
         );
     }
+
+    function setBranchLine(chart, xValue) {
+        var gridLinesColorArray = new Array(chart.data.labels.length);
+
+        for(let xVal in chart.data.labels) {
+            if(xVal === xValue) gridLinesColorArray[chart.data.labels.indexOf(xVal)] = 'red';
+        }
+
+        console.log(gridLinesColorArray);
+        chart.scales.xAxes[0].gridLines.color = gridLinesColorArray;
+    }
 </script>
 
 
 {% endblock javascripts %}
+
+
+
+var gridLinesColor = new Array(period_list.length);
+var gridLineWidth = new Array(period_list.length);
+
+for (var i = 1; i <= period_list.length; i++) {
+if (i == 5) {
+gridLinesColor[gridLinesColor.length - i] = 'red';
+gridLineWidth[gridLineWidth.length - i] = 3;
+
+}
+else {
+gridLinesColor[gridLinesColor.length - i] = '#E0E0E0';
+gridLineWidth[gridLineWidth.length - i] = 1;
+}
+}
+
+simul_opt.scales.xAxes[0].gridLines.color = gridLinesColor;
+simul_opt.scales.xAxes[0].gridLines.lineWidth = gridLineWidth;
+}

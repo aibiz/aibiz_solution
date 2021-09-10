@@ -507,7 +507,7 @@
 
                     // 2번 차트 데이터 (우상단)
                     trainAnomalyScoreXAxis = Object.keys(result.train_anomaly_score).map(
-                        (value) => Math.round(parseFloat(value).toFixed(5)) * 1000
+                        (value) => (parseFloat(value)*1000).toFixed(2)
                     ); // 1차원 배열; // 1차원 배열
                     trainAnomalyScoreData = Object.values(result.train_anomaly_score); // 1차원 배열
 
@@ -522,7 +522,7 @@
 
                     // 4번 차트 데이터
                     testAnomalyScoreXAxis = Object.keys(result.test_anomaly_score).map(
-                        (value) => Math.round(parseFloat(value).toFixed(5)) * 1000
+                        (value) => (parseFloat(value)*1000).toFixed(2)
                     ); // 1차원 배열
                     testAnomalyScoreData = Object.values(result.test_anomaly_score); // 1차원 배열
 

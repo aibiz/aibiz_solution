@@ -287,7 +287,13 @@
                     labels: xAxisOf(maxXAxisLength),
                     datasets: [...normalDataSets, ...anomalyDataSets],
                 },
-                options: {},
+                options: {
+                    legend: {
+                        labels: {
+                            display: false
+                        }
+                    }
+                },
             });
         }
 

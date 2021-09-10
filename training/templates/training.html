@@ -588,6 +588,7 @@
             },
             options: {
                 scales: {
+                    id: 'chart2_scales',
                     yAxes: [{
                         id: "train_anomalies_y",
                     }],
@@ -612,7 +613,9 @@
                     dataset(dataList[csvIndex][1], 'test predicted', false, null, 'red', 1),
                 ]
             },
-            options: {},
+            options: {
+
+            },
         });
 
         chart4 = new Chart(canvas4, {
@@ -712,7 +715,9 @@
 
         console.log(gridLinesColorArray);
         // chart.options.scales.xAxes[0].gridLines.color = gridLinesColorArray;
-        console.log("aa", chart2.options);
+        console.log("aa", chart2.options.scales.grid);
+        console.log("bb", chart2.options.scales[0].grid);
+        console.log("cc", chart2.options.scales['chart2_scales'].grid);
     }
 </script>
 

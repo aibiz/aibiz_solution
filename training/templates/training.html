@@ -96,7 +96,8 @@
                                         <div style="display: none;">
                                             <button type="hidden" id="m1_{{ i }}"
                                                     onclick="selectTrainId('{{ i.id }}','{{ i.data_name }}'
-                                                                        ,'{{ i.data_cnt }}','{{ i.data_size }}', '{{ i.data_static_path }}')">
+                                                                        ,'{{ i.data_cnt }}','{{ i.data_size }}', '{{ i.data_static_path }}
+                                                            , {{ i.equip_name }}')">
                                             </button>
                                         </div>
                                         <label class="btn-falcon-info" id="is_select"  for="m1_{{ i }}">Select</label>
@@ -555,10 +556,8 @@
             }
         });
         //5초 간격으로 하여 디렉토리 파일 리스트 호출 및 csv data 호출(간격 조정 필요한경우 수치 데이터 조정)
-        if (result['state'] == 'True')
-        {
+        {#if (result['state'] == 'True')#}
             timer = setTimeout("executeMonitoring()", 5000);
-        }
     }
 
     function drawCharts() {

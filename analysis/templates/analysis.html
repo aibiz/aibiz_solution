@@ -185,6 +185,7 @@
                         {#sensor_num#}
                 });
                 console.log('Completed!', response);
+                return response.json();
             } catch (err) {
                 console.error(`Error: ${err}`);
             }

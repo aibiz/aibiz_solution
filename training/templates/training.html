@@ -594,8 +594,7 @@
                     xAxes: [{
                         id: "train_anomalies_x",
                         gridLines: {
-                            drawTicks: false,
-                            color: [],
+                            display: false,
                         },
                     }],
                 }
@@ -701,6 +700,8 @@
             (_, index) => index + 1
         );
     }
+
+
 
     function setBranchLine(chart, xValue) {
         let gridLinesColorArray = [];

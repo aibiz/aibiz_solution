@@ -47,11 +47,11 @@ def start_training(request):
         test_anomaly(sensorNo, testStaticPath, trainStaticPath)
 
         #   equip_name, chamber_name, recipe_name, revision_no, sensor_cd -> recipe id
-        mmModel.objects.create(
-            #모델db 생성데이터
-            problem_id=1,
-
-        )
+        # mmModel.objects.create(
+        #     #모델db 생성데이터
+        #     problem_id=1,
+        #
+        # )
         print("!!!!!!!!!!!!!End Training!!!!!!!!!!!!!")
     else:
         print("testdata, traindata모두 입력하세요.")

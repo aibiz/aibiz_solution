@@ -53,6 +53,10 @@ def start_training(request):
         #
         # )
         print("!!!!!!!!!!!!!End Training!!!!!!!!!!!!!")
+        print(rsData['equipName'])
+        print(rsData['chamberName'])
+        print(rsData['recipeName'])
+        print(rsData['revisionNo'])
     else:
         print("testdata, traindata모두 입력하세요.")
     return JsonResponse(context, content_type='application/json')

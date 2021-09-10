@@ -361,6 +361,11 @@
 
             chart1.destroy();
 
+            console.log(normalizedStatusLossArray);
+            console.log(normalizedStatusValLossArray);
+            console.log(statusLossArray);
+            console.log(statusValLossArray);
+
             isNormalized
                 ? drawAnomalyChart(normalizedStatusLossArray, normalizedStatusValLossArray)
                 : drawAnomalyChart(statusLossArray, statusValLossArray);

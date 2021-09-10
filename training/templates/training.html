@@ -550,18 +550,18 @@
                 ]
             },
             options: {
-                scales: {
-                    yAxis: [{
-                        id: "train_anomalies_y",
-                    }],
-                    xAxis: [{
-                        id: "train_anomalies_y",
-                        gridLines: {
-                            drawTicks: false,
-                        },
-                    }],
-                }
-            },
+            //     scales: {
+            //         yAxis: [{
+            //             id: "train_anomalies_y",
+            //         }],
+            //         xAxis: [{
+            //             id: "train_anomalies_y",
+            //             gridLines: {
+            //                 drawTicks: false,
+            //             },
+            //         }],
+            //     }
+            // },
         });
         chart3 =  new Chart(canvas3, {
             type: 'line',
@@ -583,21 +583,20 @@
                 ]
             },
             options: {
-                scales: {
-                    yAxis: [{
-                        id: "train_anomalies_y",
-                    }],
-                    xAxis: [{
-                        id: "train_anomalies_y",
-                        gridLines: {
-                            drawTicks: false,
-                        },
-                    }],
-                }
+                // scales: {
+                //     yAxis: [{
+                //         id: "train_anomalies_y",
+                //     }],
+                //     xAxis: [{
+                //         id: "train_anomalies_y",
+                //         gridLines: {
+                //             drawTicks: false,
+                //         },
+                //     }],
+                // }
             },
         });
     }
-
 
     function reloadChart3() {
         chart3 =  new Chart(canvas3, {
@@ -645,7 +644,9 @@
     }
 
     function rightBtnClick() {
+        console.log()
         if(csvIndex >= dataList.length - 1) return;
+        console.log(csvIndex);
 
         csvIndex++;
 

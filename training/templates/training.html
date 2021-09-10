@@ -683,7 +683,7 @@
         console.log("x", xValue);
         console.log("idx", idx);
 
-        let idx = chart.data.labels.indexOf(xValue);
+        let idx = chart.data.labels.indexOf(xValue.toString());
         if (idx !== -1) gridLinesColorArray[idx] = 'red';
 
         console.log(gridLinesColorArray);

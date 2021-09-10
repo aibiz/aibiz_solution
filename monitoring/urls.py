@@ -12,6 +12,7 @@ urlpatterns = [
     path('monitoring/execute', monitoring_views.execute_monitoring.as_view(), name='execute_monitoring'),
     path('monitoring/find_chamber', monitoring_views.find_chamber.as_view(), name='find_chamber'),
     path('monitoring/find_recipe', monitoring_views.find_recipe.as_view(), name='find_recipe'),
+    path('monitoring/find_revision', monitoring_views.find_revision.as_view(), name='find_revision'),
     path('monitoring/find_sensor', monitoring_views.find_sensor.as_view(), name='find_sensor'),
     path('monitoring/run_monitoring', monitoring_views.run_monitoring.as_view(), name='run_monitoring'),
     path('monitoring/upload', monitoring_views.monitoring_upload.as_view(), name='monitoring_upload'),

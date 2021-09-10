@@ -29,10 +29,10 @@
                             <select id="chamber_select" class="mb-0" onchange="find_Recipe(this);">
                                 <option value=""></option>
                             </select>
-                            <select id="recipe_select" class="mb-0" onchange="find_Sensor(this);">
+                            <select id="recipe_select" class="mb-0" onchange="find_Revision(this);">
                                 <option value=""></option>
                             </select>
-                            <select id="revision_select" class="mb-0" onchange="find_Revision(this);">
+                            <select id="revision_select" class="mb-0" onchange="find_Sensor(this);">
                                 <option value=""></option>
                             </select>
                         </div>
@@ -352,9 +352,39 @@
             });
         }
 
+        function find_Revision(object){
+            var recipe_Name = object.value;
+
+            var url = '/monitoring/find_revision';
+
+            $.ajax({
+                type : 'POST',
+                url : url,
+                headers: { "X-CSRFToken": getCookie("csrftoken") },
+                dataType: 'json',
+                contentType: 'application/json; charset=utf-8',
+                data : JSON.stringify({ recipe_name: recipe_Name }),
+                cache: false,
+                processData: false,
+                error: function(request,status,error){
+                     //alert("code:"+request.status+"\n"+"error:"+error);
+                },
+                success : function(result){
+                    $('#revision_select').empty();
+                    $('#revision_select').append('<option value=""></option>');
+
+                    $.each(result.revision_list, function(i, item){
+                        $('#revision_select').append('<option value="' + item + '">' + item + '</option>');
+                    });
+                }
+            });
+        }
+
         function find_Sensor(){
             var equip_Name = document.getElementById('equip_select').value;
             var chamber_Name = document.getElementById('chamber_select').value;
+            var recipe_Name = document.getElementById('recipe_select').value;
+            var revision_No = document.getElementById('revision_select').value;
 
             var url = '/monitoring/find_sensor';
 
@@ -366,7 +396,9 @@
                 contentType: 'application/json; charset=utf-8',
                 data : JSON.stringify({
                     equip_name: equip_Name,
-                    chamber_name: chamber_Name
+                    chamber_name: chamber_Name,
+                    recipe_name: recipe_Name,
+                    revision_no: revision_No
                 }),
                 cache: false,
                 processData: false,
@@ -388,7 +420,7 @@
             var equip_Name = document.getElementById('equip_select').value;
             var chamber_Name = document.getElementById('chamber_select').value;
             var recipe_Name = document.getElementById('recipe_select').value;
-            var sensor_No = object.id;
+            var sensor_Cd = object.id;
 
             var url = '/monitoring/run_monitoring';
 
@@ -402,7 +434,7 @@
                     equip_name: equip_Name,
                     chamber_name: chamber_Name,
                     recipe_name: recipe_Name,
-                    sensor_no: sensor_No
+                    sensor_cd: sensor_Cd
                 }),
                 cache: false,
                 processData: false,

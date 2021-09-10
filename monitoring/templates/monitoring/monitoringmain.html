@@ -315,6 +315,7 @@
                 success : function(result){
                     $('#chamber_select').empty();
                     $('#recipe_select').empty();
+                    $('#revision_select').empty();
                     $('#chamber_select').append('<option value=""></option>');
 
                     $.each(result.chamber_list, function(i, item){
@@ -343,6 +344,7 @@
                 },
                 success : function(result){
                     $('#recipe_select').empty();
+                    $('#revision_select').empty();
                     $('#recipe_select').append('<option value=""></option>');
 
                     $.each(result.recipe_list, function(i, item){

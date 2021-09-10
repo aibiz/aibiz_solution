@@ -119,6 +119,12 @@ class run_monitoring(View):
         data = mmDataset.objects.filter(equip_name=equip_name, chamber_name=chamber_name, recipe_name=recipe_name, purpose='TRN').values_list('data_static_path', flat=True)
         path = rootpath + data[len(data) - 1]
 
+        #mh_monitoring 테이블에 관련 데이터를 저장하기 위하여 mm_model 테이블에서 정보를 조회한 뒤 테이블에 입력한다
+        dataset_id = mmDataset.objects.filter(equip_name=equip_name, chamber_name=chamber_name, recipe_name=recipe_name, purpose='TRN').values_list('id', flat=True)
+        model_id = mmModel.object.filter(dataset_id=dataset_id).values_list('id', flat=True)
+        model_id = data[len(model_id) - 1]
+        print(model_id)
+
         #test용으로 센서 번호만 이렇게..
         #sensor_cd = 2
 

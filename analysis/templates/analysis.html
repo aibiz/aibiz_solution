@@ -171,7 +171,6 @@
 
         var normalDataMaxIndex = 0;
         var anomalyDataMaxIndex = 0;
-        var normalizedDataMaxIndex = 0;
 
         var normalBtn = document.getElementById('normal');
         var anomalyBtn = document.getElementById('anomalies');
@@ -251,7 +250,7 @@
                             ? normalDataMaxIndex
                             : index;
 
-                    return dataset(value, '', false, 'black', null, 1);
+                    return dataset(value, '', false, null, 'transparent', 1);
                 }
             );
 
@@ -360,6 +359,11 @@
             if(isAnomalyChart)  return;
 
             chart1.destroy();
+
+            console.log(normalizedStatusLossArray);
+            console.log(normalizedStatusValLossArray);
+            console.log(statusLossArray);
+            console.log(statusValLossArray);
 
             isNormalized
                 ? drawAnomalyChart(normalizedStatusLossArray, normalizedStatusValLossArray)

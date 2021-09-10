@@ -19,15 +19,15 @@ class analysis_main(LoginRequiredMixin, View):
         query2 = request.GET.get('date_end','Null')
         if (query1=='Null') & (query2=='Null'):
             print("render!!!!")
-            return render(request, "analysis.html", context)
-
-        equip_sql = '''
+            equip_sql = '''
             SELECT id, equip_name FROM mm_dataset WHERE purpose='TRN' GROUP BY equip_name 
         '''
+            context = {
+                'equip_select': mmModel.objects.raw(equip_sql)
+            }
+            return render(request, "analysis.html", context)
 
-        context = {
-            'equip_select': mmModel.objects.raw(equip_sql)
-        }
+
 
         today = datetime.today().strftime("%Y-%m-%d")
         date_start = request.GET.get('date_start', today)

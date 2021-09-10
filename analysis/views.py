@@ -99,7 +99,7 @@ class analysis_main(LoginRequiredMixin, View):
         for l in range(0, len(csv_data)):
             normalized_data.append(list(map(lambda element: normalize(element, mean_val, std_val), ori_data[l])))
         for m in range(0, len(anomaly_csv_data)):
-            normalized_anomaly_csvdata.append(list(map(lambda element: normalize(element, mean_val, std_val), anomaly_csv_data)))
+            normalized_anomaly_csvdata.append(list(map(lambda element: normalize(element, mean_val, std_val), anomaly_csv_data[m])))
 
 
         print("nomalized:::::::", normalized_data)

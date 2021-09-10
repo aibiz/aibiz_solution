@@ -82,8 +82,8 @@ class analysis_main(LoginRequiredMixin, View):
         #   파일을 수정시간순으로 정렬
         for i in range(0, len(anomaly_file_list)):
             for j in range(0, len(anomaly_file_list)):
-                if datetime.datetime.fromtimestamp(os.stat(anomaly_path + anomaly_file_list[i]).st_mtime) \
-                        < datetime.datetime.fromtimestamp(os.stat(anomaly_path + anomaly_file_list[j]).st_mtime):
+                if datetime.fromtimestamp(os.stat(anomaly_path + anomaly_file_list[i]).st_mtime) \
+                        < datetime.fromtimestamp(os.stat(anomaly_path + anomaly_file_list[j]).st_mtime):
                     (anomaly_file_list[i], anomaly_file_list[j]) = (anomaly_file_list[j], anomaly_file_list[i])
         #   파일 리스트 전체의 csv파일 데이터를 읽어들여와 List 형식으로 변환(전체파일)
         for k in anomaly_file_list:

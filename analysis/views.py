@@ -76,7 +76,7 @@ class analysis_main(LoginRequiredMixin, View):
         context['normalized_data']= normalized_data
 
         #anomaly 데이터처리
-        anomaly_path = rootpath + "/static/data/monitoring_anomalies"
+        anomaly_path = rootpath + "/static/data/monitoring_anomalies/"
         anomaly_file_list = os.listdir(anomaly_path)
         anomaly_csv_data = []
         #   파일을 수정시간순으로 정렬

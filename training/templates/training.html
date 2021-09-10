@@ -527,7 +527,9 @@
                     ); // 1차원 배열
                     testAnomalyScoreData = Object.values(result.test_anomaly_score); // 1차원 배열
 
-                    thresholdLineValue = Number(result.current_threshold);
+                    thresholdLineValue = result.current_threshold;
+
+                    console.log('aa');
 
                     drawCharts();
                 }
@@ -541,6 +543,8 @@
     }
 
     function drawCharts() {
+                            console.log('bb');
+
         chart1 = new Chart(canvas1, {
             type: 'line',
             data: {
@@ -552,6 +556,7 @@
             },
             options: {},
         });
+                    console.log('cc');
 
         chart2 = new Chart(canvas2, {
             type: 'line',
@@ -576,7 +581,10 @@
                 }
             },
         });
+                            console.log('dd');
+
         setBranchLine(chart2, thresholdLineValue);
+                    console.log('ee');
 
         chart3 =  new Chart(canvas3, {
             type: 'line',

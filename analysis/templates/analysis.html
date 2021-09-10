@@ -184,8 +184,9 @@
                     {#    date_end: date_end#}
                         {#sensor_num#}
                 });
+                var res = await response.json();
+                console.log(res);
                 console.log('Completed!', response);
-                console.log(response.json());
             } catch (err) {
                 console.error(`Error: ${err}`);
             }

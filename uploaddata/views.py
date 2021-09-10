@@ -47,14 +47,14 @@ class DataUploadView(LoginRequiredMixin, View):
         elif type == 'test_data':
             purpose = 'TST'
         
-        rsEquip = mmEquipspec.objects.all().values_list('equip_name', flat=True).distinct()
+        rsEquip = mmRecipe.objects.all().values_list('equip_name', flat=True).distinct()
         context['rsEquip'] = rsEquip
         if rsEquip and equip_name=='':
             equip_name = rsEquip[0]
 
         context['equip_name'] = equip_name
 
-        rsChamber = mmEquipspec.objects.filter(equip_name=equip_name).values_list('chamber_name', flat=True).distinct()
+        rsChamber = mmRecipe.objects.filter(equip_name=equip_name).values_list('chamber_name', flat=True).distinct()
         context['rsChamber'] = rsChamber
         if rsChamber and chamber_name=='':
             chamber_name = rsChamber[0]

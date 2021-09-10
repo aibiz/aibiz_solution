@@ -526,26 +526,27 @@
                     // // else console.log(testAnomalyScoreData.values());
                     // else console.log('else');
 
+                    console.log(testAnomalyScoreData);
 
-
-                    if(testAnomalyScoreData.key === undefined) console.log("no key2");
-                    // else console.log(testAnomalyScoreData.key);
-                    else console.log('else');
-                    if(testAnomalyScoreData.value === undefined) console.log("no value2");
-                    // else console.log(testAnomalyScoreData.value);
-                                        else console.log('else');
-
-                    if(testAnomalyScoreData.keys === undefined) console.log("no key3");
-                    else console.log(testAnomalyScoreData.keys);
-                    if(testAnomalyScoreData.values === undefined) console.log("no value3");
-                    else console.log(testAnomalyScoreData.values);
+                    // if(testAnomalyScoreData.key === undefined) console.log("no key2");
+                    // // else console.log(testAnomalyScoreData.key);
+                    // else console.log('else');
+                    // if(testAnomalyScoreData.value === undefined) console.log("no value2");
+                    // // else console.log(testAnomalyScoreData.value);
+                    //                     else console.log('else');
+                    //
+                    // if(testAnomalyScoreData.keys === undefined) console.log("no key3");
+                    // else console.log(testAnomalyScoreData.keys);
+                    // if(testAnomalyScoreData.values === undefined) console.log("no value3");
+                    // else console.log(testAnomalyScoreData.values);
 
                     // console.log(testAnomalyScoreData.values());
                     // console.log(testAnomalyScoreData.key);
                     // console.log(testAnomalyScoreData.value);
                     // testAnomalyScoreXAxis = testAnomalyScoreData.map();
 
-                    if(result.state === "True") drawCharts();
+                    if(result.state === "True") console.log('true')
+                    if(result.statusCode === 200) console.log('200');
                 };
             }
         });

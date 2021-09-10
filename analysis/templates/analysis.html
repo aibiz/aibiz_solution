@@ -142,6 +142,10 @@
                                 <div class="col">Date</div>
                                 <div class="col">제품명</div>
                             </div>
+                            <table
+                                    id="anomalies_list"
+                                    style="width: 100%; margin-top: 1em"
+                            ></table>
                         </div>
                     </div>
                 </div>
@@ -172,6 +176,8 @@
         var normalizeBtn = document.getElementById('normalize');
         var startBtn = document.getElementById('start-btn');
 
+        var isNormalized = false;
+
         document.getElementById("date-start").value = new Date()
             .toISOString()
             .substring(0, 10);
@@ -181,7 +187,7 @@
     </script>
     <script>
         normalBtn.addEventListener('click', normalBtnClick);
-        anomalyBtn.addEventListener('click', anomalyBtnClick);
+        // anomalyBtn.addEventListener('click', anomalyBtnClick);
         normalizeBtn.addEventListener('click', normalizeBtnClick);
 
         startBtn.addEventListener('click', async _ => {
@@ -245,27 +251,33 @@
                     labels: xAxisOf(normalDataArray[normalDataMaxIndex]),
                     datasets: datasets
                 },
-                options: {},
-            });
-        }
-
-        function drawAnomalyChart(statusLoss, statusValLoss) {
-            var statusLossDatSets = statusLoss.map(
-                (value) => dataset(value, '', false, 'black', null, 1)
-            );
-            var statusValLossDatSets = statusValLoss.map(
-                (value) => dataset(value, '', false, 'black', null, 1)
-            );
-
-            chart1 = new Chart(canvas, {
-                type: 'line',
-                data: {
-                    labels: xAxisOf(normalDataArray[normalDataMaxIndex]),
-                    datasets: statusLoss + statusLossDatSets,
+                options: {
+                    scales: {
+                        legend: {
+                            display: false
+                        }
+                    }
                 },
-                options: {},
             });
         }
+
+        // function drawAnomalyChart(statusLoss, statusValLoss) {
+        //     var statusLossDatSets = statusLoss.map(
+        //         (value) => dataset(value, '', false, 'black', null, 1)
+        //     );
+        //     var statusValLossDatSets = statusValLoss.map(
+        //         (value) => dataset(value, '', false, 'black', null, 1)
+        //     );
+        //
+        //     chart1 = new Chart(canvas, {
+        //         type: 'line',
+        //         data: {
+        //             labels: xAxisOf(normalDataArray[normalDataMaxIndex]),
+        //             datasets: statusLossDatSets + statusValLossDatSets,
+        //         },
+        //         options: {},
+        //     });
+        // }
 
         function drawNormalizedChart(dataList) {
             var datasets = dataList.map(
@@ -317,17 +329,20 @@
 
         function normalBtnClick() {
             chart1.destroy();
-            drawNormalChart(normalDataArray);
-        }
 
-        function anomalyBtnClick() {
-            chart1.destroy();
-            drawAnomalyChart(statusLossArray, statusValLossArray);
+            if(isNormalized)    drawNormalChart(normalDataArray)
+            else    drawNormalizedChart(normalizedDataArray);
         }
+        //
+        // function anomalyBtnClick() {
+        //     chart1.destroy();
+        //
+        //     if  ;
+        //     else    drawAnomalyChart(statusLossArray, statusValLossArray);
+        // }
 
         function normalizeBtnClick() {
-            chart1.destroy();
-            drawNormalizedChart(normalizedDataArray);
+            isNormalized = true;
         }
     </script>
 

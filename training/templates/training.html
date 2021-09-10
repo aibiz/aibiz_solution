@@ -679,6 +679,10 @@
         let gridLinesColorArray = [];
         for(let i=0; i<chart.data.labels.length; i++) gridLinesColorArray[i] = '#888888';
 
+        console.log("data", chart.data.labels);
+        console.log("x", xValue);
+        console.log("idx", idx);
+
         let idx = chart.data.labels.indexOf(xValue);
         if (idx !== -1) gridLinesColorArray[idx] = 'red';
 

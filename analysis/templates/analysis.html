@@ -1,10 +1,9 @@
 {% extends 'layouts/base.html' %} {% load static %} {% block title %}training
 {%endblock %}
 <!-- Specific Page CSS goes HERE  -->
-{% block stylesheets %}<link
-        rel="stylesheet"
-        href="{% static 'assets/css/analysis.css' %}"
-/>
+{% block stylesheets %}
+    <link rel="stylesheet" href="{% static 'assets/css/analysis.css' %}"/>
+    <link rel="stylesheet" href="{% static 'vendors/jstree/dist/themes/default/style.min.css' %} />
 {% endblock stylesheets %} {% block content %}
     <main class="main" id="top">
         <div class="container-fluid">
@@ -16,6 +15,9 @@
                     </div>
                     <div class="card-header d-flex flex-between-center bg-light py-3">
                         <div class="row">
+                             <div id="jstree_div">
+
+                             </div>
 
                         </div>
                     </div>
@@ -174,7 +176,14 @@
 
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
+    <script src="/static/vendors/jstree/dist/jstree.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+    $(function () { $('#jstree_div').jstree(); });
+    $('#jstree_div').on("changed.jstree", function (e, data) {
+  console.log(data.selected);
+});
+    </script>
     <script>
         // chart component
         var canvas = document.getElementById('canvas').getContext('2d');

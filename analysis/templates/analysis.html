@@ -185,11 +185,11 @@
     <script>
         console.log("datatatata ta::: ")
         var treedata= "{{ treedata }}"
-        treedata = treedata.replace(/(&quot\;)/g,"\"")
+        {#treedata_json = JSON.parse(treedata.replace(/(&quot\;)/g,"\""))#}
         console.log(treedata)
                 $('#jstree_div').jstree({
             'plugins' : [ "wholerow", "checkbox" ],
-            'core' : { 'data' : treedata }
+            'core' : { 'data' : JSON.parse(treedata.replace(/(&quot\;)/g,"\"")) }
 
         });
          console.log("!!!!!!!!!!!!!")

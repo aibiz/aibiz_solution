@@ -1,188 +1,218 @@
-{% extends 'layouts/base.html' %}
-{% load static %}
-{% block title %}Problem Add{% endblock %}
+{% extends 'layouts/base.html' %} {% load static %} {% block title %}Problem
+Add{% endblock %}
 <!-- Specific Page CSS goes HERE  -->
-{% block stylesheets %}{% endblock stylesheets %}
+{% block stylesheets %}
+<link rel="stylesheet" href="{% static 'assets/css/masterdatamain.css' %}" />
+{% endblock stylesheets %} {% block content %}
 
-{% block content %}
+<main class="main" id="top">
+  <div class="container" data-layout="container">
+    <div class="row g-0">
+      <div class="col-md-4 col-xxl-3 mb-3 pe-md-2">
+        <div class="card h-md-100 ecommerce-card-min-width">
+          <div class="card-header text-center">
+            <h6
+              class="mb-0"
+              data-bs-toggle="collapse"
+              href="#recipe-setting"
+              role="button"
+              aria-expanded="false"
+              aria-controls="recipe-setting"
+              "
+            >
+              Recipe
+            </h6>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4 col-xxl-3 mb-3 pe-md-2">
+        <div class="card h-md-100 ecommerce-card-min-width">
+          <div class="card-header text-center">
+            <h6 class="mb-0" data-bs-toggle="collapse"
+            href="#problem-setting"
+            role="button"
+            aria-expanded="false"
+            aria-controls="problem-setting"
+          >Problem</h6>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4 col-xxl-3 mb-3 pe-md-2">
+        <div class="card h-md-100 ecommerce-card-min-width">
+          <div class="card-header text-center">
+            <h6 class="mb-0" data-bs-toggle="collapse"
+            href="#dataset-setting"
+            role="button"
+            aria-expanded="false"
+            aria-controls="dateset-setting"
+            >Dataset</h6>
+          </div>
+        </div>
+      </div>
+    </div>
 
-    <main class="main" id="top">
-        <div style="width:20%; float:left;">
-            <ul class="navbar-nav flex-column mb-3">
-                <li onclick="recipe_Setting();">Recipe</li>
-                <li onclick="problem_Setting();">Problem</li>
-                <li onclick="dataset_Setting();">Dataset_Data</li>
-            </ul>
+    
+    <div class="card h-md-100 ecommerce-card-min-width ">
+      <div class="card-header py-2 bg-100">Data Info</div>
+
+      <div class="collapse" id="recipe-setting">
+      <div class="card-body h-100">Data Info Recipe
+          <div class="mb-4" style="text-align: right;"><button
+            class="btn btn-falcon-default mt-2 btn-sm"
+            type="button"
+            onclick="add_Recipe()"
+          >
+            등록
+          </button>
         </div>
-        <div style="width:80%; float:right;">
-            <label class="form-label">Data Info</label>
-            <table class="table mb-0">
-                <thead class="text-black bg-200" id="data_list">
-                </thead>
-            </table>
+        <div class="tab-content">
+          <div
+            class="tab-pane preview-tab-pane active"
+            role="tabpanel"
+            aria-labelledby="tab-dom-5ea635f6-c41e-424b-a2d0-01213d101e84"
+            id="dom-5ea635f6-c41e-424b-a2d0-01213d101e84"
+          >
+            <div
+              id="recipe-table"
+              data-list='{"valueNames":["id","recipe_name","revision_no", "sensor_cd", "modify"],"page":5,"pagination":true}'
+            >
+              <div class="table-responsive scrollbar">
+                <table class="table table-bordered table-striped fs--1 mb-0">
+                  <thead class="bg-200 text-900">
+                    <tr>
+                      <th class="sort" data-sort="id">ID</th>
+                      <th class="sort" data-sort="recipe_name">Recipe Name</th>
+                      <th class="sort" data-sort="revision_no">Revision No</th>
+                      <th class="sort" data-sort="sensor_cd">Sensor Code</th>
+                      <th class="sort" data-sort="modify">Modify</th>
+                    </tr>
+                  </thead>
+                  <tbody class="list">
+                    {% for i in RecipeDataList %}
+                    <tr>
+                      <td class="id">{{ i.id }}</td>
+                      <td class="recipe_name">{{ i.recipe_name }}</td>
+                      <td class="revision_no">{{ i.revision_no }}</td>
+                      <td class="sensor_cd">{{ i.sensor_cd }}</td>
+                      <td class="modify">
+                          <a href="/master/recipemodify?id={{ i.id }}">수정</a></td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+              <div class="d-flex justify-content-center mt-3"><button class="btn btn-sm btn-falcon-default me-1" type="button" title="Previous" data-list-pagination="prev"><span class="fas fa-chevron-left"></span></button>
+                <ul class="pagination mb-0"></ul><button class="btn btn-sm btn-falcon-default ms-1" type="button" title="Next" data-list-pagination="next"><span class="fas fa-chevron-right"> </span></button>
+              </div>
+            </div>
+          </div>
         </div>
-    </main>
+      </div>
+    </div>
+
+    <div class="collapse" id="problem-setting">
+        <div class="card-body h-100">Data Info Problem
+         <div class="tab-content mt-2">
+           <div
+             class="tab-pane preview-tab-pane active"
+             role="tabpanel"
+             aria-labelledby="tab-dom-5ea635f6-c41e-424b-a2d0-01213d101e84"
+             id="dom-5ea635f6-c41e-424b-a2d0-01213d101e84"
+           >
+             <div
+               id="prblem-table"
+               data-list='{"valueNames":["id","problem_name", "modify"],"page":5,"pagination":true}'
+             >
+               <div class="table-responsive scrollbar">
+                 <table class="table table-bordered table-striped fs--1 mb-0">
+                   <thead class="bg-200 text-900">
+                     <tr>
+                       <th class="sort" data-sort="id">ID</th>
+                       <th class="sort" data-sort="problem_name">Problem Name</th>
+                       <th class="sort" data-sort="modify">Modify</th>
+                     </tr>
+                   </thead>
+                   <tbody class="list">
+                     {% for i in ProblemDataList %}
+                     <tr>
+                       <td class="id">{{ i.id }}</td>
+                       <td class="problem_name">{{ i.problem_name }}</td>
+                       <td class="modify">
+                           <a href="/master/problemmodify?id={{ i.id }}">수정</a></td>
+                     </tr>
+                     {% endfor %}
+                   </tbody>
+                 </table>
+               </div>
+               <div class="d-flex justify-content-center mt-3"><button class="btn btn-sm btn-falcon-default me-1" type="button" title="Previous" data-list-pagination="prev"><span class="fas fa-chevron-left"></span></button>
+                 <ul class="pagination mb-0"></ul><button class="btn btn-sm btn-falcon-default ms-1" type="button" title="Next" data-list-pagination="next"><span class="fas fa-chevron-right"> </span></button>
+               </div>
+             </div>
+           </div>
+         </div>
+       </div>
+       </div>
+
+    <div class="collapse" id="dataset-setting">
+        <div class="card-body h-100">Data Info Dataset
+        <div class="tab-content mt-2">
+          <div
+            class="tab-pane preview-tab-pane active"
+            role="tabpanel"
+            aria-labelledby="tab-dom-5ea635f6-c41e-424b-a2d0-01213d101e84"
+            id="dom-5ea635f6-c41e-424b-a2d0-01213d101e84"
+          >
+            <div
+              id="dataset-table"
+              data-list='{"valueNames":["id","equip_name", "chamber_name", "recipe_name", "data_static_path", "modify"],"page":5,"pagination":true}'
+            >
+              <div class="table-responsive scrollbar">
+                <table class="table table-bordered table-striped fs--1 mb-0">
+                  <thead class="bg-200 text-900">
+                    <tr>
+                      <th class="sort" data-sort="id">ID</th>
+                      <th class="sort" data-sort="equip_name">Equip Name</th>
+                      <th class="sort" data-sort="chamber_name">Chamber Name</th>
+                      <th class="sort" data-sort="recipe_name">Recipe Name</th>
+                      <th class="sort" data-sort="data_static_path">Data Static Name</th>
+                      <th class="sort" data-sort="modify">Modify</th>
+                    </tr>
+                  </thead>
+                  <tbody class="list">
+                    {% for i in DataSetList %}
+                    <tr>
+                      <td class="id">{{ i.id }}</td>
+                      <td class="equip_name">{{ i.equip_name }}</td>
+                      <td class="chamber_name">{{ i.chamber_name }}</td>
+                      <td class="recipe_name">{{ i.recipe_name }}</td>
+                      <td class="data_static_path">{{ i.data_static_path }}</td>
+                      <td class="modify">
+                          <a href="/master/datasetmodify?id={{ i.id }}">수정</a></td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+              <div class="d-flex justify-content-center mt-3"><button class="btn btn-sm btn-falcon-default me-1" type="button" title="Previous" data-list-pagination="prev"><span class="fas fa-chevron-left"></span></button>
+                <ul class="pagination mb-0"></ul><button class="btn btn-sm btn-falcon-default ms-1" type="button" title="Next" data-list-pagination="next"><span class="fas fa-chevron-right"> </span></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+      
+   
+  </div>
+</main>
 {% endblock content %}
 
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
 <script language="JavaScript">
-    function recipe_Setting()
-    {
-        $("#data_list").empty();
-
-        var i = "";
-
-        i = '<tr><td><button class="btn btn-falcon-default btn-sm mt-2" type="button" onclick="add_Recipe()">등록</button>';
-        $("#data_list").append(i);
-
-        i = "";
-        i += "<tr>";
-        i += '<th class="align-middle">ID</th>';
-        i += '<th class="align-middle">Recipe Name</th>';
-        i += '<th class="align-middle">Revision No</th>';
-        i += '<th class="align-middle">Sensor Code</th>';
-        i += '<th class="align-middle">Modify</th>';
-        i += "</tr>";
-
-        $("#data_list").append(i);
-
-
-        var url = '/master/recipefind';
-
-        //var form = $('#inputForm')[0];
-        //var formData = new FormData(form);
-        $.ajax({
-            type : 'GET',
-            url : url,
-            headers: { "X-CSRFToken": getCookie("csrftoken") },
-            //data : formData,
-            cache: false,
-            contentType: false,
-            processData: false,
-            error: function(request,status,error){
-                 //alert("code:"+request.status+"\n"+"error:"+error);
-            },
-            success : function(result){
-                var list = "";
-
-                $.each(result.data, function(i, item){
-                    //alert(item);
-
-                    list += "<tr>";
-                    list += "<td>" + item.id + "</td>";
-                    list += "<td>" + item.recipe_name + "</td>";
-                    list += "<td>" + item.revision_no + "</td>";
-                    list += "<td>" + item.sensor_cd + "</td>";
-                    list += "<td><a href='/master/recipemodify?id=" + item.id + "'>수정</a></td>";
-                    list += "</tr>";
-                });
-
-                $("#data_list").append(list);
-            }
-        });
-    }
-
-    function problem_Setting()
-    {
-        $("#data_list").empty();
-
-        var i = "";
-        i += "<tr>";
-        i += '<th class="align-middle">ID</th>';
-        i += '<th class="align-middle">Problem_Name</th>';
-        i += '<th class="align-middle">Modify</th>';
-        i += "</tr>";
-
-        $("#data_list").append(i);
-
-        var url = '/master/problemfind';
-
-        //var form = $('#inputForm')[0];
-        //var formData = new FormData(form);
-        $.ajax({
-            type : 'GET',
-            url : url,
-            headers: { "X-CSRFToken": getCookie("csrftoken") },
-            //data : formData,
-            cache: false,
-            contentType: false,
-            processData: false,
-            error: function(request,status,error){
-                 //alert("code:"+request.status+"\n"+"error:"+error);
-            },
-            success : function(result){
-                var list = "";
-
-                $.each(result.data, function(i, item){
-                    //alert(item);
-
-                    list += "<tr>";
-                    list += "<td>" + item.id + "</td>";
-                    list += "<td>" + item.problem_name + "</td>";
-                    list += "<td><a href='/master/problemmodify?id=" + item.id + "'>수정</a></td>";
-                    list += "</tr>";
-                });
-
-                $("#data_list").append(list);
-            }
-        });
-    }
-
-    function dataset_Setting()
-    {
-        $("#data_list").empty();
-
-        var i = "";
-        i += "<tr>";
-        i += '<th class="align-middle">ID</th>';
-        i += '<th class="align-middle">Equip_Name</th>';
-        i += '<th class="align-middle">Chamber_Name</th>';
-        i += '<th class="align-middle">Recipe_Name</th>';
-        i += '<th class="align-middle">Data_Static_Path</th>';
-        i += '<th class="align-middle">Modify</th>';
-        i += "</tr>";
-
-        $("#data_list").append(i);
-
-        var url = '/master/datasetfind';
-
-        //var form = $('#inputForm')[0];
-        //var formData = new FormData(form);
-        $.ajax({
-            type : 'GET',
-            url : url,
-            headers: { "X-CSRFToken": getCookie("csrftoken") },
-            //data : formData,
-            cache: false,
-            contentType: false,
-            processData: false,
-            error: function(request,status,error){
-                 //alert("code:"+request.status+"\n"+"error:"+error);
-            },
-            success : function(result){
-                var list = "";
-
-                $.each(result.data, function(i, item){
-                    //alert(item);
-
-                    list += "<tr>";
-                    list += "<td>" + item.id + "</td>";
-                    list += "<td>" + item.equip_name + "</td>";
-                    list += "<td>" + item.chamber_name + "</td>";
-                    list += "<td>" + item.recipe_name + "</td>";
-                    list += "<td>" + item.data_static_path + "</td>";
-                    list += "<td><a href='/master/datasetmodify?id=" + item.id + "'>수정</a></td>";
-                    list += "</tr>";
-                });
-
-                $("#data_list").append(list);
-            }
-        });
-    }
-
-    function add_Recipe(){
-        location.href='/master/recipeinsert'
-    }
+  function add_Recipe() {
+    location.href = "/master/recipeinsert";
+  }
 </script>
 {% endblock javascripts %}

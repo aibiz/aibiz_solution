@@ -2,17 +2,33 @@
 <nav class="navbar navbar-light navbar-vertical navbar-expand-xl">
   <script>
     var navbarStyle = localStorage.getItem("navbarStyle");
-    if (navbarStyle && navbarStyle !== 'transparent') {
-      document.querySelector('.navbar-vertical').classList.add(`navbar-${navbarStyle}`);
+    if (navbarStyle && navbarStyle !== "transparent") {
+      document
+        .querySelector(".navbar-vertical")
+        .classList.add(`navbar-${navbarStyle}`);
     }
   </script>
   <div class="d-flex align-items-center">
     <div class="toggle-icon-wrapper">
-
-      <button class="btn navbar-toggler-humburger-icon navbar-vertical-toggle" data-bs-toggle="tooltip" data-bs-placement="left" title="Toggle Navigation"><span class="navbar-toggle-icon"><span class="toggle-line"></span></span></button>
-
-    </div><a class="navbar-brand" href="/">
-      <div class="d-flex align-items-center py-3"><img class="me-2" src="{% static 'assets/img/icons/spot-illustrations/falcon.png' %}" alt="" width="40" /><span class="font-sans-serif">aibiz</span>
+      <button
+        class="btn navbar-toggler-humburger-icon navbar-vertical-toggle"
+        data-bs-toggle="tooltip"
+        data-bs-placement="left"
+        title="Toggle Navigation"
+      >
+        <span class="navbar-toggle-icon"
+          ><span class="toggle-line"></span
+        ></span>
+      </button>
+    </div>
+    <a class="navbar-brand" href="/">
+      <div class="d-flex align-items-center py-3">
+        <img
+          class="me-2"
+          src="{% static 'assets/img/icons/spot-illustrations/falcon.png' %}"
+          alt=""
+          width="40"
+        /><span class="font-sans-serif">aibiz</span>
       </div>
     </a>
   </div>
@@ -20,45 +36,94 @@
     <div class="navbar-vertical-content scrollbar">
       <ul class="navbar-nav flex-column mb-3" id="navbarVerticalNav">
         <li class="nav-item">
-          <!-- parent pages--><a class="nav-link dropdown-indicator" href="#dashboard" role="button" data-bs-toggle="collapse" aria-expanded="true" aria-controls="dashboard">
-            <div class="d-flex align-items-center"><span class="nav-link-icon"><span class="fas fa-chart-pie"></span></span><span class="nav-link-text ps-1">Dashboard</span>
+          <!-- parent pages--><a
+            class="nav-link dropdown-indicator"
+            href="#dashboard"
+            role="button"
+            data-bs-toggle="collapse"
+            aria-expanded="false"
+            aria-controls="dashboard"
+          >
+            <div class="d-flex align-items-center">
+              <span class="nav-link-icon"
+                ><span class="fas fa-chart-pie"></span></span
+              ><span class="nav-link-text ps-1">Dashboard</span>
             </div>
           </a>
           <ul class="nav collapse show" id="dashboard">
-            <li class="nav-item"><a class="nav-link active" href="/problem">
-                <div class="d-flex align-items-center"><span class="nav-link-text ps-1">문제 정의</span>
+            <li class="nav-item">
+              <a class="nav-link" href="/problem">
+                <div class="d-flex align-items-center">
+                  <span class="nav-link-text ps-1">문제정의</span>
                 </div>
               </a>
               <!-- more inner pages-->
             </li>
-            <li class="nav-item"><a class="nav-link" href="/uploaddata">
-                <div class="d-flex align-items-center"><span class="nav-link-text ps-1">데이터 업로드</span>
+            <li class="nav-item">
+              <a class="nav-link" href="/training">
+                <div class="d-flex align-items-center">
+                  <span class="nav-link-text ps-1">학습</span>
                 </div>
               </a>
               <!-- more inner pages-->
             </li>
-            <li class="nav-item"><a class="nav-link" href="/training">
-                <div class="d-flex align-items-center"><span class="nav-link-text ps-1">학습</span>
+            <li class="nav-item">
+              <a class="nav-link" href="/monitoring">
+                <div class="d-flex align-items-center">
+                  <span class="nav-link-text ps-1">모니터링</span>
                 </div>
               </a>
               <!-- more inner pages-->
             </li>
-              <li class="nav-item"><a class="nav-link" href="/monitoring">
-                <div class="d-flex align-items-center"><span class="nav-link-text ps-1">모니터링</span>
+            <li class="nav-item">
+              <a class="nav-link" href="/analysis">
+                <div class="d-flex align-items-center">
+                  <span class="nav-link-text ps-1">분석</span>
                 </div>
               </a>
               <!-- more inner pages-->
             </li>
-            <li class="nav-item"><a class="nav-link" href="/analysis">
-                <div class="d-flex align-items-center"><span class="nav-link-text ps-1">분석</span>
+          </ul>
+        </li>
+        <li class="nav-item">
+          <!-- parent pages--><a
+            class="nav-link dropdown-indicator"
+            href="#masterdata"
+            role="button"
+            data-bs-toggle="collapse"
+            aria-expanded="false"
+            aria-controls="masterdata"
+          >
+            <div class="d-flex align-items-center">
+              <span class="nav-link-icon"
+                ><span class="fas fa-table"></span></span
+              ><span class="nav-link-text ps-1">기준정보</span>
+            </div>
+          </a>
+          <ul class="nav collapse show" id="masterdata">
+            <li class="nav-item">
+              <a class="nav-link" href="/master/recipe">
+                <div class="d-flex align-items-center">
+                  <span class="nav-link-text ps-1">Recipe</span>
                 </div>
               </a>
               <!-- more inner pages-->
             </li>
-            <li class="nav-item"><a class="nav-link" href="/master">
-                <div class="d-flex align-items-center"><span class="nav-link-text ps-1">기준정보</span>
+            <li class="nav-item">
+              <a class="nav-link" href="/master/problem">
+                <div class="d-flex align-items-center">
+                  <span class="nav-link-text ps-1">Problem</span>
                 </div>
               </a>
+              <!-- more inner pages-->
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/master/dataset">
+                <div class="d-flex align-items-center">
+                  <span class="nav-link-text ps-1">Dataset</span>
+                </div>
+              </a>
+              <!-- more inner pages-->
             </li>
           </ul>
         </li>

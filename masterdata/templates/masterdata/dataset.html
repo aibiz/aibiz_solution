@@ -1,0 +1,65 @@
+{% extends 'layouts/base.html' %} {% load static %} {% block title %}Problem
+Add{% endblock %}
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+<link rel="stylesheet" href="{% static 'assets/css/masterdatamain.css' %}" />
+{% endblock stylesheets %} {% block content %}
+
+<main class="main" id="top">
+  <div class="container" data-layout="container">
+    <div class="card h-md-100 ecommerce-card-min-width ">
+      <div class="card-header py-2 bg-100">Data Info Dataset</div>
+        <div class="card-body h-100">
+        <div class="tab-content mt-2">
+          <div
+            class="tab-pane preview-tab-pane active"
+            role="tabpanel"
+            aria-labelledby="tab-dom-5ea635f6-c41e-424b-a2d0-01213d101e84"
+            id="dom-5ea635f6-c41e-424b-a2d0-01213d101e84"
+          >
+            <div
+              id="dataset-table"
+              data-list='{"valueNames":["id","equip_name", "chamber_name", "recipe_name", "data_static_path", "modify"],"page":10,"pagination":true}'
+            >
+              <div class="table-responsive scrollbar">
+                <table class="table table-bordered table-striped fs--1 mb-0">
+                  <thead class="bg-200 text-900">
+                    <tr>
+                      <th class="sort" data-sort="id">ID</th>
+                      <th class="sort" data-sort="equip_name">Equip Name</th>
+                      <th class="sort" data-sort="chamber_name">Chamber Name</th>
+                      <th class="sort" data-sort="recipe_name">Recipe Name</th>
+                      <th class="sort" data-sort="data_static_path">Data Static Name</th>
+                      <th class="sort" data-sort="modify">Modify</th>
+                    </tr>
+                  </thead>
+                  <tbody class="list">
+                    {% for i in DataSetList %}
+                    <tr>
+                      <td class="id">{{ i.id }}</td>
+                      <td class="equip_name">{{ i.equip_name }}</td>
+                      <td class="chamber_name">{{ i.chamber_name }}</td>
+                      <td class="recipe_name">{{ i.recipe_name }}</td>
+                      <td class="data_static_path">{{ i.data_static_path }}</td>
+                      <td class="modify">
+                          <a href="/master/datasetmodify?id={{ i.id }}">수정</a></td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+              <div class="d-flex justify-content-center mt-3"><button class="btn btn-sm btn-falcon-default me-1" type="button" title="Previous" data-list-pagination="prev"><span class="fas fa-chevron-left"></span></button>
+                <ul class="pagination mb-0"></ul><button class="btn btn-sm btn-falcon-default ms-1" type="button" title="Next" data-list-pagination="next"><span class="fas fa-chevron-right"> </span></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>   
+  </div>
+</main>
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+{% endblock javascripts %}

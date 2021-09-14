@@ -3,12 +3,42 @@ from django.views.generic import View
 from django.http import HttpRequest, JsonResponse
 from config.models import mmRecipe, mmProblem, mmDataset
 from django.db import transaction
+import json
 
 class masterdatamain(View):
     def get(self, request: HttpRequest, *args, **kwargs):
         context = {}
 
         return render(request, 'masterdata/masterdatamain.html', context)
+
+
+
+
+def recipe(request):
+    context = {}
+
+    RecipeDataList =mmRecipe.objects.filter
+    context['RecipeDataList'] = RecipeDataList
+
+    return render(request, 'masterdata/recipe.html', context)
+
+def problem(request):
+    context = {}
+
+    ProblemDataList =mmProblem.objects.filter
+    context['ProblemDataList'] = ProblemDataList
+
+    return render(request, 'masterdata/problem.html', context)
+
+def dataset(request):
+    context = {}
+
+    DataSetList =mmDataset.objects.filter
+    context['DataSetList'] = DataSetList
+
+    return render(request, 'masterdata/dataset.html', context)
+
+
 
 class masterdatarecipefind(View) :
     def get(self, request: HttpRequest, *args, **kwargs):
@@ -115,7 +145,10 @@ class delete_recipe(View):
     def post(self, request: HttpRequest, *args, **kwargs):
         context = {}
 
-        id = request.POST['id']
+        rsData = json.loads(request.body.decode("utf-8"))
+        print("rsData::::", rsData)
+
+        # id = request.POST['id']
 
         try:
             with transaction.atomic():

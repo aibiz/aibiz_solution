@@ -2,8 +2,9 @@
 {%endblock %}
 <!-- Specific Page CSS goes HERE  -->
 {% block stylesheets %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.2/themes/default/style.min.css" />
     <link rel="stylesheet" href="{% static 'assets/css/analysis.css' %}"/>
-    <link rel="stylesheet" href="{% static 'vendors/jstree/dist/themes/default/style.css' %}" />
+{#    <link rel="stylesheet" href="{% static 'vendors/jstree/dist/themes/default/style.css' %}" />#}
 {% endblock stylesheets %}
 {% block content %}
     <main class="main" id="top">
@@ -16,9 +17,11 @@
                     </div>
                     <div class="card-header d-flex flex-between-center bg-light py-3">
                         <div class="row">
+                            ddd
                              <div id="jstree_div">
 
                              </div>
+                            aaa
 
                         </div>
                     </div>
@@ -177,7 +180,9 @@
 
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
-    <script src="/static/vendors/jstree/dist/jstree.js"></script>
+{#    <script src="/static/vendors/jstree/dist/jstree.js"></script>#}
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.2/jstree.min.js"></script>
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         console.log("datatatata ta::: ")
@@ -186,8 +191,8 @@
         console.log(treedata)
                 $('#jstree_div').jstree({
             'plugins' : [ "wholerow", "checkbox" ],
-            'core' : { 'data' : treedata },
-        })
+            'core' : { 'data' : treedata }
+        });
         {#$(function () { $('#jstree_div').jstree(); console.log("tree created") });#}
         $('#jstree_div').on("changed.jstree", function (e, data) {
             console.log(data.selected);

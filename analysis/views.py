@@ -144,7 +144,7 @@ def get_treestructure():
                         sensor_list = sensors_txt.strip().split(", ")[1:]
                         for m in sensor_list:
                             sensor_id = data_path + '#' + m
-                            line = f'"id":"{m}", "parent":"{i[0]}{j[0]}{k[0]}{l[0]}", "text":"{m}"'
+                            line = f'"id":"{sensor_id}", "parent":"{i[0]}{j[0]}{k[0]}{l[0]}", "text":"{m}"'
                             treedata += '{' + line + '}, '
     treedata = treedata[:-2]
     treedata = '[' + treedata + ']'

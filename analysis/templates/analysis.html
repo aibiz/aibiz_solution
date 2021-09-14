@@ -2,9 +2,9 @@
 {%endblock %}
 <!-- Specific Page CSS goes HERE  -->
 {% block stylesheets %}
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.2/themes/default/style.min.css" />
+{#    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.2/themes/default/style.min.css" />#}
     <link rel="stylesheet" href="{% static 'assets/css/analysis.css' %}"/>
-{#    <link rel="stylesheet" href="{% static 'vendors/jstree/dist/themes/default/style.css' %}" />#}
+    <link rel="stylesheet" href="{% static 'vendors/jstree/dist/themes/default/style.css' %}" />
 {% endblock stylesheets %}
 {% block content %}
     <main class="main" id="top">
@@ -178,8 +178,8 @@
 
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
-{#    <script src="/static/vendors/jstree/dist/jstree.js"></script>#}
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.2/jstree.min.js"></script>
+    <script src="/static/vendors/jstree/dist/jstree.js"></script>
+{#<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.2/jstree.min.js"></script>#}
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
@@ -187,19 +187,15 @@
         var treedata= "{{ treedata }}"
         treedata = JSON.parse(treedata.replace(/(&quot\;)/g,"\""))
         console.log(treedata)
-                $('#jstree_div').jstree({
+        $('#jstree_div').jstree({
             'plugins' : [ "wholerow", "checkbox" ],
             'core' : { 'data' : treedata }
 
         });
-         console.log("!!!!!!!!!!!!!")
-        {#$(function () { $('#jstree_div').jstree(); console.log("tree created") });#}
         $('#jstree_div').on("changed.jstree", function (e, data) {
-            console.log(data.selected);
+            {#console.log(data.selected);#}
+            console.log(data.node.parent);
         });
-;
-
-
     </script>
     <script>
         // chart component

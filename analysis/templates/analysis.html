@@ -180,7 +180,7 @@
     <script src="/static/vendors/jstree/dist/jstree.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        console.log({{ data }})
+        console.log({{ treedata }})
           console.log("datatatatata::: ")
         $(function () { $('#jstree_div').jstree(); console.log("tree created") });
         $('#jstree_div').on("changed.jstree", function (e, data) {
@@ -189,7 +189,7 @@
         $('#jstree_div').jstree({
             "plugins" : [ "wholerow", "checkbox" ],
             "core" : {
-                'data' : {{ data }}
+                'data' : {{ treedata }}
             },
         });
 

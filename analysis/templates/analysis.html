@@ -181,7 +181,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         console.log("datatatata ta::: ")
-        var treedata={{ treedata }}
+        var treedata= "{{ treedata }}"
         treedata.replace(/&quot;/g,'"')
         console.log(treedata)
         $(function () { $('#jstree_div').jstree(); console.log("tree created") });

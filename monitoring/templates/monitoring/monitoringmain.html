@@ -21,7 +21,7 @@
                             <div class="row">
                                 <div class="form-control col ms-4 mb-1 select-box">
                                     <select id="equip_select" onchange="find_Chamber(this);">
-                                        <option value="장비"></option>
+                                        <option value="">장비</option>
                                         {% if equip_select %} {% for i in equip_select %}
                                             <option value="{{ i.equip_name }}">{{ i.equip_name }}</option>
                                         {% endfor %} {% endif %}
@@ -29,18 +29,18 @@
                                 </div>
                                 <div class="form-control col mb-1 select-box">
                                     <select id="chamber_select" onchange="find_Recipe(this);">
-                                        <option value="레시피"></option>
+                                        <option value="">레시피</option>
                                     </select>
                                 </div>
 
                                 <div class="form-control col mb-1 select-box">
                                     <select id="recipe_select" onchange="find_Revision(this);">
-                                        <option value="리비전"></option>
+                                        <option value="">리비젼</option>
                                     </select>
                                 </div>
                                 <div class="form-control col mb-1 select-box">
                                     <select id="revision_select" onchange="find_Sensor(this);">
-                                        <option value="센서"></option>
+                                        <option value=""></option>
                                     </select>
                                 </div>
                             </div>

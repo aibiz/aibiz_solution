@@ -4,7 +4,8 @@
 {% block stylesheets %}
     <link rel="stylesheet" href="{% static 'assets/css/analysis.css' %}"/>
     <link rel="stylesheet" href="{% static 'vendors/jstree/dist/themes/default/style.min.css' %}" />
-{% endblock stylesheets %} {% block content %}
+{% endblock stylesheets %}
+{% block content %}
     <main class="main" id="top">
         <div class="container-fluid">
 
@@ -179,9 +180,16 @@
     <script src="/static/vendors/jstree/dist/jstree.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-    $(function () { $('#jstree_div').jstree(); });
+    $(function () { $('#jstree_div').jstree(); console.log("tree created") });
     $('#jstree_div').on("changed.jstree", function (e, data) {
   console.log(data.selected);
+});
+    $('#jstree_div').jstree({
+  "plugins" : [ "wholerow", "checkbox" ],
+        "core" : {
+      'data' : {{ data }}
+        }
+
 });
     </script>
     <script>

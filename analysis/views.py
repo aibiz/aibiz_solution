@@ -47,7 +47,7 @@ class analysis_main(LoginRequiredMixin, View):
                                 sensor_id = data_path + '#' + m
                                 line = f'"id":"{sensor_id}", "parent":"{i[0]}{j[0]}{k[0]}{l[0]}", "text":"{m}"'
                                 treedata += '{' + line + '}, '
-                            treedata=treedata[:-2]
+                            treedata= '[' + treedata + ']'
             return render(request, "analysis.html", context)
 
 

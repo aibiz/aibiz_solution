@@ -426,7 +426,7 @@
             console.error(`Error: ${err}`);
         }
 
-        setBranchLine(chart2, );
+        // setBranchLine(chart2, thresholdLineValue);
     });
 </script>
 
@@ -527,7 +527,6 @@
 
                 if (result['state'] == 'True') {
                     console.log(result);
-                    console.log('123123');
 
                     $('#currentThreshold').val(result.current_threshold)
                     // 1번 차트 데이터
@@ -539,9 +538,6 @@
                         (value) => (parseFloat(value) * 1000).toFixed(2)
                     ); // 1차원 배열; // 1차원 배열
                     trainAnomalyScoreData = Object.values(result.train_anomaly_score); // 1차원 배열
-
-
-                    console.log('22');
 
                     // 3번 차트 데이터
                     csvList = result.csv_list.map(
@@ -557,15 +553,11 @@
                         (value) => (parseFloat(value) * 1000).toFixed(2)
                     ); // 1차원 배열
                     testAnomalyScoreData = Object.values(result.test_anomaly_score); // 1차원 배열
-                    console.log('33');
-
-                    thresholdLineValue = result.current_threshold;
-
-                    console.log('aa');
+                    thresholdLineValue = parseFloat(result.current_threshold).toFixed(2);
 
                     drawCharts();
 
-                    timer = setTimeout("executeMonitoring()", 5000);
+                    if(result['state'] === 'False')  timer = setTimeout("executeMonitoring()", 5000);
 
                 }//5초 간격으로 하여 디렉토리 파일 리스트 호출 및 csv data 호출(간격 조정 필요한경우 수치 데이터 조정)
             }
@@ -574,8 +566,6 @@
     }
 
     function drawCharts() {
-        console.log('bb');
-
         chart1 = new Chart(canvas1, {
             type: 'line',
             data: {
@@ -587,7 +577,6 @@
             },
             options: {},
         });
-        console.log('cc');
 
         chart2 = new Chart(canvas2, {
             type: 'line',
@@ -599,23 +588,17 @@
             },
             options: {
                 scales: {
-                    yAxes: [{
+                    yAxes: {
                         id: "train_anomalies_y",
-                    }],
-                    xAxes: [{
+                    },
+                    xAxes: {
                         id: "train_anomalies_x",
-                        gridLines: {
-                            drawTicks: false,
-                            color: [],
-                        },
-                    }],
+                    },
                 }
             },
         });
-        console.log('dd');
 
         setBranchLine(chart2, thresholdLineValue);
-        console.log('ee');
 
         chart3 =  new Chart(canvas3, {
             type: 'line',
@@ -626,28 +609,30 @@
                     dataset(dataList[csvIndex][1], 'test predicted', false, null, 'red', 1),
                 ]
             },
-            options: {},
+            options: {
+
+            },
         });
 
         chart4 = new Chart(canvas4, {
             type: 'line',
             data: {
-                labels: testAnomalyScoreData,
+                labels: testAnomalyScoreXAxis,
                 datasets: [
                     dataset(testAnomalyScoreData, 'test anomaly score', true, 'gray', 'transparent', 0),
                 ]
             },
             options: {
                 scales: {
-                    yAxes: [{
+                    yAxes: {
                         id: "test_anomalies_y",
-                    }],
-                    xAxes: [{
+                    },
+                    xAxes: {
                         id: "test_anomalies_x",
                         gridLines: {
                             drawTicks: false,
                         },
-                    }],
+                    },
                 }
             },
         });
@@ -717,16 +702,13 @@
 
     function setBranchLine(chart, xValue) {
         let gridLinesColorArray = [];
-        for(let i=0; i<chart.data.labels.length; i++) gridLinesColorArray[i] = '#888888';
-
-        console.log("data", chart.data.labels);
-        console.log("x", xValue);
+        for(let i=0; i<chart.data.labels.length; i++) gridLinesColorArray[i] = '#E0E0E0';
 
         let idx = chart.data.labels.indexOf(xValue.toString());
         if (idx !== -1) gridLinesColorArray[idx] = 'red';
 
         console.log(gridLinesColorArray);
-        chart.scales.xAxes[0].gridLines.color = gridLinesColorArray;
+        chart.options.scales.xAxes.grid.color = gridLinesColorArray;
     }
 </script>
 

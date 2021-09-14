@@ -190,8 +190,9 @@
                 $('#jstree_div').jstree({
             'plugins' : [ "wholerow", "checkbox" ],
             'core' : { 'data' : treedata }
-                    console.log("!!!!!!!!!!!!!")
+
         });
+         console.log("!!!!!!!!!!!!!")
         {#$(function () { $('#jstree_div').jstree(); console.log("tree created") });#}
         $('#jstree_div').on("changed.jstree", function (e, data) {
             console.log(data.selected);

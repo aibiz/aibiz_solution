@@ -184,16 +184,15 @@
         var treedata= "{{ treedata }}"
         treedata = treedata.replace(/(&quot\;)/g,"\"")
         console.log(treedata)
-        $(function () { $('#jstree_div').jstree(); console.log("tree created") });
+                $('#jstree_div').jstree({
+            'plugins' : [ "wholerow", "checkbox" ],
+            'core' : { 'data' : treedata },
+        })
+        {#$(function () { $('#jstree_div').jstree(); console.log("tree created") });#}
         $('#jstree_div').on("changed.jstree", function (e, data) {
             console.log(data.selected);
         });
-        $('#jstree_div').jstree({
-            "plugins" : [ "wholerow", "checkbox" ],
-            "core" : {
-                'data' : treedata
-            },
-        });
+;
 
 
     </script>

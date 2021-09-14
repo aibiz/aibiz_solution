@@ -112,6 +112,7 @@
                             <div class="row-cols-md-1">
                             </div>
                             <div style="display: flex; float: right">
+                                <label id="file_name"></label>
                                 <button class="btn-falcon-default" id="leftBtn"><</button>
                                 <button class="btn-falcon-default" id="rightBtn">></button>
                             </div>
@@ -156,6 +157,27 @@
                     </div>
                 </div>
             </div>
+            <!----------------------------------- Modal -------------------------------->
+            <div class="modal fade" id="viewWarning" tabindex="-1" aria-labelledby="viewWarningLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="viewWarningLabel">Select Warning List</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div>
+                                <label id="file_name_popup"></label>
+                                <canvas id="modalpopupCanvas"></canvas>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="footer-btn">확인</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {#            end modal             #}
         </div>
     </main>
 {% endblock %}
@@ -207,6 +229,7 @@
         rightBtn.addEventListener("click", rightBtnClick);
 
         var monitorChart;
+        var popupChart;
 
         var csvList = [];
         var csvIndex = 0;
@@ -249,7 +272,8 @@
                         //실제 테이블에 리스팅
                         list += "<tr>";
                         list += "   <td>" + date + "</td>";
-                        list += "   <td>" + lot_No + "</td>";
+                        list += "   <td><button class='btn col btn-falcon-default btn-sm' data-bs-toggle='modal' data-bs-target='#viewWarning' onclick='popup_Warning(" + i + ");'>"
+                              + lot_No + "</button></td>";
                         list +=
                             "   <input type='hidden' id='seq_" + i + "' value='" + i + "'>";
                         list +=
@@ -272,6 +296,15 @@
             });
             //5초 간격으로 하여 디렉토리 파일 리스트 호출 및 csv data 호출(간격 조정 필요한경우 수치 데이터 조정)
             timer = setTimeout("execute_Monitoring()", 5000);
+
+            //재조회 진행시에 가장 최신의 데이터를 우선으로 차트 부분에 표기한다..
+            setTimeout(function exec() {
+                csvIndex = 0;
+                monitorChart.data.datasets[0].data = dataList[csvIndex][0];
+                monitorChart.data.datasets[1].data = dataList[csvIndex][1];
+                monitorChart.destroy();
+                drawChart();
+            }, 300);
         }
 
         function drawChart() {
@@ -306,6 +339,9 @@
                     scales: [],
                 },
             });
+
+            //해당 차트의 파일명 표기
+            document.getElementById('file_name').innerText = csvList[csvIndex];
         }
 
         function leftBtnClick() {
@@ -314,6 +350,8 @@
 
             csvIndex--;
 
+            //해당 차트의 파일명 표기
+            document.getElementById('file_name').innerText = csvList[csvIndex];
             monitorChart.data.datasets[0].data = dataList[csvIndex][0];
             monitorChart.data.datasets[1].data = dataList[csvIndex][1];
             monitorChart.destroy();
@@ -326,6 +364,8 @@
 
             csvIndex++;
 
+            //해당 차트의 파일명 표기
+            document.getElementById('file_name').innerText = csvList[csvIndex];
             monitorChart.data.datasets[0].data = dataList[csvIndex][0];
             monitorChart.data.datasets[1].data = dataList[csvIndex][1];
             monitorChart.destroy();
@@ -524,6 +564,51 @@
                     } else {
                         alert(result.message);
                     }
+                },
+            });
+        }
+
+        function popup_Warning(index){
+            //팝업 버튼 클릭시(파일 리스트) 해당 품목에 대한 파일명과 차트를 표기함.. (모달 폼 사용)
+            document.getElementById('file_name_popup').innerText = csvList[index];
+
+            //차트 중복 생성 에러 방지
+            if(popupChart != undefined)
+                popupChart.destroy();
+
+            drawChart_Popup(index);
+        }
+
+        function drawChart_Popup(index) {
+           popupChart = new Chart(modalpopupCanvas, {
+                type: "line",
+                data: {
+                    labels: xAxis,
+                    datasets: [
+                        {
+                            label: "test data",
+                            type: "line",
+                            fill: false,
+                            lineTension: 0,
+                            pointRadius: 0,
+                            borderColor: "blue",
+                            borderWidth: 1,
+                            data: dataList[index][0],
+                        },
+                        {
+                            label: "test predicted",
+                            type: "line",
+                            fill: false,
+                            lineTension: 0,
+                            pointRadius: 0,
+                            borderColor: "red",
+                            borderWidth: 1,
+                            data: dataList[index][1],
+                        },
+                    ],
+                },
+                options: {
+                    scales: [],
                 },
             });
         }

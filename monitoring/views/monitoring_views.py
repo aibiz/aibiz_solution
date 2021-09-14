@@ -13,6 +13,7 @@ import csv
 import datetime
 import pandas
 import json
+import time
 
 monitoring = None
 
@@ -211,8 +212,9 @@ class execute_monitoring(View):
         file_list = os.listdir(dir)
         csv_list = []
 
-        #파일을 수정시간순으로 정렬
-        file_list.sort(key=lambda s: os.stat(os.path.join(dir, s)).st_mtime)
+        #파일을 생성시간순으로 정렬한 후 최신파일이 먼저 표현되도록 역순 정렬 처리..
+        file_list.sort(key=lambda s: os.stat(os.path.join(dir, s)).st_ctime)
+        file_list.reverse()
 
         '''for i in range(0, len(file_list)) :
             for j in range(0, len(file_list)) :

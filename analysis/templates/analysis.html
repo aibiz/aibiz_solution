@@ -18,9 +18,7 @@
                     <div class="card-header d-flex flex-between-center bg-light py-3">
                         <div class="row">
                             ddd
-                             <div id="jstree_div">
-
-                             </div>
+                             <div id="jstree_div"></div>
                             aaa
 
                         </div>
@@ -192,6 +190,7 @@
                 $('#jstree_div').jstree({
             'plugins' : [ "wholerow", "checkbox" ],
             'core' : { 'data' : treedata }
+                    console.log("!!!!!!!!!!!!!")
         });
         {#$(function () { $('#jstree_div').jstree(); console.log("tree created") });#}
         $('#jstree_div').on("changed.jstree", function (e, data) {

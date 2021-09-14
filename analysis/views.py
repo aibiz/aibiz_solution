@@ -19,14 +19,36 @@ class analysis_main(LoginRequiredMixin, View):
         query2 = request.GET.get('date_end','Null')
         if (query1=='Null') & (query2=='Null'):
             print("render!!!!")
-            equip_sql = '''
-            SELECT id, equip_name FROM mm_dataset WHERE purpose='TRN' GROUP BY equip_name 
-        '''
-            context = {
-                'equip_select': mmModel.objects.raw(equip_sql)
-            }
+            equip_list=mmDataset.objects.filter().order_by('equip_name').values_list('equip_name').distinct()
+            treedata=""
+            for i in equip_list:
+                line = f'"id":"{i[0]}", "parent":"#", "text":"{i[0]}"'
+                treedata += '{' + line + '}, '
+                chamber_list=mmDataset.objects.filter(equip_name=i[0]).values_list('chamber_name').distinct()
+                for j in chamber_list:
+                    line = f'"id":"{i[0]}{j[0]}", "parent":"{i[0]}", "text":"{j[0]}"'
+                    treedata += '{' + line + '}, '
+                    recipe_list=mmDataset.objects.filter(equip_name=i[0], chamber_name=j[0]).values_list('recipe_name').distinct()
+                    for k in recipe_list:
+                        line = f'"id":"{i[0]}{j[0]}{k[0]}", "parent":"{i[0]}{j[0]}", "text":"{k[0]}"'
+                        treedata += '{' + line + '}, '
+                        rev_list=mmDataset.objects.filter(equip_name=i[0], chamber_name=j[0], recipe_name=k[0]).values_list('revision_no').distinct()
+                        rootpath=os.getcwd()
+                        for l in rev_list:
+                            line = f'"id":"{i[0]}{j[0]}{k[0]}{l[0]}", "parent":"{i[0]}{j[0]}{k[0]}", "text":"{l[0]}"'
+                            treedata += '{' + line + '}, '
+                            data_path=rootpath + mmDataset.objects.filter(equip_name=i[0], chamber_name=j[0], recipe_name=k[0], revision_no=l[0]).last().data_static_path
+                            sensorinfo_file=data_path + "/sensor_info.txt"
+                            file = open(sensorinfo_file, "r")
+                            sensors_txt=file.read()
+                            file.close()
+                            sensor_list=sensors_txt.strip().split(", ")[1:]
+                            for m in sensor_list:
+                                sensor_id = data_path + '#' + m
+                                line = f'"id":"{sensor_id}", "parent":"{i[0]}{j[0]}{k[0]}{l[0]}", "text":"{m}"'
+                                treedata += '{' + line + '}, '
+                            treedata=treedata[:-2]
             return render(request, "analysis.html", context)
-
 
 
         today = datetime.today().strftime("%Y-%m-%d")
@@ -118,8 +140,10 @@ class analysis_main(LoginRequiredMixin, View):
         # print("response!!!!")
         return JsonResponse(context, content_type='application/json')
 
+
 def normalize(element, mean, std):
     return (element-mean)/std
+
 
 class find_chamber(View):
     def post(self, request: HttpRequest, *args, **kwargs):
@@ -135,6 +159,7 @@ class find_chamber(View):
 
         return JsonResponse(context, content_type='application/json')
 
+
 class find_recipe(View):
     def post(self, request: HttpRequest, *args, **kwargs):
         context = {}
@@ -149,6 +174,7 @@ class find_recipe(View):
 
         return JsonResponse(context, content_type='application/json')
 
+
 class find_revision(View):
     def post(self, request: HttpRequest, *args, **kwargs):
         context = {}
@@ -162,6 +188,7 @@ class find_revision(View):
         }
 
         return JsonResponse(context, content_type='application/json')
+
 
 class find_sensor(View):
     def post(self, request: HttpRequest, *args, **kwargs):
@@ -179,3 +206,47 @@ class find_sensor(View):
         }
 
         return JsonResponse(context, content_type='application/json')
+
+
+# def test():
+#
+# equip_list=mmDataset.objects.filter().order_by('equip_name').values_list('equip_name').distinct()
+# treedata=""
+# for i in equip_list:
+#     # equiplist_all=mmDataset.objects.filter(equip_name=i[0]).values('id')
+#     line = f'"id":"{i[0]}", "parent":"#", "text":"{i[0]}"'
+#     treedata += '{' + line + '}, '
+#     chamber_list=mmDataset.objects.filter(equip_name=i[0]).values_list('chamber_name').distinct()
+#     for j in chamber_list:
+#         line = f'"id":"{i[0]}{j[0]}", "parent":"{i[0]}", "text":"{j[0]}"'
+#         treedata += '{' + line + '}, '
+#         recipe_list=mmDataset.objects.filter(equip_name=i[0], chamber_name=j[0]).values_list('recipe_name').distinct()
+#         for k in recipe_list:
+#             line = f'"id":"{i[0]}{j[0]}{k[0]}", "parent":"{i[0]}{j[0]}", "text":"{k[0]}"'
+#             treedata += '{' + line + '}, '
+#             rev_list=mmDataset.objects.filter(equip_name=i[0], chamber_name=j[0], recipe_name=k[0]).values_list('revision_no').distinct()
+#             rootpath=os.getcwd()
+#             for l in rev_list:
+#                 line = f'"id":"{i[0]}{j[0]}{k[0]}{l[0]}", "parent":"{i[0]}{j[0]}{k[0]}", "text":"{l[0]}"'
+#                 treedata += '{' + line + '}, '
+#                 data_path=rootpath + mmDataset.objects.filter(equip_name=i[0], chamber_name=j[0], recipe_name=k[0], revision_no=l[0]).last().data_static_path
+#                 sensorinfo_file=data_path + "/sensor_info.txt"
+#                 file = open(sensorinfo_file, "r")
+#                 sensors_txt=file.read()
+#                 file.close()
+#                 sensor_list=sensors_txt.strip().split(", ")[1:]
+#                 for m in sensor_list:
+#                     sensor_id = data_path + '#' + m
+#                     line = f'"id":"{sensor_id}", "parent":"{i[0]}{j[0]}{k[0]}{l[0]}", "text":"{m}"'
+#                     treedata += '{' + line + '}, '
+#                 treedata=treedata[:-2]
+#                 print(sensors)
+#
+#
+#                 print(sensorinfo_file)
+
+
+
+
+
+

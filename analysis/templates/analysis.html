@@ -16,30 +16,7 @@
                     </div>
                     <div class="card-header d-flex flex-between-center bg-light py-3">
                         <div class="row">
-                            <div class="form-control col ms-4 mb-1 select-box">
-                                <select id="equip_select" onchange="find_Chamber(this);">
-                                    <option value=""></option>
-                                    {% if equip_select %} {% for i in equip_select %}
-                                        <option value="{{ i.equip_name }}">{{ i.equip_name }}</option>
-                                    {% endfor %} {% endif %}
-                                </select>
-                            </div>
-                            <div class="form-control col mb-1 select-box">
-                                <select id="chamber_select" onchange="find_Recipe(this);">
-                                    <option value=""></option>
-                                </select>
-                            </div>
 
-                            <div class="form-control col mb-1 select-box">
-                                <select id="recipe_select" onchange="find_Revision(this);">
-                                    <option value=""></option>
-                                </select>
-                            </div>
-                            <div class="form-control col mb-1 select-box">
-                                <select id="revision_select" onchange="find_Sensor(this);">
-                                    <option value=""></option>
-                                </select>
-                            </div>
                         </div>
                     </div>
                                                         <div class="card-body pb-1 tree-content">

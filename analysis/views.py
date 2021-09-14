@@ -134,7 +134,7 @@ def get_treestructure():
                 rootpath=os.getcwd()
                 for l in rev_list:
                     data_path = rootpath + mmDataset.objects.filter(equip_name=i[0], chamber_name=j[0], recipe_name=k[0], revision_no=l[0]).last().data_static_path
-                    line = f'"id":"{data_path}", "parent":"{i[0]}{j[0]}{k[0]}", "text":"{l[0]}"'
+                    line = f'"id":"{i[0]}{j[0]}{k[0]}{l[0]}", "parent":"{i[0]}{j[0]}{k[0]}", "text":"{l[0]}", "val":"{data_path}"'
                     treedata += '{' + line + '}, '
                     sensorinfo_file = data_path + "/sensor_info.txt"
                     if os.path.isfile(sensorinfo_file):
@@ -144,7 +144,7 @@ def get_treestructure():
                         sensor_list = sensors_txt.strip().split(", ")[1:]
                         for m in sensor_list:
                             sensor_id = data_path + '#' + m
-                            line = f'"id":"{m}", "parent":"{data_path}", "text":"{m}"'
+                            line = f'"id":"{m}", "parent":"{i[0]}{j[0]}{k[0]}{l[0]}", "text":"{m}"'
                             treedata += '{' + line + '}, '
     treedata = treedata[:-2]
     treedata = '[' + treedata + ']'

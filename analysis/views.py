@@ -43,9 +43,9 @@ class analysis_main(LoginRequiredMixin, View):
 
             # 여러 챔버, 장비 선택시 for문 시작점
             # ex for path in selected_list:
-            #       datapath = rootpath + path
             datapath = datapath + '/' #server
             print("datapath::::", datapath)
+            print("sensornum:::", sensor_list)
 
             file_list = os.listdir(datapath)
             file_list_csv = [file for file in file_list if file.endswith(".csv")]
@@ -112,7 +112,7 @@ class analysis_main(LoginRequiredMixin, View):
             normalized_anomaly_csvdata.append(list(map(lambda element: normalize(element, mean_val, std_val), anomaly_csv_data[m])))
 
         context['raw_data'] = csv_data
-        context['normalized_data']= normalized_data
+        context['normalized_data'] = normalized_data
         context['anomaly_filelist'] = anomaly_file_list
         context['anomaly_csvdata'] = anomaly_csv_data
         context['normalized_anomaly_csvdata'] = normalized_anomaly_csvdata

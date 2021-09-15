@@ -59,7 +59,7 @@ class analysis_main(LoginRequiredMixin, View):
                     filtered_filelist.append(i)
 
             #test
-            print(filtered_filelist)
+            print("files:::::::", filtered_filelist)
 
             d1_datasum = []
             csv_data = []

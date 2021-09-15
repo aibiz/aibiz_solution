@@ -37,9 +37,10 @@ class analysis_main(LoginRequiredMixin, View):
         print(tree_selected_list)
 
         for selected_sensor in tree_selected_list:
+            sensor_list = []
             temp = selected_sensor.split('#')
             datapath = temp[0]
-            sensor_list = int(temp[1].replace("sensor", ''))
+            sensor_list = sensor_list.append(int(temp[1].replace("sensor", '')))
 
             # rootpath = os.getcwd()
             # 여러 챔버, 장비 선택시 for문 시작점

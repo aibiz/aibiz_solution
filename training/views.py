@@ -110,7 +110,7 @@ def graphing_training(request):
         thresholdpd = pandas.read_csv(thresholdFile, header=None)
         #      threshold 표시값 조정
         forAdjustThshld = 1000
-        threshold = round(pandas.DataFrame(thresholdpd).loc[0, 0] * forAdjustThshld, 3)
+        threshold = round(pandas.DataFrame(thresholdpd).loc[0, 0] * forAdjustThshld, 2)
         context = {'anomalies_list': file_list, 'csv_list': csv_list, 'current_threshold': threshold,
                    'status_loss': convert_data(trainingStatusFile, 0)[0],
                    'status_val_loss': convert_data(trainingStatusFile, 0)[1],

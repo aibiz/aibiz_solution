@@ -58,6 +58,9 @@ class analysis_main(LoginRequiredMixin, View):
                 if (formatted_startdate <= formatted_file_date and formatted_file_date <= formatted_enddate):
                     filtered_filelist.append(i)
 
+            #test
+            print(filtered_filelist)
+
             d1_datasum = []
             csv_data = []
             for k in filtered_filelist:

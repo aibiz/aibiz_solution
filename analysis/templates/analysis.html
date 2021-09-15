@@ -366,12 +366,7 @@
         }
 
         function normalBtnClick() {
-            if (isNormalChart == true) {
-                normalBtn.classList = 'btn btn-primary'
-            }
-            else {
-               normalBtn.classList = 'btn btn-secondary'
-            }
+
 
             isNormalChart = !isNormalChart;
             chart1.destroy();
@@ -380,18 +375,17 @@
                 ? drawChart(normalDataArray, anomalyDataArray)
                 : drawChart(normalizedDataArray, normalizedAnomalyDataArray);
 
+            if (isNormalChart == true) {
+                normalBtn.classList = 'btn btn-primary'
+            }
+            else {
+               normalBtn.classList = 'btn btn-secondary'
+            }
             // if(isNormalized)    drawNormalChart(normalDataArray)
             // else    drawNormalChart(normalizedDataArray);
         }
 
         function anomalyBtnClick() {
-            if (isAnomalyChart == true) {
-                anomalyBtn.classList = 'btn btn-primary'
-            }
-            else {
-               anomalyBtn.classList = 'btn btn-secondary'
-            }
-
             isAnomalyChart = !isAnomalyChart;
 
             chart1.destroy();
@@ -399,15 +393,16 @@
             isNormalized
                 ? drawChart(normalDataArray, anomalyDataArray)
                 : drawChart(normalizedDataArray, normalizedAnomalyDataArray);
+
+            if (isAnomalyChart == true) {
+                anomalyBtn.classList = 'btn btn-primary'
+            }
+            else {
+               anomalyBtn.classList = 'btn btn-secondary'
+            }
         }
 
         function normalizeBtnClick() {
-            if (isNormalized == true) {
-                normalizeBtn.classList = 'btn btn-primary'
-            }
-            else {
-               normalizeBtn.classList = 'btn btn-secondary'
-            }
             isNormalized = !isNormalized;
 
             if(isNormalChart || isAnomalyChart) {
@@ -416,6 +411,13 @@
                 isNormalized
                     ? drawChart(normalDataArray, anomalyDataArray)
                     : drawChart(normalizedDataArray, normalizedAnomalyDataArray);
+
+            if (isNormalized == true) {
+                normalizeBtn.classList = 'btn btn-primary'
+            }
+            else {
+               normalizeBtn.classList = 'btn btn-secondary'
+            }
             }
         }
     </script>

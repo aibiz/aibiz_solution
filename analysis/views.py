@@ -29,10 +29,8 @@ class analysis_main(LoginRequiredMixin, View):
         formatted_enddate = time.strptime(date_end,"%Y-%m-%d")
         formatted_startdate = time.strptime(date_start,"%Y-%m-%d")
 
-        # sensor_list = [2] #넘겨받아 split
-        # print("tree selected::::::", request.GET.get('tree_checked_ids'))
         tree_selected = request.GET.get('tree_checked_ids')
-        # 파일 경로 및 파일명에는 ","가 들어가면 안됨
+        # 파일 경로 및 파일명에는 ',' '#'"가 들어가면 안됨
         tree_selected_list = tree_selected.split(",")
         print(tree_selected_list)
 
@@ -42,7 +40,7 @@ class analysis_main(LoginRequiredMixin, View):
             datapath = temp[0]
             sensor_list = sensor_list.append(int(temp[1].replace("sensor", '')))
 
-            # rootpath = os.getcwd()
+
             # 여러 챔버, 장비 선택시 for문 시작점
             # ex for path in selected_list:
             #       datapath = rootpath + path
@@ -76,6 +74,7 @@ class analysis_main(LoginRequiredMixin, View):
             # end for selected_list
 
             #anomaly 데이터처리
+            rootpath = os.getcwd()
             anomaly_path = rootpath + "/static/data/monitoring_anomalies" + '/'
             anomaly_file_list = os.listdir(anomaly_path)
             anomaly_csv_data = []

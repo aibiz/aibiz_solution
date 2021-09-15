@@ -38,6 +38,7 @@ class analysis_main(LoginRequiredMixin, View):
             sensor_list = []
             temp = selected_sensor.split('#')
             datapath = temp[0]
+            print("raw_sennum:::", int(temp[1].replace("sensor", '')))
             sensor_list = sensor_list.append(int(temp[1].replace("sensor", '')))
 
 

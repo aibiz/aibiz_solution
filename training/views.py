@@ -8,8 +8,8 @@ import datetime
 import pandas
 from collections import Counter
 from django.db import transaction
-from aiengine.learning_code import learn_anomaly
-from aiengine.test_code import test_anomaly
+# from aiengine.learning_code import learn_anomaly
+# from aiengine.test_code import test_anomaly
 
 
 def training_main(request):
@@ -44,8 +44,8 @@ def start_training(request):
     print("path::", trainStaticPath, testStaticPath)
     print(trainDataId, testDataId, sensorNo, thresholdStd)
     if (trainDataId != 'Null') & (testDataId != 'Null'):
-        learn_anomaly(sensorNo, thresholdStd, trainStaticPath)
-        test_anomaly(sensorNo, testStaticPath, trainStaticPath)
+        # learn_anomaly(sensorNo, thresholdStd, trainStaticPath)
+        # test_anomaly(sensorNo, testStaticPath, trainStaticPath)
 
         print(rsData['equipName'])
         print(rsData['chamberName'])

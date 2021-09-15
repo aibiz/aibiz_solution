@@ -39,7 +39,7 @@ class analysis_main(LoginRequiredMixin, View):
             temp = selected_sensor.split('#')
             datapath = temp[0]
             print("raw_sennum:::", int(temp[1].replace("sensor", '')))
-            sensor_list = sensor_list.append(int(temp[1].replace("sensor", '')))
+            sensor_list.append(int(temp[1].replace("sensor", '')))
 
 
             # 여러 챔버, 장비 선택시 for문 시작점

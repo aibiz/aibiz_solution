@@ -31,6 +31,8 @@ class analysis_main(LoginRequiredMixin, View):
 
         sensor_list = [2] #넘겨받아 split
 
+        print("tree selected::::::", request.GET.get('tree_checked_ids'))
+
         rootpath = os.getcwd()
 
         # 여러 챔버, 장비 선택시 for문 시작점
@@ -119,12 +121,14 @@ def normalize(element, mean, std):
 def get_treestructure():
     equip_list = mmDataset.objects.filter().order_by('equip_name').values_list('equip_name').distinct()
     treedata=""
+    checkbox_state = '{ "checkbox_disabled" : true }'
+    disabled_state = '{ "opened": true }' #"disabled": true,
     for i in equip_list:
-        line = f'"id":"{i[0]}", "parent":"#", "text":"{i[0]}"'
+        line = f'"id":"{i[0]}", "parent":"#", "text":"{i[0]}", "state" : {disabled_state}'
         treedata += '{' + line + '}, '
         chamber_list = mmDataset.objects.filter(equip_name=i[0]).values_list('chamber_name').distinct()
         for j in chamber_list:
-            line = f'"id":"{i[0]}{j[0]}", "parent":"{i[0]}", "text":"{j[0]}"'
+            line = f'"id":"{i[0]}{j[0]}", "parent":"{i[0]}", "text":"{j[0]}", "state" : {disabled_state}'
             treedata += '{' + line + '}, '
             recipe_list = mmDataset.objects.filter(equip_name=i[0], chamber_name=j[0]).values_list('recipe_name').distinct()
             for k in recipe_list:
@@ -134,7 +138,7 @@ def get_treestructure():
                 rootpath=os.getcwd()
                 for l in rev_list:
                     data_path = rootpath + mmDataset.objects.filter(equip_name=i[0], chamber_name=j[0], recipe_name=k[0], revision_no=l[0]).last().data_static_path
-                    line = f'"id":"{i[0]}{j[0]}{k[0]}{l[0]}", "parent":"{i[0]}{j[0]}{k[0]}", "text":"{l[0]}", "val":"{data_path}"'
+                    line = f'"id":"{i[0]}{j[0]}{k[0]}{l[0]}", "parent":"{i[0]}{j[0]}{k[0]}", "text":"{l[0]}", "val":"{data_path}"'#, "state" : {checkbox_state}'
                     treedata += '{' + line + '}, '
                     sensorinfo_file = data_path + "/sensor_info.txt"
                     if os.path.isfile(sensorinfo_file):

@@ -10,25 +10,24 @@
     <main class="main" id="top">
         <div class="container-fluid">
 
-                <div class="row g-3 mb-3">
+            <div class="row g-3 mb-3">
                 <div class="card h-100">
                     <div class="card-header d-flex flex-between-center bg-light py-3">
                         <h6 class="mb-0">Analysis</h6>
                     </div>
                     <div class="card-header d-flex flex-between-center bg-light py-3">
                         <div class="row">
-                            ddd
-                             <div id="jstree_div"></div>
-                            aaa
-
+                            <!-- 트리구조  -->
+                            <div id="jstree_div"></div>
+                            <!-- /트리구조 -->
+                            <input type="text" id="test_tree">
                         </div>
                     </div>
-                                                        <div class="card-body pb-1 tree-content">
-                            <ul style="padding: 0" id="sensor_list"></ul>
-                        </div>
+                    <div class="card-body pb-1 tree-content">
+                        <ul style="padding: 0" id="sensor_list"></ul>
+                    </div>
                 </div>
-
-                </div>
+            </div>
         </div>
 
                 {#                <div class="col-lg-3">#}
@@ -179,25 +178,21 @@
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
     <script src="/static/vendors/jstree/dist/jstree.js"></script>
-{#<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.2/jstree.min.js"></script>#}
-
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        console.log("datatatata ta::: ")
         var treedata= "{{ treedata }}"
         treedata = JSON.parse(treedata.replace(/(&quot\;)/g,"\""))
         console.log(treedata)
         $('#jstree_div').jstree({
+            "checkbox": { "keep_selected_style": false  },
             'plugins' : [ "wholerow", "checkbox" ],
             'core' : { 'data' : treedata }
-
         });
+        var select_list = []
         $('#jstree_div').on("changed.jstree", function (e, data) {
             console.log(data.selected);
             console.log(data.node.parent);
-            data.node
-            var select_list = []
-            select_list.push()
+            select_list =  data.selected;
         });
     </script>
     <script>
@@ -233,15 +228,26 @@
         anomalyBtn.addEventListener('click', anomalyBtnClick);
         normalizeBtn.addEventListener('click', normalizeBtnClick);
 
+
         startBtn.addEventListener('click', async _ => {
             try {
                 var url = 'analysis?'
                 var date_start = document.getElementById("date-start").value;
                 var date_end = document.getElementById("date-end").value;
 
+                <!-- 트리select id 얻기!-->
+                var tree_checked_ids = [];
+                var tree_selectedNodes = $('#jstree_div').jstree("get_bottom_checked", true);
+                $.each(tree_selectedNodes, function() {
+                    tree_checked_ids.push(this.id);
+                });
+                // You can assign checked_ids to a hidden field of a form before submitting to the server
+                $('#test_tree').val(tree_checked_ids);
+
                 var querystr = new URLSearchParams({
                     date_start: date_start,
-                    date_end: date_end
+                    date_end: date_end,
+                    tree_checked_ids: tree_checked_ids
                 })
                 const response = await fetch(url + querystr, {
                     method: 'GET',

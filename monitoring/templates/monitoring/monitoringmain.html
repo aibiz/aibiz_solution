@@ -236,6 +236,8 @@
         var dataList = [];
         var xAxis = [];
 
+        var graph_Flag = false;
+
         //파일 리스트 호출 함수
         function execute_Monitoring() {
             var url = "/monitoring/execute";
@@ -297,14 +299,16 @@
             //5초 간격으로 하여 디렉토리 파일 리스트 호출 및 csv data 호출(간격 조정 필요한경우 수치 데이터 조정)
             timer = setTimeout("execute_Monitoring()", 5000);
 
-            //재조회 진행시에 가장 최신의 데이터를 우선으로 차트 부분에 표기한다..
-            setTimeout(function exec() {
-                csvIndex = 0;
-                monitorChart.data.datasets[0].data = dataList[csvIndex][0];
-                monitorChart.data.datasets[1].data = dataList[csvIndex][1];
-                monitorChart.destroy();
-                drawChart();
-            }, 300);
+            if(!graph_Flag){
+                //재조회 진행시에 가장 최신의 데이터를 우선으로 차트 부분에 표기한다..
+                setTimeout(function exec() {
+                    csvIndex = 0;
+                    monitorChart.data.datasets[0].data = dataList[csvIndex][0];
+                    monitorChart.data.datasets[1].data = dataList[csvIndex][1];
+                    monitorChart.destroy();
+                    drawChart();
+                }, 300);
+            }
         }
 
         function drawChart() {
@@ -350,6 +354,10 @@
 
             csvIndex--;
 
+            graph_Flag = true;
+
+            if (csvIndex === 0) graph_Flag = false;
+
             //해당 차트의 파일명 표기
             document.getElementById('file_name').innerText = csvList[csvIndex];
             monitorChart.data.datasets[0].data = dataList[csvIndex][0];
@@ -363,6 +371,10 @@
             console.log(csvIndex);
 
             csvIndex++;
+
+            graph_Flag = true;
+
+            if (csvIndex === 0) graph_Flag = false;
 
             //해당 차트의 파일명 표기
             document.getElementById('file_name').innerText = csvList[csvIndex];

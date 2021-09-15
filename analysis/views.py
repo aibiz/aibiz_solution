@@ -29,9 +29,8 @@ class analysis_main(LoginRequiredMixin, View):
         formatted_enddate = time.strptime(date_end,"%Y-%m-%d")
         formatted_startdate = time.strptime(date_start,"%Y-%m-%d")
 
-        sensor_list = [2] #넘겨받아 split
-
-        print("tree selected::::::", request.GET.get('tree_checked_ids'))
+        # sensor_list = [2] #넘겨받아 split
+        # print("tree selected::::::", request.GET.get('tree_checked_ids'))
         tree_selected = request.GET.get('tree_checked_ids')
         # 파일 경로 및 파일명에는 ","가 들어가면 안됨
         tree_selected_list = tree_selected.split(",")
@@ -42,11 +41,13 @@ class analysis_main(LoginRequiredMixin, View):
             datapath = temp[0]
             sensor_list = temp[1]
 
-            rootpath = os.getcwd()
+            # rootpath = os.getcwd()
             # 여러 챔버, 장비 선택시 for문 시작점
             # ex for path in selected_list:
             #       datapath = rootpath + path
-            datapath = rootpath + datapath + '/' #server
+            datapath = datapath + '/' #server
+            print("datapath::::", datapath)
+
             file_list = os.listdir(datapath)
             file_list_csv = [file for file in file_list if file.endswith(".csv")]
             filtered_filelist = []

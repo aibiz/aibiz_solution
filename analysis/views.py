@@ -74,12 +74,12 @@ class analysis_main(LoginRequiredMixin, View):
                     csv_data.append([k, sensor_data])
             # end for selected_list
 
-            #anomaly 데이터처리
+            #anomaly 데이터처리(시간필터링 x)
             rootpath = os.getcwd()
-            anomaly_path = rootpath + "/static/data/monitoring_anomalies" + '/'
+            anomaly_datapath = "/static/data/monitoring_anomalies" + '/'
+            anomaly_path = rootpath + anomaly_datapath
             anomaly_file_list = os.listdir(anomaly_path)
             anomaly_csv_data = []
-
             #   파일을 수정시간순으로 정렬
             for i in range(0, len(anomaly_file_list)):
                 for j in range(0, len(anomaly_file_list)):
@@ -95,16 +95,14 @@ class analysis_main(LoginRequiredMixin, View):
                 d1_datasum.extend(np.reshape(anomaly_data[0], -1))
                 d1_datasum.extend(np.reshape(anomaly_data[1], -1))
 
-        # mean, std
+        # calculate mean, std
         mean_val = np.mean(d1_datasum)
         std_val = np.std(d1_datasum)
         print("mean::", mean_val, "std::", std_val)
         ori_data = []
         for j in range(0, len(csv_data)):
             ori_data.append(csv_data[j][1])
-        # print("ori:::::::::::::", ori_data)
-
-        # 정규화
+        # mean,std 이용한 normalization
         normalized_data = []
         normalized_anomaly_csvdata = []
         for l in range(0, len(csv_data)):
@@ -118,11 +116,11 @@ class analysis_main(LoginRequiredMixin, View):
         context['anomaly_csvdata'] = anomaly_csv_data
         context['normalized_anomaly_csvdata'] = normalized_anomaly_csvdata
 
-        # print("raw_data:::::::::", context['raw_data'])
+        print("raw_data:::::::::", context['raw_data'])
         # print("normilized_data:::::::::", context['normalized_data'])
         # print("anomaly_filelist:::::::::::::", context['anomaly_filelist'])
-        print("anomaly_csvdata::::::::::::", context['anomaly_csvdata'])
-        print("normalized_anomaly_csvdata::::::", context['normalized_anomaly_csvdata'])
+        # print("anomaly_csvdata::::::::::::", context['anomaly_csvdata'])
+        # print("normalized_anomaly_csvdata::::::", context['normalized_anomaly_csvdata'])
         # print("response!!!!")
         return JsonResponse(context, content_type='application/json')
 

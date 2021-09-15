@@ -20,7 +20,6 @@
                             <!-- 트리구조  -->
                             <div id="jstree_div"></div>
                             <!-- /트리구조 -->
-                            <input type="text" id="test_tree">
                         </div>
                     </div>
                     <div class="card-body pb-1 tree-content">
@@ -241,7 +240,6 @@
                 $.each(tree_selectedNodes, function() {
                     tree_checked_ids.push(this.id);
                 });
-                $('#test_tree').val(tree_checked_ids);
 
                 var querystr = new URLSearchParams({
                     date_start: date_start,

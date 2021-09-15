@@ -394,8 +394,8 @@
                 })
             });
             console.log('Completed!', response);
-            const trainstartBtn = document.getElementById('trainstart-btn');
-            trainstartBtn.disabled = true;
+            button.disabled = false;
+            button.classList = "btn btn-primary loaded"
         } catch(err) {
             console.error(`Error: ${err}`);
         }

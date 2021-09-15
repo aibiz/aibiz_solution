@@ -7,6 +7,7 @@ from django.http import HttpRequest, JsonResponse
 import datetime
 import pandas
 from collections import Counter
+from django.db import transaction
 from aiengine.learning_code import learn_anomaly
 from aiengine.test_code import test_anomaly
 
@@ -54,15 +55,19 @@ def start_training(request):
                              revision_no=rsData['revisionNo'], sensor_cd=rsData['sensorNo']).id
         print("ID::::::::", recipeId)
           # equip_name, chamber_name, recipe_name, revision_no, sensor_cd -> recipe id
-        mmModel.objects.create(
-            #모델db 생성데이터
-            problem_id=1,
-            recipe_id=recipeId,
-            dataset_id=rsData['trainDataId'],
-            sensor_cd=sensorNo
-        )
+        try:
+            with transaction.atomic():
+                mmModel.objects.create(
+                    #모델db 생성데이터
+                    problem_id=1,
+                    recipe_id=recipeId,
+                    dataset_id=rsData['trainDataId'],
+                    sensor_cd=sensorNo)
+        except Exception as e:
+            context['success'] = False
+            context['message'] = 'DB 저장 실패'
+            return JsonResponse(context, content_type='application/json')
         print("!!!!!!!!!!!!!End Training!!!!!!!!!!!!!")
-
     else:
         print("testdata, traindata모두 입력하세요.")
     return JsonResponse(context, content_type='application/json')
@@ -105,7 +110,7 @@ def graphing_training(request):
         thresholdpd = pandas.read_csv(thresholdFile, header=None)
         #      threshold 표시값 조정
         forAdjustThshld = 1000
-        threshold = round(pandas.DataFrame(thresholdpd).loc[0, 0], 5) * forAdjustThshld
+        threshold = round(pandas.DataFrame(thresholdpd).loc[0, 0] * forAdjustThshld, 3)
         context = {'anomalies_list': file_list, 'csv_list': csv_list, 'current_threshold': threshold,
                    'status_loss': convert_data(trainingStatusFile, 0)[0],
                    'status_val_loss': convert_data(trainingStatusFile, 0)[1],

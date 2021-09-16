@@ -83,6 +83,7 @@ class analysis_main(LoginRequiredMixin, View):
             #   파일을 수정시간순으로 정렬
             anomaly_file_list.sort(key=lambda s: os.stat(os.path.join(anomaly_path, s)).st_ctime)
             anomaly_file_list.reverse()
+            print("aaaaaaaaaa::::: ", anomaly_file_list)
             # for i in range(0, len(anomaly_file_list)):
             #     for j in range(0, len(anomaly_file_list)):
             #         if datetime.fromtimestamp(os.stat(anomaly_path + anomaly_file_list[i]).st_mtime) \
@@ -118,7 +119,7 @@ class analysis_main(LoginRequiredMixin, View):
         context['anomaly_csvdata'] = anomaly_csv_data
         context['normalized_anomaly_csvdata'] = normalized_anomaly_csvdata
 
-        print("raw_data:::::::::", context['raw_data'])
+        # print("raw_data:::::::::", context['raw_data'])
         # print("normilized_data:::::::::", context['normalized_data'])
         # print("anomaly_filelist:::::::::::::", context['anomaly_filelist'])
         # print("anomaly_csvdata::::::::::::", context['anomaly_csvdata'])

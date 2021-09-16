@@ -53,8 +53,11 @@ class analysis_main(LoginRequiredMixin, View):
             for i in file_list_csv:
                 date = i[:10]
                 formatted_file_date = time.strptime(date, "%Y_%m_%d")
+                print("date_object:: ", i)
+                print("date::", formatted_startdate, formatted_enddate, "file_date::", formatted_file_date)
                 if (formatted_startdate <= formatted_file_date and formatted_file_date <= formatted_enddate):
                     filtered_filelist.append(i)
+                    print("::::pass ")
 
             #test
             print("files:::::::", filtered_filelist)

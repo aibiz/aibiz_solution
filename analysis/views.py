@@ -22,7 +22,6 @@ class analysis_main(LoginRequiredMixin, View):
             context['treedata'] = get_treestructure()
             return render(request, "analysis.html", context)
 
-
         today = datetime.today().strftime("%Y-%m-%d")
         date_start = request.GET.get('date_start', today)
         date_end = request.GET.get('date_end', today)
@@ -32,19 +31,17 @@ class analysis_main(LoginRequiredMixin, View):
         tree_selected = request.GET.get('tree_checked_ids')
         # 파일 경로 및 파일명에는 ',' '#'"가 들어가면 안됨
         tree_selected_list = tree_selected.split(",")
-        print(tree_selected_list)
+        # print(tree_selected_list)
 
         for selected_sensor in tree_selected_list:
             sensor_list = []
             temp = selected_sensor.split('#')
             datapath = temp[0]
-            print("raw_sennum:::", int(temp[1].replace("sensor", '')))
             sensor_list.append(int(temp[1].replace("sensor", '')))
-
 
             # 여러 챔버, 장비 선택시 for문 시작점
             # ex for path in selected_list:
-            datapath = datapath + '/' #server
+            datapath = datapath + '/'
             print("datapath::::", datapath)
             print("sensornum:::", sensor_list)
 
@@ -135,14 +132,14 @@ def normalize(element, mean, std):
 def get_treestructure():
     equip_list = mmDataset.objects.filter().order_by('equip_name').values_list('equip_name').distinct()
     treedata=""
-    checkbox_state = '{ "checkbox_disabled" : true }'
-    disabled_state = '{ "opened": true }' #"disabled": true,
+    # checkbox_state = '{ "checkbox_disabled" : true }'
+    state_open = '{ "opened": true }'
     for i in equip_list:
-        line = f'"id":"{i[0]}", "parent":"#", "text":"{i[0]}", "state" : {disabled_state}'
+        line = f'"id":"{i[0]}", "parent":"#", "text":"{i[0]}", "state" : {state_open}'
         treedata += '{' + line + '}, '
         chamber_list = mmDataset.objects.filter(equip_name=i[0]).values_list('chamber_name').distinct()
         for j in chamber_list:
-            line = f'"id":"{i[0]}{j[0]}", "parent":"{i[0]}", "text":"{j[0]}", "state" : {disabled_state}'
+            line = f'"id":"{i[0]}{j[0]}", "parent":"{i[0]}", "text":"{j[0]}", "state" : {state_open}'
             treedata += '{' + line + '}, '
             recipe_list = mmDataset.objects.filter(equip_name=i[0], chamber_name=j[0]).values_list('recipe_name').distinct()
             for k in recipe_list:

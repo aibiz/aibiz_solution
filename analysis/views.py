@@ -81,7 +81,7 @@ class analysis_main(LoginRequiredMixin, View):
             anomaly_file_list = os.listdir(anomaly_path)
             anomaly_csv_data = []
             #   파일을 수정시간순으로 정렬
-            anomaly_file_list.sort(key=lambda s: os.stat(os.path.join(anomaly_datapath, s)).st_ctime)
+            anomaly_file_list.sort(key=lambda s: os.stat(os.path.join(anomaly_path, s)).st_ctime)
             anomaly_file_list.reverse()
             # for i in range(0, len(anomaly_file_list)):
             #     for j in range(0, len(anomaly_file_list)):

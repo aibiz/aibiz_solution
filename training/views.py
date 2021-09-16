@@ -8,8 +8,8 @@ import datetime
 import pandas
 from collections import Counter
 from django.db import transaction
-# from aiengine.learning_code import learn_anomaly
-# from aiengine.test_code import test_anomaly
+from aiengine.learning_code import learn_anomaly
+from aiengine.test_code import test_anomaly
 
 
 def training_main(request):
@@ -44,8 +44,8 @@ def start_training(request):
     print("path::", trainStaticPath, testStaticPath)
     print(trainDataId, testDataId, sensorNo, thresholdStd)
     if (trainDataId != 'Null') & (testDataId != 'Null'):
-        # learn_anomaly(sensorNo, thresholdStd, trainStaticPath)
-        # test_anomaly(sensorNo, testStaticPath, trainStaticPath)
+        learn_anomaly(sensorNo, thresholdStd, trainStaticPath)
+        test_anomaly(sensorNo, testStaticPath, trainStaticPath)
 
         print(rsData['equipName'])
         print(rsData['chamberName'])
@@ -95,11 +95,13 @@ def graphing_training(request):
         file_list = os.listdir(testAnomalyList)
         csv_list = []
         #   파일을 수정시간순으로 정렬
-        for i in range(0, len(file_list)):
-            for j in range(0, len(file_list)):
-                if datetime.datetime.fromtimestamp(os.stat(testAnomalyList + file_list[i]).st_mtime) \
-                        < datetime.datetime.fromtimestamp(os.stat(testAnomalyList + file_list[j]).st_mtime):
-                    (file_list[i], file_list[j]) = (file_list[j], file_list[i])
+        file_list.sort(key=lambda s: os.stat(os.path.join(testAnomalyList, s)).st_ctime)
+        file_list.reverse()
+        # for i in range(0, len(file_list)):
+        #     for j in range(0, len(file_list)):
+        #         if datetime.datetime.fromtimestamp(os.stat(testAnomalyList + file_list[i]).st_mtime) \
+        #                 < datetime.datetime.fromtimestamp(os.stat(testAnomalyList + file_list[j]).st_mtime):
+        #             (file_list[i], file_list[j]) = (file_list[j], file_list[i])
         #   파일 리스트 전체의 csv파일 데이터를 읽어들여와 List 형식으로 변환(전체파일)
         for k in file_list:
             data = pandas.read_csv(testAnomalyList + k, header = None)

@@ -42,13 +42,13 @@ class analysis_main(LoginRequiredMixin, View):
             # 여러 챔버, 장비 선택시 for문 시작점
             # ex for path in selected_list:
             datapath = datapath + '/'
-            print("datapath::::", datapath)
-            print("sensornum:::", sensor_list)
+            # print("datapath::::", datapath)
+            # print("sensornum:::", sensor_list)
 
             file_list = os.listdir(datapath)
             file_list_csv = [file for file in file_list if file.endswith(".csv")]
+            print("all_list::: ", file_list_csv)
             filtered_filelist = []
-
             # 기간내 파일 필터링
             for i in file_list_csv:
                 date = i[:10]

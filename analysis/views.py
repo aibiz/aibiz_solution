@@ -31,7 +31,6 @@ class analysis_main(LoginRequiredMixin, View):
         tree_selected = request.GET.get('tree_checked_ids')
         # 파일 경로 및 파일명에는 ',' '#'"가 들어가면 안됨
         tree_selected_list = tree_selected.split(",")
-        # print(tree_selected_list)
 
         for selected_sensor in tree_selected_list:
             sensor_list = []
@@ -39,8 +38,6 @@ class analysis_main(LoginRequiredMixin, View):
             datapath = temp[0]
             sensor_list.append(int(temp[1].replace("sensor", '')))
 
-            # 여러 챔버, 장비 선택시 for문 시작점
-            # ex for path in selected_list:
             datapath = datapath + '/'
             # print("datapath::::", datapath)
             # print("sensornum:::", sensor_list)
@@ -53,14 +50,11 @@ class analysis_main(LoginRequiredMixin, View):
             for i in file_list_csv:
                 date = i[:10]
                 formatted_file_date = time.strptime(date, "%Y_%m_%d")
-                print("date_object:: ", i)
-                print("date::", formatted_startdate, formatted_enddate, "file_date::", formatted_file_date)
                 if (formatted_startdate <= formatted_file_date and formatted_file_date <= formatted_enddate):
                     filtered_filelist.append(i)
-                    print("::::pass ")
 
             #test
-            print("files:::::::", filtered_filelist)
+            # print("files:::::::", filtered_filelist)
 
             d1_datasum = []
             csv_data = []
@@ -72,7 +66,6 @@ class analysis_main(LoginRequiredMixin, View):
                     d1_data = np.reshape(sensor_data, -1)
                     d1_datasum.extend(d1_data)
                     csv_data.append([k, sensor_data])
-            # end for selected_list
 
             #anomaly 데이터처리(시간필터링 x)
             rootpath = os.getcwd()
@@ -80,21 +73,17 @@ class analysis_main(LoginRequiredMixin, View):
             anomaly_path = rootpath + anomaly_datapath
             anomaly_file_list = os.listdir(anomaly_path)
             anomaly_csv_data = []
+            anomaly_csv_fulldata = []
             #   파일을 수정시간순으로 정렬
             anomaly_file_list.sort(key=lambda s: os.stat(os.path.join(anomaly_path, s)).st_ctime)
             anomaly_file_list.reverse()
-            print("aaaaaaaaaa::::: ", anomaly_file_list)
-            # for i in range(0, len(anomaly_file_list)):
-            #     for j in range(0, len(anomaly_file_list)):
-            #         if datetime.fromtimestamp(os.stat(anomaly_path + anomaly_file_list[i]).st_mtime) \
-            #                 < datetime.fromtimestamp(os.stat(anomaly_path + anomaly_file_list[j]).st_mtime):
-            #             (anomaly_file_list[i], anomaly_file_list[j]) = (anomaly_file_list[j], anomaly_file_list[i])
             #   파일 리스트 전체의 csv파일 데이터를 읽어들여와 List 형식으로 변환(전체파일)
             for k in anomaly_file_list:
                 anomaly_data = pandas.read_csv(anomaly_path + k, header=None, )
                 anomaly_data = anomaly_data.values.tolist()
                 anomaly_csv_data.append(anomaly_data[0])
                 anomaly_csv_data.append(anomaly_data[1])
+                anomaly_csv_fulldata.append([k, data])
                 d1_datasum.extend(np.reshape(anomaly_data[0], -1))
                 d1_datasum.extend(np.reshape(anomaly_data[1], -1))
 
@@ -118,13 +107,14 @@ class analysis_main(LoginRequiredMixin, View):
         context['anomaly_filelist'] = anomaly_file_list
         context['anomaly_csvdata'] = anomaly_csv_data
         context['normalized_anomaly_csvdata'] = normalized_anomaly_csvdata
+        context['anomaly_csv_fulldata'] = anomaly_csv_fulldata
 
         # print("raw_data:::::::::", context['raw_data'])
         # print("normilized_data:::::::::", context['normalized_data'])
         # print("anomaly_filelist:::::::::::::", context['anomaly_filelist'])
         # print("anomaly_csvdata::::::::::::", context['anomaly_csvdata'])
         # print("normalized_anomaly_csvdata::::::", context['normalized_anomaly_csvdata'])
-        # print("response!!!!")
+        print("anomaly_csv_fulldata:::: ", context['anomaly_csv_fulldata'])
         return JsonResponse(context, content_type='application/json')
 
 

@@ -106,8 +106,8 @@
                                     </div>
                                     <div class="col-5">
                                         <p>
-                                            <button class="btn btn-secondary" id="start-btn" >
-                                                Submit
+                                            <button class="btn btn-primary" id="start-btn" >
+                                               확인
                                             </button>
                                         </p>
                                     </div>
@@ -366,8 +366,6 @@
         }
 
         function normalBtnClick() {
-
-
             isNormalChart = !isNormalChart;
             chart1.destroy();
 
@@ -412,12 +410,12 @@
                     ? drawChart(normalDataArray, anomalyDataArray)
                     : drawChart(normalizedDataArray, normalizedAnomalyDataArray);
 
-            if (isNormalized == false) {
-                normalizeBtn.classList = 'btn btn-primary'
-            }
-            else {
-               normalizeBtn.classList = 'btn btn-secondary'
-            }
+                if (isNormalized == false) {
+                    normalizeBtn.classList = 'btn btn-primary'
+                }
+                else {
+                    normalizeBtn.classList = 'btn btn-secondary'
+                }
             }
         }
     </script>

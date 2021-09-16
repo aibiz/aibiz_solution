@@ -81,11 +81,13 @@ class analysis_main(LoginRequiredMixin, View):
             anomaly_file_list = os.listdir(anomaly_path)
             anomaly_csv_data = []
             #   파일을 수정시간순으로 정렬
-            for i in range(0, len(anomaly_file_list)):
-                for j in range(0, len(anomaly_file_list)):
-                    if datetime.fromtimestamp(os.stat(anomaly_path + anomaly_file_list[i]).st_mtime) \
-                            < datetime.fromtimestamp(os.stat(anomaly_path + anomaly_file_list[j]).st_mtime):
-                        (anomaly_file_list[i], anomaly_file_list[j]) = (anomaly_file_list[j], anomaly_file_list[i])
+            anomaly_file_list.sort(key=lambda s: os.stat(os.path.join(anomaly_datapath, s)).st_ctime)
+            anomaly_file_list.reverse()
+            # for i in range(0, len(anomaly_file_list)):
+            #     for j in range(0, len(anomaly_file_list)):
+            #         if datetime.fromtimestamp(os.stat(anomaly_path + anomaly_file_list[i]).st_mtime) \
+            #                 < datetime.fromtimestamp(os.stat(anomaly_path + anomaly_file_list[j]).st_mtime):
+            #             (anomaly_file_list[i], anomaly_file_list[j]) = (anomaly_file_list[j], anomaly_file_list[i])
             #   파일 리스트 전체의 csv파일 데이터를 읽어들여와 List 형식으로 변환(전체파일)
             for k in anomaly_file_list:
                 anomaly_data = pandas.read_csv(anomaly_path + k, header=None, )

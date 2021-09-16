@@ -83,7 +83,7 @@ class analysis_main(LoginRequiredMixin, View):
                 anomaly_data = anomaly_data.values.tolist()
                 anomaly_csv_data.append(anomaly_data[0])
                 anomaly_csv_data.append(anomaly_data[1])
-                anomaly_csv_fulldata.append([k, data])
+                anomaly_csv_fulldata.append([k, anomaly_data])
                 d1_datasum.extend(np.reshape(anomaly_data[0], -1))
                 d1_datasum.extend(np.reshape(anomaly_data[1], -1))
 

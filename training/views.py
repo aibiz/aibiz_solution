@@ -97,6 +97,7 @@ def graphing_training(request):
         #   파일을 수정시간순으로 정렬
         file_list.sort(key=lambda s: os.stat(os.path.join(testAnomalyList, s)).st_ctime)
         file_list.reverse()
+        print(file_list)
         # for i in range(0, len(file_list)):
         #     for j in range(0, len(file_list)):
         #         if datetime.datetime.fromtimestamp(os.stat(testAnomalyList + file_list[i]).st_mtime) \
